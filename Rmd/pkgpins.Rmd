@@ -1,0 +1,297 @@
+---
+editor_options:
+  chunk_output_type: console
+---
+
+# INTERNAL
+
+## Avoid `R CMD check` notes about undefined global objects used in magrittr pipes
+
+cf. <https://github.com/tidyverse/magrittr/issues/29#issuecomment-74313262>
+
+```{r}
+utils::globalVariables(names = c(".",
+                                 "cached",
+                                 "id",
+                                 "name"))
+```
+
+# Register a package's user-cache pins board
+
+```{r}
+#' Register a package's user-cache pins board
+#'
+#' This function registers a package's user-cache pins board. It will be automatically called when needed.
+#'
+#' @inheritParams boardname
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # you could register the cache on package load, although this isn't really necessary
+#' .onLoad <- function(libname, pkgname) {
+#'   pkgpins::register(pkgname)
+#' }
+#' }
+register <- function(pkg) {
+  
+  if (!(boardname(pkg) %in% pins::board_list())) {
+    
+    pins::board_register_local(name = boardname(pkg),
+                               cache = pins::board_cache_path(),
+                               versions = FALSE)
+  }
+}
+```
+
+# Unregister a package's user-cache pins board
+
+```{r}
+#' Unregister a package's user-cache pins board
+#'
+#' This function unregisters a package's user-cache pins board.
+#'
+#' Ideally, you call this function on [package unload][base::.onUnload]. See the examples for details.
+#'
+#' @inheritParams boardname
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # register the cache on package unload
+#' .onUnload <- function(libpath) {
+#'   pkgpins::unregister()
+#' }
+#' }
+unregister <- function(pkg) {
+  
+  if (boardname(pkg) %in% pins::board_list()) {
+    
+    pins::board_deregister(name = boardname(pkg))
+  }
+}
+```
+
+# Get a package's user-cache pins board name
+
+By convention, the pins board name is identical to the directory name.
+
+```{r}
+#' Get a package's user-cache pins board name
+#'
+#' This function returns the board name of the `pks`'s user-cache pins board. 
+#' 
+#' It shouldn't be necessary to rely on this function for the tasks this package is intended to perform, though.
+#'
+#' @param pkg Package name. A character scalar.
+#' @return The board name of the [user-cache pins board](https://pins.rstudio.com/articles/boards-understanding.html) belonging to `pkg`, which is at the same
+#'   the name of the filesystem directory beneath [pkgpins::path_cache()]. A character scalar.
+#' @export
+boardname <- function(pkg) {
+  
+  paste0("pkg-cache-", checkmate::assert_string(pkg))
+}
+```
+
+# Get a package's user-cache pins board path
+
+```{r}
+#' Get a package's user-cache pins board path
+#'
+#' This function allows to the determine the filesystem path to the `pkg`'s user-cache pins board. Note that this path depends on the operating system this
+#' function is called from.
+#' 
+#' It shouldn't be necessary to rely on this function for the tasks this package is intended to perform, though.
+#'
+#' @inheritParams boardname
+#' @return A path of type [fs_path][fs::path()].
+#' @export
+path_cache <- function(pkg) {
+  
+  fs::path(pins::board_cache_path(), boardname(pkg))
+}
+```
+
+# List all objects in a package's user-cache pins board
+
+```{r}
+#' List all objects in a package's user-cache pins board
+#'
+#' This function lists all object `id`s and the date and time they were `cached`.
+#'
+#' @inheritParams boardname
+#'
+#' @return A [tibble][tibble::tbl_df].
+#' @export
+ls_cache <- function(pkg) {
+  
+  register(pkg = pkg)
+  result <- pins::pin_find(board = boardname(pkg),
+                           extended = TRUE)
+  
+  if ("cached" %in% colnames(result)) {
+    result %<>% dplyr::transmute(id = name,
+                                 cached = lubridate::as_datetime(cached))
+  } else {
+    result <- tibble::tibble(id = character(),
+                             cached = lubridate::as_datetime(integer()))
+  }
+  
+  result
+}
+```
+
+# Delete all objects from a package's user-cache pins board exceeding a certain age
+
+```{r}
+#' Delete all objects from a package's user-cache pins board exceeding a certain age
+#'
+#' This function allows to clean up old caching left-overs. It could be called on package load/unload, for example.
+#'
+#' @inheritParams boardname
+#' @param max_age The age above which cached objects will be deleted. A valid [lubridate duration][lubridate::as.duration]. Defaults to 1 day (24 hours).
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # delete all cached results that are older than 7 days at once on package load:
+#' .onLoad <- function(libname, pkgname) {
+#'   pkgpins::register()
+#'   pkgpins::clear(max_age = "7 days")
+#' }
+#' }
+clear <- function(max_age = "1 day",
+                  pkg) {
+  
+  register(pkg = pkg)
+  
+  ls_cache(pkg) %>%
+    dplyr::filter(lubridate::now() - cached > lubridate::as.duration(max_age)) %$%
+    id %>%
+    purrr::walk(.f = pins::pin_remove,
+                board = boardname(pkg))
+}
+```
+
+# Cache an object to a package's user-cache pins board
+
+```{r}
+#' Cache an object to a package's user-cache pins board
+#'
+#' This function stores an object in a package's user-cache pins board.
+#' 
+#' The exact date and time (UTC) of the pinning is stored as the additional metadata `cached` which is of type [integer][base::integer]. You can restore the
+#' actual datetime using [`lubridate::as_datetime(cached)`][lubridate::as_datetime] (note that [pkgpins::ls_cache()] does this automatically).
+#'
+#' @inheritParams boardname
+#' @param x An object, local file or remote URL to be cached.
+#' @param id The pin name uniquely identifying `x` in the `pkg`'s user-cache pins board. A character scalar. Necessary to retrieve `x` again using
+#'   [pkgpins::get_obj()]. An already existing pin named `id` will be silently overwritten.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' library(magrittr)
+#' 
+#' jsonlite::fromJSON(txt = "https://sysreqs.r-hub.io/pkg/git2r",
+#'                    simplifyVector = FALSE) %>%
+#'   purrr::flatten() %>%
+#'   pkgpins::cache_obj(id = "git2r-syreqs")
+#' }
+cache_obj <- function(x,
+                      id,
+                      pkg) {
+  
+  register(pkg = pkg)
+  
+  pins::pin(x = x,
+            board = boardname(pkg),
+            name = checkmate::assert_string(id),
+            metadata = list(cached = lubridate::now()))
+}
+```
+
+# Get a cached object from a package's user-cache pins board
+
+```{r}
+#' Get a cached object from a package's user-cache pins board
+#'
+#' This function retrieves a cached object from a package's user-cache pins board _if_ it is not older than `max_age`.
+#'
+#' @inheritParams boardname
+#' @param id The pin name uniquely identifying the object to be retrieved from the `pkg`'s user-cache pins board. A character scalar.
+#' @param max_age The maximum age the cached object is allowed to have. A valid [lubridate duration][lubridate::as.duration]. Defaults to 1 day (24 hours).
+#'
+#' @return The cached object if it is not older than `max_age`, otherwise `NULL`.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' pkgpins::get_obj(id = "git2r-syreqs",
+#'                  max_age = "2 weeks")
+#' }
+get_obj <- function(id,
+                    max_age = "1 day",
+                    pkg) {
+  
+  register(pkg = pkg)
+  board <- boardname(pkg)
+  result <- pins::pin_find(name = checkmate::assert_string(id),
+                           board = board,
+                           extended = TRUE)
+  
+  if (nrow(result) > 1) {
+    rlang::abort(paste0("Multiple pins found for board '", board, "'!\nThis should not happen since versioning is disabled for pkgpins boards... \U1F41E"))
+    
+  } else if (nrow(result) == 1) {
+    
+    if (!("cached" %in% colnames(result))) {
+      rlang::abort(paste0("Corrupted package cache detected! Please delete the directory `", path_cache(pkg = pkg), "` and then try again."))
+    }
+    
+    result %<>% dplyr::filter(lubridate::now() - lubridate::as_datetime(cached) <= lubridate::as.duration(max_age)) %$% name
+    
+    if (length(result) > 0) {
+      result <- pins::pin_get(board = board,
+                              name = id)
+    } else{
+      result <- NULL
+    }
+    
+  } else {
+    result <- NULL
+  }
+  
+  result
+}
+```
+
+# Delete a cached object from a package's user-cache pins board
+
+```{r}
+#' Delete a cached object from a package's user-cache pins board
+#'
+#' Note that it normally won't be necessary to delete a cached object using this function because [pkgpins::cache_obj()] will always overwrite a possibly
+#' existing object in the cache with the same `id`. If you want to ensure that no "data corpses" are left behind from using [pkgpins::cache_obj()], consider
+#' clearing the whole package user-cache pins board at once using [pkgpins::clear()].
+#'
+#' @inheritParams boardname
+#' @param id The pin name uniquely identifying the object to be deleted from the `pkg`'s user-cache pins board. A character scalar.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' pkgpins::rm_obj(id = "git2r-syreqs")
+#' }
+rm_obj <- function(id,
+                   pkg) {
+  
+  register(pkg = pkg)
+  
+  pins::pin_remove(board = boardname(pkg),
+                   name = checkmate::assert_string(id))
+}
+```

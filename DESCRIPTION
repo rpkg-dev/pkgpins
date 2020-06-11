@@ -1,0 +1,33 @@
+Package: pkgpins
+Title: Facilitates Results Caching in R Packages Using the Pins
+    Package
+Version: 0.0.9000
+Authors@R: 
+    person(given = "Salim",
+           family = "Brüggemann",
+           role = c("aut", "cre"),
+           email = "salim-b@pm.me",
+           comment = c(ORCID = "0000-0002-5329-5987"))
+Description: pkgpins builds upon the pins package and
+    strives to provide R package authors a simple and standardized way to
+    cache results on the filesystem in a suitable user directory.
+License: AGPL-3
+URL: https://gitlab.com/salim_b/r/pkgs/pkgpins
+BugReports: https://gitlab.com/salim_b/r/pkgs/pkgpins/issues
+Imports: 
+    checkmate (>= 2.0.0),
+    dplyr (>= 1.0.0),
+    fs (>= 1.4.1),
+    lubridate (>= 1.7.9),
+    magrittr (>= 1.5),
+    pins (>= 0.4.1),
+    purrr (>= 0.3.4),
+    rlang (>= 0.4.6),
+    tibble (>= 3.0.1),
+    utils (>= 4.0.1)
+Suggests: 
+    pal
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.0.9001
