@@ -6,20 +6,65 @@
 \usage{
 call_to_name(
   call = match.call(definition = sys.function(sys.parent(1L)), call =
-    sys.call(sys.parent(1L)))
+    sys.call(sys.parent(1L))),
+  rm_blanks = TRUE,
+  sanitize = TRUE,
+  non_destructive = FALSE,
+  exclude_args = NULL
 )
 }
 \arguments{
 \item{call}{A \link[base:call]{function call}. Defaults to the call of the calling function.}
+
+\item{rm_blanks}{Remove all whitespaces from \code{call}'s evaluated argument names. Enabled by default.}
+
+\item{sanitize}{Remove characters which are problematic or have special meaning on common filesystems from \code{call}'s evaluated argument names. Enabled by
+default. See \code{\link[fs:path_sanitize]{fs::path_sanitize()}} for details about the performed sanitation.}
+
+\item{non_destructive}{Disable all name conversion steps which are known to be destructive (loss of information). See details. This setting implies
+\code{santize = FALSE} and \code{rm_blanks = FALSE}. This is set to \code{FALSE} by default.}
+
+\item{exclude_args}{Specify argument names to be excluded from the generated name. A character vector.}
 }
 \value{
 A character scalar.
 }
 \description{
 This function strives to create a string that uniquely identifies a function call by the function name and the specified arguments. For example, the
-function call \code{foo(a = T, b = "bar", c = 1)} will be converted to \code{"foo_aTRUE-bbar-c1"}.
+function call \code{foo(a = F, b = "bar", c = 1)} will be converted to
+"foo_aFALSE_bbar-c1".
 }
 \details{
 This function does evaluate object names passed as function arguments. I.e. the function call \code{foo(a = my_var)}, where \code{my_var}'s value is \code{100}, will be
-converted to \code{"foo_a100"}. Nevertheless, it should be used with caution.
+converted to "foo_a100".
+
+Nevertheless, it should be used with caution since the name conversion can be destructive: For instance, whitespaces are just deleted, thus
+\code{foo(a = "ho ho")} and \code{foo(a = paste("ho", "ho", sep = paste0(rep(" ", 5), collapse = "")))} both produce the name
+"foo_ahoho" by default. Set \code{rm_blanks = FALSE} in order to keep
+whitespaces.
+
+Also, characters which are problematic or have special meaning on common filesystems are removed by default. To prevent this, use \code{sanitize = FALSE}
+instead.
+
+Finally, \code{", "} in evaluated argument names will be replaced by \code{"-"} by default. See examples. Turn of all the known-to-be destructive conversion steps
+at once by setting \code{non_destructive = TRUE}.
+}
+\examples{
+foo <- function(a, b, c) call_to_name()
+foo("ya", "hoo")
+
+# ", " in evaluated argument names will be replaced by "-"
+# which means the following produces identical names
+foo("", "ar", list("1, 77"))
+foo("", "ar", list(1, 77))
+
+# to avoid this and produce distinct names instead:
+foo <- function(a, b, c) call_to_name(non_destructive = TRUE)
+foo("", "ar", list("1, 77"))
+foo("", "ar", list(1, 77))
+
+# exclude arguments by name
+foo <- function(a, b, c) call_to_name(exclude_args = c("a", "c"))
+foo("", "ar", list("1, 77"))
+foo("", "ar", list(1, 77))
 }
