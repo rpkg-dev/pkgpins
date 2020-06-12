@@ -247,3 +247,39 @@ rm_obj <- function(id,
   pins::pin_remove(board = boardname(pkg),
                    name = checkmate::assert_string(id))
 }
+
+#' Convert a function call to a (pin) name
+#'
+#' This function strives to create a string that uniquely identifies a function call by the function name and the specified arguments. For example, the
+#' function call `foo(a = T, b = "bar", c = 1)` will be converted to `"foo_aTRUE-bbar-c1"`.
+#' 
+#' This function does evaluate object names passed as function arguments. I.e. the function call `foo(a = my_var)`, where `my_var`'s value is `100`, will be
+#' converted to `"foo_a100"`. Nevertheless, it should be used with caution.
+#'
+#' @param call A [function call][base::call]. Defaults to the call of the calling function.
+#'
+#' @return A character scalar.
+#' @export
+call_to_name <- function(call = match.call(definition = sys.function(sys.parent(1L)),
+                                           call = sys.call(sys.parent(1L)))) {
+  
+  fun_name <- as.character(as.list(call)[1])
+  
+  # evaluate the call's arguments in the calling environment
+  purrr::map(.x = as.list(call[-1]),
+             .f = eval,
+             envir = sys.frame(1L)) %>%
+    # convert to string
+    deparse1() %>%
+    # remove enclosing "list()", " = " and quotes
+    stringr::str_remove_all(pattern = "(^list\\(|\\)$| = |[\"'])") %>%
+    # replace whitespaces
+    stringr::str_replace(pattern = "(^.+?), ",
+                         replacement = "\\1_") %>%
+    stringr::str_replace_all(pattern = ", ",
+                             replacement = "-") %>%
+    # add function name
+    paste0(fun_name, dplyr::if_else(nchar(.) > 0, "_", ""), .) %>%
+    # remove filesystem-unsafe chars
+    fs::path_sanitize()
+}
