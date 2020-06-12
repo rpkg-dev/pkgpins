@@ -30,9 +30,9 @@ register <- function(pkg) {
   }
 }
 
-#' Unregister a package's user-cache pins board
+#' Deregister a package's user-cache pins board
 #'
-#' This function unregisters a package's user-cache pins board.
+#' This function deregisters a package's user-cache pins board.
 #'
 #' Ideally, you call this function on [package unload][base::.onUnload]. See the examples for details.
 #'
@@ -41,12 +41,12 @@ register <- function(pkg) {
 #'
 #' @examples
 #' \dontrun{
-#' # register the cache on package unload
+#' # deregister the cache on package unload
 #' .onUnload <- function(libpath) {
-#'   pkgpins::unregister()
+#'   pkgpins::deregister()
 #' }
 #' }
-unregister <- function(pkg) {
+deregister <- function(pkg) {
   
   if (boardname(pkg) %in% pins::board_list()) {
     
@@ -359,9 +359,9 @@ call_to_name <- function(call = match.call(definition = sys.function(sys.parent(
   }
 }
 
-#' Get predefined argument label
+#' Get predefined parameter label
 #'
-#' These are pre-defined labels indended to be used for arguments of the same name in `@param`
+#' These are pre-defined labels intended to be used for parameters of the same name in `@param`
 #' [roxygen2 tags](https://roxygen2.r-lib.org/articles/rd.html#functions).
 #'
 #' Recommended usage in [roxygen2 7.1.0](https://www.tidyverse.org/blog/2020/03/roxygen2-7-1-0/) and above:

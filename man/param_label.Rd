@@ -2,7 +2,7 @@
 % Please edit documentation in R/pkgpins-GEN.R
 \name{param_label}
 \alias{param_label}
-\title{Get predefined argument label}
+\title{Get predefined parameter label}
 \usage{
 param_label(name = c("cache_lifespan", "use_cache"))
 }
@@ -13,7 +13,7 @@ param_label(name = c("cache_lifespan", "use_cache"))
 A character scalar.
 }
 \description{
-These are pre-defined labels indended to be used for arguments of the same name in \verb{@param}
+These are pre-defined labels intended to be used for parameters of the same name in \verb{@param}
 \href{https://roxygen2.r-lib.org/articles/rd.html#functions}{roxygen2 tags}.
 }
 \details{
