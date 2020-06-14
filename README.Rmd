@@ -6,6 +6,20 @@ output: pal::gitlab_document
 
 `r pal::desc_value("Description")`
 
+## Predefined parameter labels
+
+There are two predefined parameter labels available in [pkgsnippets](https://gitlab.com/salim_b/r/pkgs/pkgsnippets) which fit typical use cases of this
+package. They are intended to be used in `@param` [roxygen2 tags](https://roxygen2.r-lib.org/articles/rd.html#functions)[^v710] as follows:
+
+```r
+#' @@param cache_lifespan `r pkgsnippets::param_label("cache_lifespan")`
+#' @@param use_cache `r pkgsnippets::param_label("use_cache")`
+```
+
+
+[^v710]: Support for dynamic inline R code was introduced in [roxygen2 7.1.0](https://www.tidyverse.org/blog/2020/03/roxygen2-7-1-0/).
+
+
 ## Installation
 ```{r, install-snippet-dev, child = pkgsnippets::snippet_path("installation-notice_dev-version_gitlab.Rmd")}
 ```
@@ -22,7 +36,9 @@ output: pal::gitlab_document
 
 ## See also
 
-- R packages that provide a [memoization](http://en.wikipedia.org/wiki/Memoization) infrastructure. Memoization is suited best for caching strict functional programming results, i.e. caching functions that always return the same result with the same arguments – something that's often not the case for functions accessing external APIs.
+- R packages that provide a [memoization](http://en.wikipedia.org/wiki/Memoization) infrastructure. Memoization is suited best for caching strict functional
+  programming results, i.e. caching functions that always return the same result with the same arguments – something that's often not the case for functions
+  accessing external APIs.
 
     There are at least two actively developed memoization packages:
   
