@@ -410,32 +410,3 @@ call_to_name <- function(call = match.call(definition = sys.function(sys.parent(
   }
 }
 ```
-
-# Get predefined parameter label
-
-```{r}
-#' Get predefined parameter label
-#'
-#' These are pre-defined labels intended to be used for parameters of the same name in `@param`
-#' [roxygen2 tags](https://roxygen2.r-lib.org/articles/rd.html#functions).
-#'
-#' Recommended usage in [roxygen2 7.1.0](https://www.tidyverse.org/blog/2020/03/roxygen2-7-1-0/) and above:
-#'
-#' ``@@param cache_lifespan `r pkgpins::param_label("cache_lifespan")` ``  
-#' ``@@param use_cache `r pkgpins::param_label("use_cache")` ``
-#'
-#' @param name The label name.
-#'
-#' @return A character scalar.
-#' @export
-param_label <- function(name = c("cache_lifespan",
-                                 "use_cache")) {
-  
-  rlang::arg_match(name) %>%
-    switch(cache_lifespan = paste0("The duration after which cached results are refreshed (i.e. newly fetched). A valid ",
-                                   "[lubridate duration][lubridate::as.duration]. Defaults to 1 day (24 hours). Only relevant if `use_cache = TRUE`."),
-           
-           use_cache = "Return cached results if possible. If `FALSE`, results are always newly fetched regardless of `cache_lifespan`."
-    )
-}
-```
