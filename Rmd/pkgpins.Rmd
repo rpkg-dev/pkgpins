@@ -325,7 +325,7 @@ rm_obj <- function(id,
 #'   default. See [fs::path_sanitize()] for details about the performed sanitation.
 #' @param non_destructive Disable all name conversion steps which are known to be destructive (loss of information). See details. This setting implies
 #'   `santize = FALSE` and `rm_blanks = FALSE`. This is set to `FALSE` by default.
-#' @param exclude_args Specify argument names to be excluded from the generated name. A character vector.
+#' @param exclude_args Specify argument names to be excluded from the generated name. A character vector, or `NULL` for no excluded arguments.
 #'
 #' @return A character scalar.
 #' @export
@@ -353,7 +353,7 @@ call_to_name <- function(call = match.call(definition = sys.function(sys.parent(
                          rm_blanks = TRUE,
                          sanitize = TRUE,
                          non_destructive = FALSE,
-                         exclude_args = NULL) {
+                         exclude_args = c("use_cache", "cache_lifespan")) {
   
   fun_name <- as.character(as.list(call)[1])
   args <- as.list(call[-1])
