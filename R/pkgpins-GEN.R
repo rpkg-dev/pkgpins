@@ -199,10 +199,10 @@ get_obj <- function(id,
                            board = board,
                            extended = TRUE)
   
-  if (nrow(result) > 1) {
+  if (nrow(result) > 1L) {
     rlang::abort(paste0("Multiple pins found for board '", board, "'!\nThis should not happen since versioning is disabled for pkgpins boards... \U1F41E"))
     
-  } else if (nrow(result) == 1) {
+  } else if (nrow(result) == 1L) {
     
     if (!("cached" %in% colnames(result))) {
       rlang::abort(paste0("Corrupted package cache detected! Please delete the directory `", path_cache(pkg = pkg), "` and then try again."))
@@ -210,7 +210,7 @@ get_obj <- function(id,
     
     result %<>% dplyr::filter(lubridate::now() - lubridate::as_datetime(cached) <= lubridate::as.duration(max_age)) %$% name
     
-    if (length(result) > 0) {
+    if (length(result) > 0L) {
       result <- pins::pin_get(board = board,
                               name = id)
     } else{
@@ -274,7 +274,7 @@ rm_obj <- function(id,
 #'   default. See [fs::path_sanitize()] for details about the performed sanitation.
 #' @param non_destructive Disable all name conversion steps which are known to be destructive (loss of information). See details. This setting implies
 #'   `santize = FALSE` and `rm_blanks = FALSE`. This is set to `FALSE` by default.
-#' @param exclude_args Specify argument names to be excluded from the generated name. A character vector.
+#' @param exclude_args Specify argument names to be excluded from the generated name. A character vector, or `NULL` for no excluded arguments.
 #'
 #' @return A character scalar.
 #' @export
@@ -302,10 +302,10 @@ call_to_name <- function(call = match.call(definition = sys.function(sys.parent(
                          rm_blanks = TRUE,
                          sanitize = TRUE,
                          non_destructive = FALSE,
-                         exclude_args = NULL) {
+                         exclude_args = c("use_cache", "cache_lifespan")) {
   
-  fun_name <- as.character(as.list(call)[1])
-  args <- as.list(call[-1])
+  fun_name <- as.character(as.list(call)[1L])
+  args <- as.list(call[-1L])
   
   if (!is.null(checkmate::assert_character(exclude_args,
                                            any.missing = FALSE,
@@ -313,13 +313,13 @@ call_to_name <- function(call = match.call(definition = sys.function(sys.parent(
     
     excl <- names(args) %in% exclude_args
     
-    if (length(excl) > 0) {
+    if (length(excl) > 0L) {
       
       args <- args[!excl]
     }
   }
   
-  if (length(args) > 0) {
+  if (length(args) > 0L) {
     
     # evaluate the call's arguments in the calling environment
     args %>%
@@ -336,19 +336,19 @@ call_to_name <- function(call = match.call(definition = sys.function(sys.parent(
       # (this is a potentially destructive conversion step)
       purrr::when(!non_destructive ~ stringr::str_replace_all(string = .,
                                                               pattern = ", ",
-                                                              replacement = "-") ,
+                                                              replacement = "-"),
                   ~ .) %>%
       # remove " = " and quotes
       # (this is a potentially destructive conversion step)
       purrr::when(!non_destructive ~ stringr::str_remove_all(string = .,
-                                                             pattern = "( = |[\"'])") ,
+                                                             pattern = "( = |[\"'])"),
                   ~ .) %>%
       stringr::str_replace_all(pattern = dplyr::if_else(checkmate::assert_flag(rm_blanks),
                                                         "\\s+",
                                                         "^$"),
                                replacement = "") %>%
       # add function name
-      paste0(fun_name, dplyr::if_else(nchar(.) > 0, "_", ""), .) %>%
+      paste0(fun_name, dplyr::if_else(nchar(.) > 0L, "_", ""), .) %>%
       # remove filesystem-unsafe chars
       # (this is a potentially destructive conversion step)
       purrr::when(sanitize & !non_destructive ~ fs::path_sanitize(.),

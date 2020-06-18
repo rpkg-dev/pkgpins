@@ -10,7 +10,7 @@ call_to_name(
   rm_blanks = TRUE,
   sanitize = TRUE,
   non_destructive = FALSE,
-  exclude_args = NULL
+  exclude_args = c("use_cache", "cache_lifespan")
 )
 }
 \arguments{
@@ -24,7 +24,7 @@ default. See \code{\link[fs:path_sanitize]{fs::path_sanitize()}} for details abo
 \item{non_destructive}{Disable all name conversion steps which are known to be destructive (loss of information). See details. This setting implies
 \code{santize = FALSE} and \code{rm_blanks = FALSE}. This is set to \code{FALSE} by default.}
 
-\item{exclude_args}{Specify argument names to be excluded from the generated name. A character vector.}
+\item{exclude_args}{Specify argument names to be excluded from the generated name. A character vector, or \code{NULL} for no excluded arguments.}
 }
 \value{
 A character scalar.
