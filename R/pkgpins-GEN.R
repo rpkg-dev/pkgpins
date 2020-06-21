@@ -248,11 +248,12 @@ rm_obj <- function(id,
                    name = checkmate::assert_string(id))
 }
 
-#' Convert a function call to a (pin) name
+#' Convert the calling function call to a (pin) name
 #'
-#' This function strives to create a string that uniquely identifies a function call by the function name and the specified arguments. For example, the
-#' function call `foo(a = F, b = "bar", c = 1)` will be converted to
-#' `r foo <- function(a, b, c) call_to_name(); pal::prose_ls(foo(a = F, b = "bar", c = 1), wrap = '"')`.
+#' This function strives to create a string that uniquely identifies the function call of the calling function by the function's namespace, name and
+#' specified arguments. For example, when called _inside_ the function `foo()`, it will return
+#' `r foo <- function(a, b, c) call_to_name(); pal::prose_ls(foo(a = F, b = "bar", c = 1), wrap = '"')` when `foo()` was called with
+#' `foo(a = F, b = "bar", c = 1)`.
 #' 
 #' This function does evaluate object names passed as function arguments. I.e. the function call `foo(a = my_var)`, where `my_var`'s value is `100`, will be
 #' converted to `r my_var <- 100; pal::prose_ls(foo(100), wrap = '"')`.
@@ -265,15 +266,15 @@ rm_obj <- function(id,
 #' Also, characters which are problematic or have special meaning on common filesystems are removed by default. To prevent this, use `sanitize = FALSE`
 #' instead.
 #' 
-#' Finally, `", "` in evaluated argument names will be replaced by `"-"` by default. See examples. Turn of all the known-to-be destructive conversion steps
-#' at once by setting `non_destructive = TRUE`.
+#' To turn of all the known-to-be destructive conversion steps at once, set `non_destructive = TRUE`.
 #'
-#' @param call A [function call][base::call]. Defaults to the call of the calling function.
-#' @param rm_blanks Remove all whitespaces from `call`'s evaluated argument names. Enabled by default.
+#' @param add_namespace Prefix the generated name with the [namespace](https://cran.r-project.org/doc/manuals/r-release/R-ints.html#Namespaces) (i.e.
+#'   package name) the called function belongs to (if any).
+#' @param rm_blanks Remove all whitespaces from `call`'s evaluated argument names.
 #' @param sanitize Remove characters which are problematic or have special meaning on common filesystems from `call`'s evaluated argument names. Enabled by
 #'   default. See [fs::path_sanitize()] for details about the performed sanitation.
 #' @param non_destructive Disable all name conversion steps which are known to be destructive (loss of information). See details. This setting implies
-#'   `santize = FALSE` and `rm_blanks = FALSE`. This is set to `FALSE` by default.
+#'   `santize = FALSE` and `rm_blanks = FALSE` and has precedence over them.
 #' @param exclude_args Specify argument names to be excluded from the generated name. A character vector, or `NULL` for no excluded arguments.
 #'
 #' @return A character scalar.
@@ -283,37 +284,75 @@ rm_obj <- function(id,
 #' foo <- function(a, b, c) call_to_name()
 #' foo("ya", "hoo")
 #'
-#' # ", " in evaluated argument names will be replaced by "-"
+#' # whitespaces are removed by default
 #' # which means the following produces identical names
-#' foo("", "ar", list("1, 77"))
-#' foo("", "ar", list(1, 77))
+#' foo(4 - 2, 'a \" r', list("1, 77"))
+#' foo(1+1, 'ar', list('1,77'))
 #' 
 #' # to avoid this and produce distinct names instead:
 #' foo <- function(a, b, c) call_to_name(non_destructive = TRUE)
-#' foo("", "ar", list("1, 77"))
-#' foo("", "ar", list(1, 77))
+#' foo(4 - 2, 'a \" r', list("1, 77"))
+#' foo(1+1, 'ar', list('1,77'))
 #'
 #' # exclude arguments by name
 #' foo <- function(a, b, c) call_to_name(exclude_args = c("a", "c"))
-#' foo("", "ar", list("1, 77"))
-#' foo("", "ar", list(1, 77))
-call_to_name <- function(call = match.call(definition = sys.function(sys.parent(1L)),
-                                           call = sys.call(sys.parent(1L))),
+#' foo(1+1, 'ar', list('1,77'))
+call_to_name <- function(add_namespace = TRUE,
                          rm_blanks = TRUE,
                          sanitize = TRUE,
                          non_destructive = FALSE,
                          exclude_args = c("use_cache", "cache_lifespan")) {
   
-  fun_name <- as.character(as.list(call)[1L])
+  checkmate::assert_flag(add_namespace)
+  checkmate::assert_flag(rm_blanks)
+  checkmate::assert_flag(sanitize)
+  checkmate::assert_flag(non_destructive)
+  
+  call = match.call(definition = sys.function(sys.parent(1L)),
+                    call = sys.call(sys.parent(1L)))
+  fun_name <- as.character(as.list(call)[[1]])
   args <- as.list(call[-1L])
   
+  # add namespace
+  ## extract it if provided in call
+  if (length(fun_name) == 3L) {
+    
+    fun_namespace <- fun_name[2]
+    fun_name <- fun_name[3]
+    
+    ## or otherwise determine it manually
+  } else if (length(fun_name) == 1L) {
+    
+    fun_envirs <- environmentName(methods::findFunction(f = fun_name,
+                                                        where = sys.frame(sys.parent(1L))))
+    
+    ### test if actually a package _namespace_ (in contrast to _environment_, cf. https://stackoverflow.com/a/38872833/7196903)
+    i_namespaces <-
+      fun_envirs %>%
+      purrr::map_lgl(isNamespace) %>%
+      which()
+    
+    if (length(i_namespaces)) {
+      fun_namespace <- getNamespaceName(fun_namespace[[i_namespaces[1]]])
+    } else {
+      fun_namespace <- NULL
+    }
+  } else {
+    rlang::abort("Unknown situation detected: Call's function has a length of 2! Please debug...")
+  }
+  
+  if (add_namespace & !is.null(fun_namespace)) {
+    
+    fun_name %<>% paste0(fun_namespace, dplyr::if_else(sanitize & !non_destructive, "-", "::"), .)
+  }
+  
+  # add args
   if (!is.null(checkmate::assert_character(exclude_args,
                                            any.missing = FALSE,
                                            null.ok = TRUE))) {
-    
     excl <- names(args) %in% exclude_args
     
-    if (length(excl) > 0L) {
+    if (length(excl)) {
       
       args <- args[!excl]
     }
@@ -326,35 +365,42 @@ call_to_name <- function(call = match.call(definition = sys.function(sys.parent(
       purrr::map(.f = eval,
                  envir = sys.frame(1L)) %>%
       # convert to string
-      # (don't really know if this could be a destructive conversion step under specific circumstances)
-      deparse1() %>%
+      # (under rather exotic circumstances this is destructive, see `?deparseOpts`)
+      deparse1(collapse = "",
+               control = c("keepNA",
+                           "keepInteger",
+                           "niceNames",
+                           "showAttributes",
+                           "warnIncomplete")) %>%
       # remove enclosing "list()"
       stringr::str_remove_all(pattern = "(^list\\(|\\)$)") %>%
-      # replace whitespaces
-      stringr::str_replace(pattern = "(^.+?), ",
-                           replacement = "\\1_") %>%
+      # replace double quotes around character arguments with single quotes to make them filesystem safe
+      # (this is a potentially destructive conversion step, and unnecessary anyway when non_destructive)
+      stringr::str_replace_all(pattern = dplyr::if_else(sanitize & !non_destructive,
+                                                        '(^|[^\\\\])(")(.+?[^\\\\])(")',
+                                                        "^$"),
+                               replacement = "\\1'\\3'") %>%
+      # remove blanks
       # (this is a potentially destructive conversion step)
-      purrr::when(!non_destructive ~ stringr::str_replace_all(string = .,
-                                                              pattern = ", ",
-                                                              replacement = "-"),
-                  ~ .) %>%
-      # remove " = " and quotes
-      # (this is a potentially destructive conversion step)
-      purrr::when(!non_destructive ~ stringr::str_remove_all(string = .,
-                                                             pattern = "( = |[\"'])"),
-                  ~ .) %>%
-      stringr::str_replace_all(pattern = dplyr::if_else(checkmate::assert_flag(rm_blanks),
+      stringr::str_replace_all(pattern = dplyr::if_else(rm_blanks & !non_destructive,
                                                         "\\s+",
                                                         "^$"),
                                replacement = "") %>%
       # add function name
-      paste0(fun_name, dplyr::if_else(nchar(.) > 0L, "_", ""), .) %>%
+      paste0(fun_name, dplyr::if_else(nchar(.) > 0L, "-", ""), .) %>%
       # remove filesystem-unsafe chars
       # (this is a potentially destructive conversion step)
       purrr::when(sanitize & !non_destructive ~ fs::path_sanitize(.),
                   ~ .)
   } else {
     
+    if (sanitize & !non_destructive) {
+      fun_name %<>% fs::path_sanitize()
+    }
+    
     fun_name
   }
 }
+
+test_call_to_name <- function(...) call_to_name()
+test_call_to_name_no_ns <- function(...) call_to_name(add_namespace = FALSE)

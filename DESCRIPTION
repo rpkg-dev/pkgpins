@@ -20,6 +20,7 @@ Imports:
     fs (>= 1.4.1),
     lubridate (>= 1.7.9),
     magrittr (>= 1.5),
+    methods (>= 4.0.1),
     pins (>= 0.4.1),
     purrr (>= 0.3.4),
     rlang (>= 0.4.6),

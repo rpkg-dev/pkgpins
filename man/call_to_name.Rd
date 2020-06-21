@@ -2,11 +2,10 @@
 % Please edit documentation in R/pkgpins-GEN.R
 \name{call_to_name}
 \alias{call_to_name}
-\title{Convert a function call to a (pin) name}
+\title{Convert the calling function call to a (pin) name}
 \usage{
 call_to_name(
-  call = match.call(definition = sys.function(sys.parent(1L)), call =
-    sys.call(sys.parent(1L))),
+  add_namespace = TRUE,
   rm_blanks = TRUE,
   sanitize = TRUE,
   non_destructive = FALSE,
@@ -14,15 +13,16 @@ call_to_name(
 )
 }
 \arguments{
-\item{call}{A \link[base:call]{function call}. Defaults to the call of the calling function.}
+\item{add_namespace}{Prefix the generated name with the \href{https://cran.r-project.org/doc/manuals/r-release/R-ints.html#Namespaces}{namespace} (i.e.
+package name) the called function belongs to (if any).}
 
-\item{rm_blanks}{Remove all whitespaces from \code{call}'s evaluated argument names. Enabled by default.}
+\item{rm_blanks}{Remove all whitespaces from \code{call}'s evaluated argument names.}
 
 \item{sanitize}{Remove characters which are problematic or have special meaning on common filesystems from \code{call}'s evaluated argument names. Enabled by
 default. See \code{\link[fs:path_sanitize]{fs::path_sanitize()}} for details about the performed sanitation.}
 
 \item{non_destructive}{Disable all name conversion steps which are known to be destructive (loss of information). See details. This setting implies
-\code{santize = FALSE} and \code{rm_blanks = FALSE}. This is set to \code{FALSE} by default.}
+\code{santize = FALSE} and \code{rm_blanks = FALSE} and has precedence over them.}
 
 \item{exclude_args}{Specify argument names to be excluded from the generated name. A character vector, or \code{NULL} for no excluded arguments.}
 }
@@ -30,41 +30,40 @@ default. See \code{\link[fs:path_sanitize]{fs::path_sanitize()}} for details abo
 A character scalar.
 }
 \description{
-This function strives to create a string that uniquely identifies a function call by the function name and the specified arguments. For example, the
-function call \code{foo(a = F, b = "bar", c = 1)} will be converted to
-"foo_aFALSE_bbar-c1".
+This function strives to create a string that uniquely identifies the function call of the calling function by the function's namespace, name and
+specified arguments. For example, when called \emph{inside} the function \code{foo()}, it will return
+"foo-a=FALSE,b='bar',c=1" when \code{foo()} was called with
+\code{foo(a = F, b = "bar", c = 1)}.
 }
 \details{
 This function does evaluate object names passed as function arguments. I.e. the function call \code{foo(a = my_var)}, where \code{my_var}'s value is \code{100}, will be
-converted to "foo_a100".
+converted to "foo-a=100".
 
 Nevertheless, it should be used with caution since the name conversion can be destructive: For instance, whitespaces are just deleted, thus
 \code{foo(a = "ho ho")} and \code{foo(a = paste("ho", "ho", sep = paste0(rep(" ", 5), collapse = "")))} both produce the name
-"foo_ahoho" by default. Set \code{rm_blanks = FALSE} in order to keep
+"foo-a='hoho'" by default. Set \code{rm_blanks = FALSE} in order to keep
 whitespaces.
 
 Also, characters which are problematic or have special meaning on common filesystems are removed by default. To prevent this, use \code{sanitize = FALSE}
 instead.
 
-Finally, \code{", "} in evaluated argument names will be replaced by \code{"-"} by default. See examples. Turn of all the known-to-be destructive conversion steps
-at once by setting \code{non_destructive = TRUE}.
+To turn of all the known-to-be destructive conversion steps at once, set \code{non_destructive = TRUE}.
 }
 \examples{
 foo <- function(a, b, c) call_to_name()
 foo("ya", "hoo")
 
-# ", " in evaluated argument names will be replaced by "-"
+# whitespaces are removed by default
 # which means the following produces identical names
-foo("", "ar", list("1, 77"))
-foo("", "ar", list(1, 77))
+foo(4 - 2, 'a \" r', list("1, 77"))
+foo(1+1, 'ar', list('1,77'))
 
 # to avoid this and produce distinct names instead:
 foo <- function(a, b, c) call_to_name(non_destructive = TRUE)
-foo("", "ar", list("1, 77"))
-foo("", "ar", list(1, 77))
+foo(4 - 2, 'a \" r', list("1, 77"))
+foo(1+1, 'ar', list('1,77'))
 
 # exclude arguments by name
 foo <- function(a, b, c) call_to_name(exclude_args = c("a", "c"))
-foo("", "ar", list("1, 77"))
-foo("", "ar", list(1, 77))
+foo(1+1, 'ar', list('1,77'))
 }
