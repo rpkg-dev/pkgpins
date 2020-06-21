@@ -367,17 +367,17 @@ call_to_name <- function(add_namespace = TRUE,
   checkmate::assert_flag(sanitize)
   checkmate::assert_flag(non_destructive)
   
-  call = match.call(definition = sys.function(sys.parent(1L)),
-                    call = sys.call(sys.parent(1L)))
-  fun_name <- as.character(as.list(call)[[1]])
+  call <- match.call(definition = sys.function(sys.parent(1L)),
+                     call = sys.call(sys.parent(1L)))
+  fun_name <- as.character(as.list(call)[[1L]])
   args <- as.list(call[-1L])
   
   # add namespace
   ## extract it if provided in call
   if (length(fun_name) == 3L) {
     
-    fun_namespace <- fun_name[2]
-    fun_name <- fun_name[3]
+    fun_namespace <- fun_name[2L]
+    fun_name <- fun_name[3L]
     
     ## or otherwise determine it manually
   } else if (length(fun_name) == 1L) {
