@@ -31,6 +31,8 @@ Suggests:
     jsonlite,
     pal,
     testthat
+Remotes:
+    gitlab::salim_b/r/pkgs/pal
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
