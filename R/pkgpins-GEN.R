@@ -15,11 +15,10 @@ utils::globalVariables(names = c(".",
 #'
 #' @examples
 #' \dontrun{
-#' # you could register the cache on package load, although this isn't really necessary
+#' # you could register the cache on package load, although this is not necessary in most cases
 #' .onLoad <- function(libname, pkgname) {
 #'   pkgpins::register(pkgname)
-#' }
-#' }
+#' }}
 register <- function(pkg) {
   
   if (!(boardname(pkg) %in% pins::board_list())) {
@@ -41,11 +40,10 @@ register <- function(pkg) {
 #'
 #' @examples
 #' \dontrun{
-#' # deregister the cache on package unload
+#' # deregister the cache on package unload (recommended)
 #' .onUnload <- function(libpath) {
 #'   pkgpins::deregister()
-#' }
-#' }
+#' }}
 deregister <- function(pkg) {
   
   if (boardname(pkg) %in% pins::board_list()) {
@@ -64,6 +62,10 @@ deregister <- function(pkg) {
 #' @return The board name of the [user-cache pins board](https://pins.rstudio.com/articles/boards-understanding.html) belonging to `pkg`, which is at the same
 #'   the name of the filesystem directory beneath [pkgpins::path_cache()]. A character scalar.
 #' @export
+#'
+#' @examples
+#' \donttest{
+#' pkgpins::boardname(pkg = "not.a.real.pkg")}
 boardname <- function(pkg) {
   
   paste0("pkg-cache-", checkmate::assert_string(pkg))
@@ -79,6 +81,10 @@ boardname <- function(pkg) {
 #' @inheritParams boardname
 #' @return A path of type [fs_path][fs::path()].
 #' @export
+#'
+#' @examples
+#' \donttest{
+#' pkgpins::path_cache(pkg = "not.a.real.pkg")}
 path_cache <- function(pkg) {
   
   fs::path(pins::board_cache_path(), boardname(pkg))
@@ -86,12 +92,16 @@ path_cache <- function(pkg) {
 
 #' List all objects in a package's user-cache pins board
 #'
-#' This function lists all object `id`s and the date and time they were `cached`.
+#' This function lists all object `id`s belonging to a `pkg`'s user-cache pins board, together with the date and time they were `cached`.
 #'
 #' @inheritParams boardname
 #'
 #' @return A [tibble][tibble::tbl_df].
 #' @export
+#'
+#' @examples
+#' \donttest{
+#' pkgpins::ls_cache(pkg = "not.a.real.pkg")}
 ls_cache <- function(pkg) {
   
   register(pkg = pkg)
@@ -122,12 +132,10 @@ ls_cache <- function(pkg) {
 #' \dontrun{
 #' # delete all cached results that are older than 7 days at once on package load:
 #' .onLoad <- function(libname, pkgname) {
-#'   pkgpins::register()
 #'   pkgpins::clear(max_age = "7 days")
-#' }
-#' }
-clear <- function(max_age = "1 day",
-                  pkg) {
+#' }}
+clear <- function(pkg,
+                  max_age = "1 day") {
   
   register(pkg = pkg)
   
@@ -153,14 +161,14 @@ clear <- function(max_age = "1 day",
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library(magrittr)
 #' 
 #' jsonlite::fromJSON(txt = "https://sysreqs.r-hub.io/pkg/git2r",
 #'                    simplifyVector = FALSE) %>%
 #'   purrr::flatten() %>%
-#'   pkgpins::cache_obj(id = "git2r-syreqs")
-#' }
+#'   pkgpins::cache_obj(id = "git2r-syreqs",
+#'                      pkg = "not.a.real.pkg")}
 cache_obj <- function(x,
                       id,
                       pkg) {
@@ -185,13 +193,13 @@ cache_obj <- function(x,
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' pkgpins::get_obj(id = "git2r-syreqs",
-#'                  max_age = "2 weeks")
-#' }
+#'                  pkg = "not.a.real.pkg",
+#'                  max_age = "2 weeks")}
 get_obj <- function(id,
-                    max_age = "1 day",
-                    pkg) {
+                    pkg,
+                    max_age = "1 day") {
   
   register(pkg = pkg)
   board <- boardname(pkg)
@@ -236,9 +244,9 @@ get_obj <- function(id,
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' pkgpins::rm_obj(id = "git2r-syreqs")
-#' }
+#' \donttest{
+#' pkgpins::rm_obj(id = "git2r-syreqs",
+#'                 pkg = "not.a.real.pkg")}
 rm_obj <- function(id,
                    pkg) {
   

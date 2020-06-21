@@ -19,3 +19,7 @@ This function returns the board name of the \code{pks}'s user-cache pins board.
 \details{
 It shouldn't be necessary to rely on this function for the tasks this package is intended to perform, though.
 }
+\examples{
+\donttest{
+pkgpins::boardname(pkg = "not.a.real.pkg")}
+}

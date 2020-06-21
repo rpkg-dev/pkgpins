@@ -14,9 +14,8 @@ This function registers a package's user-cache pins board. It will be automatica
 }
 \examples{
 \dontrun{
-# you could register the cache on package load, although this isn't really necessary
+# you could register the cache on package load, although this is not necessary in most cases
 .onLoad <- function(libname, pkgname) {
   pkgpins::register(pkgname)
-}
-}
+}}
 }

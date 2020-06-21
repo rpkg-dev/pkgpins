@@ -22,12 +22,12 @@ The exact date and time (UTC) of the pinning is stored as the additional metadat
 actual datetime using \code{\link[lubridate:as_datetime]{lubridate::as_datetime(cached)}} (note that \code{\link[pkgpins:ls_cache]{pkgpins::ls_cache()}} does this automatically).
 }
 \examples{
-\dontrun{
+\donttest{
 library(magrittr)
 
 jsonlite::fromJSON(txt = "https://sysreqs.r-hub.io/pkg/git2r",
                    simplifyVector = FALSE) \%>\%
   purrr::flatten() \%>\%
-  pkgpins::cache_obj(id = "git2r-syreqs")
-}
+  pkgpins::cache_obj(id = "git2r-syreqs",
+                     pkg = "not.a.real.pkg")}
 }

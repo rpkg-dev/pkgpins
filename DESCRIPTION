@@ -28,6 +28,7 @@ Imports:
     tibble (>= 3.0.1),
     utils (>= 4.0.1)
 Suggests: 
+    jsonlite,
     pal,
     testthat
 Encoding: UTF-8

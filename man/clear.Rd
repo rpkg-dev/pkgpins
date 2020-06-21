@@ -4,12 +4,12 @@
 \alias{clear}
 \title{Delete all objects from a package's user-cache pins board exceeding a certain age}
 \usage{
-clear(max_age = "1 day", pkg)
+clear(pkg, max_age = "1 day")
 }
 \arguments{
-\item{max_age}{The age above which cached objects will be deleted. A valid \link[lubridate:as.duration]{lubridate duration}. Defaults to 1 day (24 hours).}
-
 \item{pkg}{Package name. A character scalar.}
+
+\item{max_age}{The age above which cached objects will be deleted. A valid \link[lubridate:as.duration]{lubridate duration}. Defaults to 1 day (24 hours).}
 }
 \description{
 This function allows to clean up old caching left-overs. It could be called on package load/unload, for example.
@@ -18,8 +18,6 @@ This function allows to clean up old caching left-overs. It could be called on p
 \dontrun{
 # delete all cached results that are older than 7 days at once on package load:
 .onLoad <- function(libname, pkgname) {
-  pkgpins::register()
   pkgpins::clear(max_age = "7 days")
-}
-}
+}}
 }

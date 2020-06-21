@@ -17,7 +17,7 @@ existing object in the cache with the same \code{id}. If you want to ensure that
 clearing the whole package user-cache pins board at once using \code{\link[pkgpins:clear]{pkgpins::clear()}}.
 }
 \examples{
-\dontrun{
-pkgpins::rm_obj(id = "git2r-syreqs")
-}
+\donttest{
+pkgpins::rm_obj(id = "git2r-syreqs",
+                pkg = "not.a.real.pkg")}
 }

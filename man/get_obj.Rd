@@ -4,14 +4,14 @@
 \alias{get_obj}
 \title{Get a cached object from a package's user-cache pins board}
 \usage{
-get_obj(id, max_age = "1 day", pkg)
+get_obj(id, pkg, max_age = "1 day")
 }
 \arguments{
 \item{id}{The pin name uniquely identifying the object to be retrieved from the \code{pkg}'s user-cache pins board. A character scalar.}
 
-\item{max_age}{The maximum age the cached object is allowed to have. A valid \link[lubridate:as.duration]{lubridate duration}. Defaults to 1 day (24 hours).}
-
 \item{pkg}{Package name. A character scalar.}
+
+\item{max_age}{The maximum age the cached object is allowed to have. A valid \link[lubridate:as.duration]{lubridate duration}. Defaults to 1 day (24 hours).}
 }
 \value{
 The cached object if it is not older than \code{max_age}, otherwise \code{NULL}.
@@ -20,8 +20,8 @@ The cached object if it is not older than \code{max_age}, otherwise \code{NULL}.
 This function retrieves a cached object from a package's user-cache pins board \emph{if} it is not older than \code{max_age}.
 }
 \examples{
-\dontrun{
+\donttest{
 pkgpins::get_obj(id = "git2r-syreqs",
-                 max_age = "2 weeks")
-}
+                 pkg = "not.a.real.pkg",
+                 max_age = "2 weeks")}
 }

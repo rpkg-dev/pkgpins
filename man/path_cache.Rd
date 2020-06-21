@@ -19,3 +19,7 @@ function is called from.
 \details{
 It shouldn't be necessary to rely on this function for the tasks this package is intended to perform, though.
 }
+\examples{
+\donttest{
+pkgpins::path_cache(pkg = "not.a.real.pkg")}
+}

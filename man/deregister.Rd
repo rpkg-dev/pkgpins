@@ -17,9 +17,8 @@ Ideally, you call this function on \link[base:.onUnload]{package unload}. See th
 }
 \examples{
 \dontrun{
-# deregister the cache on package unload
+# deregister the cache on package unload (recommended)
 .onUnload <- function(libpath) {
   pkgpins::deregister()
-}
-}
+}}
 }
