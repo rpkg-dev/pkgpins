@@ -374,25 +374,29 @@ call_to_name <- function(add_namespace = TRUE,
     ## or otherwise determine it manually
   } else if (length(fun_name) == 1L) {
     
-    fun_envirs <- environmentName(methods::findFunction(f = fun_name,
-                                                        where = sys.frame(sys.parent(1L))))
+    fun_envirs <- methods::findFunction(f = fun_name,
+                                        where = sys.frame(sys.parent(1L)))
     
-    ### test if actually a package _namespace_ (in contrast to _environment_, cf. https://stackoverflow.com/a/38872833/7196903)
-    i_namespaces <-
-      fun_envirs %>%
-      purrr::map_lgl(isNamespace) %>%
-      which()
-    
-    if (length(i_namespaces)) {
-      fun_namespace <- getNamespaceName(fun_namespace[[i_namespaces[1]]])
+    ### reduce to the first visible version of the function and extract env and namespace name
+    if (length(fun_envirs)) {
+      
+      fun_namespace <-
+        fun_envirs %>%
+        dplyr::first() %>%
+        environmentName() %>%
+        ### reduce to actual package _namespace_ (in contrast to _environment_, cf. https://stackoverflow.com/a/38872833/7196903)
+        stringr::str_extract(pattern = "(?<=^package:).+")
+      
     } else {
-      fun_namespace <- NULL
+      
+      fun_namespace <- NA_character_
     }
   } else {
+    
     rlang::abort("Unknown situation detected: Call's function has a length of 2! Please debug...")
   }
   
-  if (add_namespace & !is.null(fun_namespace)) {
+  if (add_namespace & !is.na(fun_namespace)) {
     
     fun_name %<>% paste0(fun_namespace, dplyr::if_else(sanitize & !non_destructive, "-", "::"), .)
   }
