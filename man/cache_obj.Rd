@@ -10,7 +10,7 @@ cache_obj(x, id, pkg)
 \item{x}{An object, local file or remote URL to be cached.}
 
 \item{id}{The pin name uniquely identifying \code{x} in the \code{pkg}'s user-cache pins board. A character scalar. Necessary to retrieve \code{x} again using
-\code{\link[pkgpins:get_obj]{pkgpins::get_obj()}}. An already existing pin named \code{id} will be silently overwritten.}
+\code{\link[=get_obj]{get_obj()}}. An already existing pin named \code{id} will be silently overwritten.}
 
 \item{pkg}{Package name. A character scalar.}
 }
@@ -19,7 +19,7 @@ This function stores an object in a package's user-cache pins board.
 }
 \details{
 The exact date and time (UTC) of the pinning is stored as the additional metadata \code{cached} which is of type \link[base:integer]{integer}. You can restore the
-actual datetime using \code{\link[lubridate:as_datetime]{lubridate::as_datetime(cached)}} (note that \code{\link[pkgpins:ls_cache]{pkgpins::ls_cache()}} does this automatically).
+actual datetime using \code{\link[lubridate:as_date]{lubridate::as_datetime(cached)}} (note that \code{\link[=ls_cache]{ls_cache()}} does this automatically).
 }
 \examples{
 \donttest{

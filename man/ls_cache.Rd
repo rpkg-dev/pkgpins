@@ -10,7 +10,7 @@ ls_cache(pkg)
 \item{pkg}{Package name. A character scalar.}
 }
 \value{
-A \link[tibble:tbl_df]{tibble}.
+A \link[tibble:tbl_df-class]{tibble}.
 }
 \description{
 This function lists all object \code{id}s belonging to a \code{pkg}'s user-cache pins board, together with the date and time they were \code{cached}.

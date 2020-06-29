@@ -13,7 +13,7 @@ deregister(pkg)
 This function deregisters a package's user-cache pins board.
 }
 \details{
-Ideally, you call this function on \link[base:.onUnload]{package unload}. See the examples for details.
+Ideally, you call this function on \link[base:ns-hooks]{package unload}. See the examples for details.
 }
 \examples{
 \dontrun{

@@ -12,9 +12,9 @@ rm_obj(id, pkg)
 \item{pkg}{Package name. A character scalar.}
 }
 \description{
-Note that it normally won't be necessary to delete a cached object using this function because \code{\link[pkgpins:cache_obj]{pkgpins::cache_obj()}} will always overwrite a possibly
-existing object in the cache with the same \code{id}. If you want to ensure that no "data corpses" are left behind from using \code{\link[pkgpins:cache_obj]{pkgpins::cache_obj()}}, consider
-clearing the whole package user-cache pins board at once using \code{\link[pkgpins:clear]{pkgpins::clear()}}.
+Note that it normally won't be necessary to delete a cached object using this function because \code{\link[=cache_obj]{cache_obj()}} will always overwrite a possibly
+existing object in the cache with the same \code{id}. If you want to ensure that no "data corpses" are left behind from using \code{\link[=cache_obj]{cache_obj()}}, consider
+clearing the whole package user-cache pins board at once using \code{\link[=clear]{clear()}}.
 }
 \examples{
 \donttest{
