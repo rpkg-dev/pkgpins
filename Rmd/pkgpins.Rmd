@@ -325,7 +325,7 @@ rm_obj <- function(id,
 #' Also, characters which are problematic or have special meaning on common filesystems are removed by default. To prevent this, use `sanitize = FALSE`
 #' instead.
 #' 
-#' To turn of all the known-to-be destructive conversion steps at once, set `non_destructive = TRUE`.
+#' To turn off all the known-to-be destructive conversion steps at once, set `non_destructive = TRUE`.
 #'
 #' @param add_namespace Prefix the generated name with the [namespace](https://cran.r-project.org/doc/manuals/r-release/R-ints.html#Namespaces) (i.e.
 #'   package name) the called function belongs to (if any).

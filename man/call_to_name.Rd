@@ -47,7 +47,7 @@ whitespaces.
 Also, characters which are problematic or have special meaning on common filesystems are removed by default. To prevent this, use \code{sanitize = FALSE}
 instead.
 
-To turn of all the known-to-be destructive conversion steps at once, set \code{non_destructive = TRUE}.
+To turn off all the known-to-be destructive conversion steps at once, set \code{non_destructive = TRUE}.
 }
 \examples{
 foo <- function(a, b, c) call_to_name()
