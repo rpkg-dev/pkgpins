@@ -153,6 +153,8 @@ clear <- function(pkg,
 #' The exact date and time (UTC) of the pinning is stored as the additional metadata `cached` which is of type [integer][base::integer]. You can restore the
 #' actual datetime using [`lubridate::as_datetime(cached)`][lubridate::as_datetime] (note that [pkgpins::ls_cache()] does this automatically).
 #'
+#' See [pkgpins::call_to_name()] for a convenient way to create an `id` uniquely identifying a function call.
+#'
 #' @inheritParams boardname
 #' @param x An object, local file or remote URL to be cached.
 #' @param id The pin name uniquely identifying `x` in the `pkg`'s user-cache pins board. A character scalar. Necessary to retrieve `x` again using

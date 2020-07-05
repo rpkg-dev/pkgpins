@@ -20,6 +20,8 @@ This function stores an object in a package's user-cache pins board.
 \details{
 The exact date and time (UTC) of the pinning is stored as the additional metadata \code{cached} which is of type \link[base:integer]{integer}. You can restore the
 actual datetime using \code{\link[lubridate:as_date]{lubridate::as_datetime(cached)}} (note that \code{\link[=ls_cache]{ls_cache()}} does this automatically).
+
+See \code{\link[=call_to_name]{call_to_name()}} for a convenient way to create an \code{id} uniquely identifying a function call.
 }
 \examples{
 \donttest{
