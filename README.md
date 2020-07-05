@@ -57,7 +57,7 @@ pkgpurl::lint_rmd()
 
 ## See also
 
--   R packages that provide a [memoization](http://en.wikipedia.org/wiki/Memoization) infrastructure. Memoization is suited best for caching strict functional programming results, i.e. caching functions that always return the same result with the same arguments – something that’s often not the case for functions accessing external APIs.
+-   R packages that provide a [memoization](http://en.wikipedia.org/wiki/Memoization) infrastructure. Memoization is suited best for caching [purely functional programming](https://en.wikipedia.org/wiki/Purely_functional_programming) results, i.e. caching functions that always return the same result with the same arguments – something that’s often not the case for functions accessing external APIs.
 
     There are at least two actively developed memoization packages:
 
