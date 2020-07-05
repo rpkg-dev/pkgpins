@@ -184,6 +184,11 @@ clear <- function(pkg,
 
 # Cache an object to a package's user-cache pins board
 
+**Notes:**
+
+- Pinning an object with `I()` as below [avoids the creation of a CSV copy](https://github.com/rstudio/pins/pull/74) which improves performance. The CSV is
+  not needed by pkgpins anyway.
+
 ```{r}
 #' Cache an object to a package's user-cache pins board
 #'
@@ -216,7 +221,7 @@ cache_obj <- function(x,
   
   register(pkg = pkg)
   
-  pins::pin(x = x,
+  pins::pin(x = I(x),
             board = boardname(pkg),
             name = checkmate::assert_string(id),
             metadata = list(cached = lubridate::now()))

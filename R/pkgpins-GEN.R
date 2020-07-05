@@ -177,7 +177,7 @@ cache_obj <- function(x,
   
   register(pkg = pkg)
   
-  pins::pin(x = x,
+  pins::pin(x = I(x),
             board = boardname(pkg),
             name = checkmate::assert_string(id),
             metadata = list(cached = lubridate::now()))
