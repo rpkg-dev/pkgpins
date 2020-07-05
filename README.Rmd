@@ -12,8 +12,8 @@ There are two predefined parameter labels available in [pkgsnippets](https://git
 package. They are intended to be used in `@param` [roxygen2 tags](https://roxygen2.r-lib.org/articles/rd.html#functions)[^v710] as follows:
 
 ```r
-#' @@param cache_lifespan `r pkgsnippets::param_label("cache_lifespan")`
-#' @@param use_cache `r pkgsnippets::param_label("use_cache")`
+#' @param cache_lifespan `r pkgsnippets::param_label("cache_lifespan")`
+#' @param use_cache `r pkgsnippets::param_label("use_cache")`
 ```
 
 
