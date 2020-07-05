@@ -26,11 +26,11 @@ package. They are intended to be used in `@param` [roxygen2 tags](https://roxyge
 
 ## Development
 
-### Literate Programming
-```{r, literate-programming-snippet, child = pkgsnippets::snippet_path("literate-programming-notice.Rmd")}
+### R Markdown format
+```{r, rmd-pkg-snippet, child = pkgsnippets::snippet_path("rmd-package-notice.Rmd")}
 ```
 
-### Coding Style
+### Coding style
 ```{r, coding-style-snippet, child = pkgsnippets::snippet_path("coding-style-notice.Rmd")}
 ```
 
