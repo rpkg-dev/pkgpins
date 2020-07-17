@@ -30,6 +30,7 @@ Imports:
 Suggests: 
     jsonlite,
     pal,
+    pkgsnip,
     testthat
 Remotes:
     gitlab::salim_b/r/pkgs/pal
