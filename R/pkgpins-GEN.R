@@ -166,11 +166,50 @@ clear <- function(pkg,
 #' \donttest{
 #' library(magrittr)
 #' 
-#' jsonlite::fromJSON(txt = "https://sysreqs.r-hub.io/pkg/git2r",
-#'                    simplifyVector = FALSE) %>%
-#'   purrr::flatten() %>%
-#'   pkgpins::cache_obj(id = "git2r-syreqs",
-#'                      pkg = "not.a.real.pkg")}
+#' # let's define a fn that returns R pkg sys deps from cache
+#' pkg_sys_deps <- function(pkg,
+#'                          use_cache = TRUE,
+#'                          cache_lifespan = "1 day") {
+#'
+#'   # if this fn would be part of a real package, we would instead define `this_pkg` globally
+#'   # e.g. using `this_pkg <- utils::packageName()`
+#'   this_pkg <- "not.a.real.pkg"
+#'
+#'   if (use_cache) {
+#'     pin_name <- pkgpins::call_to_name()
+#'     result <- pkgpins::get_obj(id = pin_name,
+#'                                max_age = cache_lifespan,
+#'                                pkg = this_pkg)
+#'     fetch <- is.null(result)
+#'       
+#'   } else {
+#'     fetch <- TRUE
+#'   }
+#'   
+#'   if (fetch) {
+#'     result <-
+#'       jsonlite::fromJSON(txt = paste0("https://sysreqs.r-hub.io/pkg/", pkg),
+#'                          simplifyVector = FALSE) %>%
+#'       purrr::flatten()
+#'   }
+#'  
+#'   if (use_cache & fetch) {
+#'     pkgpins::cache_obj(x = result,
+#'                        id = pin_name,
+#'                        pkg = this_pkg)
+#'   }
+#'
+#'   result
+#' }
+#'
+#' # now get the sys deps for git2r for the first time (populating the cache)
+#' pkg_sys_deps("git2r",
+#'              cache_lifespan = "6h")}
+#' \dontrun{
+#' # for the next 6h, the cached result will be returned (as long as `use_cache = TRUE`):
+#' microbenchmark::microbenchmark(pkg_sys_deps("git2r"),
+#'                                pkg_sys_deps("git2r", use_cache = FALSE),
+#'                                times = 10)}
 cache_obj <- function(x,
                       id,
                       pkg) {

@@ -29,6 +29,7 @@ Imports:
     utils
 Suggests: 
     jsonlite,
+    microbenchmark,
     pal,
     pkgsnip,
     testthat
