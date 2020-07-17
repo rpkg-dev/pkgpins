@@ -4,11 +4,11 @@ pkgpins builds upon the pins package and strives to provide R package authors a 
 
 ## Predefined parameter labels
 
-There are two predefined parameter labels available in [pkgsnippets](https://gitlab.com/salim_b/r/pkgs/pkgsnippets) which fit typical use cases of this package. They are intended to be used in `@param` [roxygen2 tags](https://roxygen2.r-lib.org/articles/rd.html#functions)[^1] as follows:
+There are two predefined parameter labels available in [pkgsnip](https://gitlab.com/salim_b/r/pkgs/pkgsnip) which fit typical use cases of this package. They are intended to be used in `@param` [roxygen2 tags](https://roxygen2.r-lib.org/articles/rd.html#functions)[^1] as follows:
 
 ``` r
-#' @param cache_lifespan `r pkgsnippets::param_label("cache_lifespan")`
-#' @param use_cache `r pkgsnippets::param_label("use_cache")`
+#' @param cache_lifespan `r pkgsnip::param_label("cache_lifespan")`
+#' @param use_cache `r pkgsnip::param_label("use_cache")`
 ```
 
 The above inline R code will eventually result in this:

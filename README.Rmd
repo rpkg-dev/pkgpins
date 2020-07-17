@@ -8,19 +8,19 @@ output: pal::gitlab_document
 
 ## Predefined parameter labels
 
-There are two predefined parameter labels available in [pkgsnippets](https://gitlab.com/salim_b/r/pkgs/pkgsnippets) which fit typical use cases of this
+There are two predefined parameter labels available in [pkgsnip](https://gitlab.com/salim_b/r/pkgs/pkgsnip) which fit typical use cases of this
 package. They are intended to be used in `@param` [roxygen2 tags](https://roxygen2.r-lib.org/articles/rd.html#functions)[^v710] as follows:
 
 ```r
-#' @param cache_lifespan `r '\x60r pkgsnippets::param_label("cache_lifespan")\x60'`
-#' @param use_cache `r '\x60r pkgsnippets::param_label("use_cache")\x60'`
+#' @param cache_lifespan `r '\x60r pkgsnip::param_label("cache_lifespan")\x60'`
+#' @param use_cache `r '\x60r pkgsnip::param_label("use_cache")\x60'`
 ```
 
 The above inline R code will eventually result in this:
 
 ```r
-#' @param cache_lifespan `r pkgsnippets::param_label("cache_lifespan")`
-#' @param use_cache `r pkgsnippets::param_label("use_cache")`
+#' @param cache_lifespan `r pkgsnip::param_label("cache_lifespan")`
+#' @param use_cache `r pkgsnip::param_label("use_cache")`
 ```
 
 
@@ -28,17 +28,17 @@ The above inline R code will eventually result in this:
 
 
 ## Installation
-```{r, install-snippet-dev, child = pkgsnippets::snippet_path("installation-notice_dev-version_gitlab.Rmd")}
+```{r, install-snippet-dev, child = pkgsnip::snip_path("installation-notice_dev-version_gitlab.Rmd")}
 ```
 
 ## Development
 
 ### R Markdown format
-```{r, rmd-pkg-snippet, child = pkgsnippets::snippet_path("rmd-package-notice.Rmd")}
+```{r, rmd-pkg-snippet, child = pkgsnip::snip_path("rmd-package-notice.Rmd")}
 ```
 
 ### Coding style
-```{r, coding-style-snippet, child = pkgsnippets::snippet_path("coding-style-notice.Rmd")}
+```{r, coding-style-snippet, child = pkgsnip::snip_path("coding-style-notice.Rmd")}
 ```
 
 ## See also
