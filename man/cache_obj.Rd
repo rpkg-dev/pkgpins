@@ -27,14 +27,14 @@ See \code{\link[=call_to_name]{call_to_name()}} for a convenient way to create a
 \donttest{
 library(magrittr)
 
+# if the fn below would be part of a real package, we could instead define `this_pkg`
+# globally using `this_pkg <- utils::packageName()`
+this_pkg <- "not.a.real.pkg"
+
 # let's define a fn that returns R pkg sys deps from cache
 pkg_sys_deps <- function(pkg,
                          use_cache = TRUE,
                          cache_lifespan = "1 day") {
-
-  # if this fn would be part of a real package, we would instead define `this_pkg` globally
-  # e.g. using `this_pkg <- utils::packageName()`
-  this_pkg <- "not.a.real.pkg"
 
   if (use_cache) {
     pin_name <- pkgpins::call_to_name()
