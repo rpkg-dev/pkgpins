@@ -9,6 +9,9 @@ register(pkg)
 \arguments{
 \item{pkg}{Package name. A character scalar.}
 }
+\value{
+\code{boardname} invisibly if it wasn't registered before, otherwise \code{NULL}.
+}
 \description{
 This function registers a package's user-cache pins board. It will be automatically called when needed.
 }

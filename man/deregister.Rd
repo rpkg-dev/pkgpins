@@ -9,6 +9,9 @@ deregister(pkg)
 \arguments{
 \item{pkg}{Package name. A character scalar.}
 }
+\value{
+\code{NULL}.
+}
 \description{
 This function deregisters a package's user-cache pins board.
 }

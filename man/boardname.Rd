@@ -11,7 +11,7 @@ boardname(pkg)
 }
 \value{
 The board name of the \href{https://pins.rstudio.com/articles/boards-understanding.html}{user-cache pins board} belonging to \code{pkg}, which is at the same
-the name of the filesystem directory beneath \code{\link[=path_cache]{path_cache()}}. A character scalar.
+time the name of the filesystem directory beneath \code{\link[=path_cache]{path_cache()}}. A character scalar.
 }
 \description{
 This function returns the board name of the \code{pks}'s user-cache pins board.

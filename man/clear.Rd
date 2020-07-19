@@ -11,6 +11,9 @@ clear(pkg, max_age = "1 day")
 
 \item{max_age}{The age above which cached objects will be deleted. A valid \link[lubridate:as.duration]{lubridate duration}. Defaults to 1 day (24 hours).}
 }
+\value{
+The IDs of the deleted objects invisibly.
+}
 \description{
 This function allows to clean up old caching left-overs. It could be called on package load/unload, for example.
 }

@@ -5,14 +5,18 @@
 \title{Convert the calling function call to a (pin) name}
 \usage{
 call_to_name(
+  n_generations_back = 1L,
   add_namespace = TRUE,
   rm_blanks = TRUE,
   sanitize = TRUE,
   non_destructive = FALSE,
-  exclude_args = c("use_cache", "cache_lifespan")
+  exclude_args = c("use_cache", "cache_lifespan"),
+  warn_incomplete = TRUE
 )
 }
 \arguments{
+\item{n_generations_back}{The number of generations to go back. See \code{\link[=sys.parent]{sys.parent()}} for details. An integerish scalar.}
+
 \item{add_namespace}{Prefix the generated name with the \href{https://cran.r-project.org/doc/manuals/r-release/R-ints.html#Namespaces}{namespace} (i.e.
 package name) the called function belongs to (if any).}
 
@@ -25,6 +29,9 @@ default. See \code{\link[fs:path_sanitize]{fs::path_sanitize()}} for details abo
 \code{santize = FALSE} and \code{rm_blanks = FALSE} and has precedence over them.}
 
 \item{exclude_args}{Specify argument names to be excluded from the generated name. A character vector, or \code{NULL} for no excluded arguments.}
+
+\item{warn_incomplete}{Show a warning if the deparser \emph{suspects} it's unable to properly deparse an argument (might involve false positives). See the
+\code{"warnIncomplete"} section in \code{\link[base:deparseOpts]{base::..deparseOpts}} for details. A logical scalar.}
 }
 \value{
 A character scalar.
@@ -50,20 +57,44 @@ instead.
 To turn off all the known-to-be destructive conversion steps at once, set \code{non_destructive = TRUE}.
 }
 \examples{
-foo <- function(a, b, c) call_to_name()
+# By default, the parent function call is returned ...
+foo <- function(a, b, c) pkgpins::call_to_name()
 foo("ya", "hoo")
 
-# whitespaces are removed by default
-# which means the following produces identical names
+# ... but you can go back further and return e.g. the grandparent function call
+foo <- function(a) pkgpins::call_to_name(n_generations_back = 2L)
+bar <- function(b) foo()
+bar()
+
+# Whitespaces are removed by default
+# which means the following produces identical names ...
+foo <- function(a, b, c) pkgpins::call_to_name()
 foo(4 - 2, 'a \" r', list("1, 77"))
 foo(1+1, 'ar', list('1,77'))
 
-# to avoid this and produce distinct names instead:
-foo <- function(a, b, c) call_to_name(non_destructive = TRUE)
+# ... to avoid this and produce distinct names instead, set `rm_blanks = FALSE` ...
+foo <- function(a, b, c) pkgpins::call_to_name(rm_blanks = FALSE)
 foo(4 - 2, 'a \" r', list("1, 77"))
 foo(1+1, 'ar', list('1,77'))
 
-# exclude arguments by name
-foo <- function(a, b, c) call_to_name(exclude_args = c("a", "c"))
+# ... or just disable the known to be destructive conversion steps altogether
+foo <- function(a, b, c) pkgpins::call_to_name(non_destructive = TRUE)
+foo(4 - 2, 'a \" r', list("1, 77"))
 foo(1+1, 'ar', list('1,77'))
+
+# Arguments can be excluded by name
+foo <- function(a, b, c) pkgpins::call_to_name(exclude_args = c("a", "c"))
+foo(1+1, 'ar', list('1,77'))
+
+\dontrun{
+# R's deparsing warns about possible incompletion when arguments are
+# formulas or curly-braced function definitions ...
+foo <- function(a, b, c) pkgpins::call_to_name()
+foo(~ 1)
+foo(function(x){x})
+
+# ... to mute those warnings, set `warn_incomplete = FALSE`
+foo <- function(a, b, c) pkgpins::call_to_name(warn_incomplete = FALSE)
+foo(~ 1)
+foo(function(x){x})}
 }
