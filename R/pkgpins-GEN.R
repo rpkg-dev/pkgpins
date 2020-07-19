@@ -252,7 +252,7 @@ get_obj <- function(id,
   
   register(pkg = pkg)
   board <- boardname(pkg)
-  result <- pins::pin_find(name = checkmate::assert_string(id),
+  result <- pins::pin_find(name = paste0("\\Q", checkmate::assert_string(id), "\\E"),
                            board = board,
                            extended = TRUE)
   

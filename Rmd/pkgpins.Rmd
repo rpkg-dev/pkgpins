@@ -191,6 +191,10 @@ clear <- function(pkg,
 
 # Cache an object to a package's user-cache pins board
 
+TODO: 
+
+- Find out why retrieving an obj with a "structure"-name won't work...
+
 **Notes:**
 
 - Pinning an object with `I()` as below [avoids the creation of a CSV copy](https://github.com/rstudio/pins/pull/74) which improves performance. The CSV is
@@ -277,6 +281,12 @@ cache_obj <- function(x,
 
 # Get a cached object from a package's user-cache pins board
 
+**Notes:**
+
+- Although `pins::pin_find()` documentation about param `name` says "The exact name of the pin to match when searching" (nothing about being a regular
+  expression), it actually _is_ interpreted as a regex! Thus we wrap `name` in the literal sequence escapes `\\Q...\\E`. Issue has been
+  [reported](https://github.com/rstudio/pins/issues/270).
+
 ```{r}
 #' Get a cached object from a package's user-cache pins board
 #'
@@ -300,7 +310,7 @@ get_obj <- function(id,
   
   register(pkg = pkg)
   board <- boardname(pkg)
-  result <- pins::pin_find(name = checkmate::assert_string(id),
+  result <- pins::pin_find(name = paste0("\\Q", checkmate::assert_string(id), "\\E"),
                            board = board,
                            extended = TRUE)
   
