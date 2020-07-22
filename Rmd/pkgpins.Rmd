@@ -370,9 +370,25 @@ rm_obj <- function(id,
 
 # Convert the calling function call to a (pin) name
 
+TODO:
+
+- The `args` are not properly evaluated, i.e. the search path is "cut off". Example where this matters:
+
+    ```r
+    testf <- function(param) swissmuni::snapshots(historicized_code = param)
+    testf(TRUE)
+    
+    # avoiding calling `call_to_name()`
+    testf <- function(param) swissmuni::snapshots(historicized_code = param, use_cache = FALSE)
+    testf(TRUE)
+    ```
+    
+    Maybe thoroughly read the chapter [Environments](https://adv-r.hadley.nz/environments.html) in the _Advanced R_ book the better understand the whole
+    situation?
+
 **Notes:**
 
-- The following, seemingly weird behaviour is not a bug of `call_to_name()`:
+- The following seemingly weird behaviour is not a bug of `call_to_name()`:
 
   ```r
   foo <- function(x, c) call_to_name(exclude_args = c("some_inexistent_arg_name"))
@@ -390,7 +406,7 @@ rm_obj <- function(id,
   - `exclude_args` (or any other param in fact) is set to `c(...)`
   
   My best guess is that it has something to do with R's lazy evaluation; because the function `c()` and the variable/param `c` share names/symbols, R has to
-  disambiguate them; accessing the param with the `c(...)` value thus also triggers an evaluation of the `c` param (since it's found in the current env);
+  disambiguate them; accessing the param with the `c(...)` value thus also triggers an evaluation of the param named `c` (since it's found in the current env);
   no name clashes, no lazy eval.
   
   An easy prove that the issue is not specific to `call_to_name()`:
