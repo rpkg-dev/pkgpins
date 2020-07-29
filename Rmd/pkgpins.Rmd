@@ -191,10 +191,6 @@ clear <- function(pkg,
 
 # Cache an object to a package's user-cache pins board
 
-TODO: 
-
-- Find out why retrieving an obj with a "structure"-name won't work...
-
 **Notes:**
 
 - Pinning an object with `I()` as below [avoids the creation of a CSV copy](https://github.com/rstudio/pins/pull/74) which improves performance. The CSV is
