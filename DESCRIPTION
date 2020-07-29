@@ -28,8 +28,8 @@ Imports:
     tibble (>= 3.0.1),
     utils
 Suggests: 
+    bench,
     jsonlite,
-    microbenchmark,
     pal,
     pkgsnip,
     testthat

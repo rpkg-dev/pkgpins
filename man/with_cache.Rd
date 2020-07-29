@@ -63,7 +63,8 @@ pkg_sys_deps("git2r")}
 \dontrun{
 # for the `cache_lifespan` (we've set a default of 6h), the cached result will be returned
 # (as long as `use_cache = TRUE`):
-microbenchmark::microbenchmark(pkg_sys_deps("git2r"),
-                               pkg_sys_deps("git2r", use_cache = FALSE),
-                               times = 10)}
+bench::mark("with cache" = pkg_sys_deps("git2r"),
+            "without cache" = pkg_sys_deps("git2r", use_cache = FALSE),
+            iterations = 10,
+            relative = TRUE)}
 }

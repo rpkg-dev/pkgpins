@@ -215,9 +215,10 @@ clear <- function(pkg,
 #' \dontrun{
 #' # for the `cache_lifespan` (we've set a default of 6h), the cached result will be returned
 #' # (as long as `use_cache = TRUE`):
-#' microbenchmark::microbenchmark(pkg_sys_deps("git2r"),
-#'                                pkg_sys_deps("git2r", use_cache = FALSE),
-#'                                times = 10)}
+#' bench::mark("with cache" = pkg_sys_deps("git2r"),
+#'             "without cache" = pkg_sys_deps("git2r", use_cache = FALSE),
+#'             iterations = 10,
+#'             relative = TRUE)}
 cache_obj <- function(x,
                       id,
                       pkg) {
@@ -545,9 +546,10 @@ test_call_to_name_no_ns <- function(...) call_to_name(add_namespace = FALSE)
 #' \dontrun{
 #' # for the `cache_lifespan` (we've set a default of 6h), the cached result will be returned
 #' # (as long as `use_cache = TRUE`):
-#' microbenchmark::microbenchmark(pkg_sys_deps("git2r"),
-#'                                pkg_sys_deps("git2r", use_cache = FALSE),
-#'                                times = 10)}
+#' bench::mark("with cache" = pkg_sys_deps("git2r"),
+#'             "without cache" = pkg_sys_deps("git2r", use_cache = FALSE),
+#'             iterations = 10,
+#'             relative = TRUE)}
 with_cache <- function(.fn,
                        ...,
                        .use_cache = TRUE,
