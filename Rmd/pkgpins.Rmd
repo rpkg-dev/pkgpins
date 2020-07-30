@@ -369,7 +369,7 @@ rm_obj <- function(id,
 
 TODO:
 
-- The `args` are not properly evaluated, i.e. the search path (or "env stack" or whatever) is "cut off". Real-life example where this matters:
+- The `args` are not properly evaluated, i.e. the search path (or "env stack", "call stack", or whatever) is "cut off". Real-life example where this matters:
 
     ```r
     testf <- function(param) swissmuni::snapshots(historicized_code = param)
@@ -389,13 +389,19 @@ TODO:
     bar(TRUE)
     ```
     
-    Maybe thoroughly read the chapter [Environments](https://adv-r.hadley.nz/environments.html) of the _Advanced R_ book to better understand the whole
-    situation?
+    Maybe thoroughly read the chapter [Environments](https://adv-r.hadley.nz/environments.html), especially the subchapter
+    [Call stacks](https://adv-r.hadley.nz/environments.html#call-stack) of the _Advanced R_ book to better understand the whole situation?
     
     NOTES:
     
-    - As it seems, the current way might be a dead end because we "break" R's concept of [promises](https://adv-r.hadley.nz/functions.html#promises) by trying
-      to reconstruct the args from `match.call()`... (is this really true?)
+    - As it appears, the current way is likely a dead end because we seem to "break" R's concept of [promises](https://adv-r.hadley.nz/functions.html#promises)
+      (see also the [official doc](https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Promise-objects)) by trying to reconstruct the args from
+      `match.call()`... (is this really true, i.e. there's no way to get the args as the original _promises_ instead of just symbols?)
+      
+      We could try to work around this by iteratively calling `rlang::env_has(env = parent.frame(n), nms = arg, inherit = TRUE)` with an incresing `n` until it
+      returns TRUE, but this would obviously be bad since it's not guaranteed that we find the right `arg` object.
+      
+      Or would simply requiring the calling env as an argument to `call_to_name()` help? No. Really, nope!
       
     - _Quosures_ might provide a way out -> thoroughly read the whole [part IV (Metaprogramming)](https://adv-r.hadley.nz/metaprogramming.html) of the
       _Advanced R_ book!
@@ -652,6 +658,8 @@ TODO:
   which returns a function, similar to `purrr::safely()` 🥳
   
   Then change `with_cache()` to cache an expression? does caching an expr even make sense for pkgpins? I guess not... -> then deprecate `with_cache()` instead!
+  
+  It probably makes sense to thoroughly read the chapter [Function factories](https://adv-r.hadley.nz/function-factories.html) of _Advanced R_ first. 🤓
 
 ```{r}
 #' Cache a function call
