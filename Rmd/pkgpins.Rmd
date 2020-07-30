@@ -369,7 +369,7 @@ rm_obj <- function(id,
 
 TODO:
 
-- The `args` are not properly evaluated, i.e. the search path is "cut off". Example where this matters:
+- The `args` are not properly evaluated, i.e. the search path (or "env stack" or whatever) is "cut off". Real-life example where this matters:
 
     ```r
     testf <- function(param) swissmuni::snapshots(historicized_code = param)
@@ -380,8 +380,25 @@ TODO:
     testf(TRUE)
     ```
     
-    Maybe thoroughly read the chapter [Environments](https://adv-r.hadley.nz/environments.html) in the _Advanced R_ book the better understand the whole
+    Or a simpler synthetic example:
+    
+    ```r
+    foo <- function(rmb) pkgpins::call_to_name(rm_blanks = rmb)
+    bar <- function(really_rmb) foo(rmb = really_rmb)
+    foo(TRUE)
+    bar(TRUE)
+    ```
+    
+    Maybe thoroughly read the chapter [Environments](https://adv-r.hadley.nz/environments.html) of the _Advanced R_ book to better understand the whole
     situation?
+    
+    NOTES:
+    
+    - As it seems, the current way might be a dead end because we "break" R's concept of [promises](https://adv-r.hadley.nz/functions.html#promises) by trying
+      to reconstruct the args from `match.call()`... (is this really true?)
+      
+    - _Quosures_ might provide a way out -> thoroughly read the whole [part IV (Metaprogramming)](https://adv-r.hadley.nz/metaprogramming.html) of the
+      _Advanced R_ book!
 
 **Notes:**
 
