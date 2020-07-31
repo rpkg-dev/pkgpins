@@ -174,7 +174,8 @@ ls_cache <- function(pkg) {
 #' \dontrun{
 #' # delete all cached results that are older than 7 days at once on package load:
 #' .onLoad <- function(libname, pkgname) {
-#'   pkgpins::clear(max_age = "7 days")
+#'   pkgpins::clear(pkg = pkgname,
+#'                  max_age = "7 days")
 #' }}
 clear <- function(pkg,
                   max_age = "1 day") {

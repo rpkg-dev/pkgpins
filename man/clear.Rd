@@ -21,6 +21,7 @@ This function allows to clean up old caching left-overs. It could be called on p
 \dontrun{
 # delete all cached results that are older than 7 days at once on package load:
 .onLoad <- function(libname, pkgname) {
-  pkgpins::clear(max_age = "7 days")
+  pkgpins::clear(pkg = pkgname,
+                 max_age = "7 days")
 }}
 }
