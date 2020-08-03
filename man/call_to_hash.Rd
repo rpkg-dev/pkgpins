@@ -42,7 +42,10 @@ foo <- function(a) pkgpins::call_to_hash(n_generations_back = 2L)
 bar <- function(b) foo()
 bar()
 
-# Arguments can be excluded by name
-foo <- function(a, b, c) pkgpins::call_to_hash(exclude_args = c("a", "c"))
+# Arguments can be excluded by name ...
+foo <- function(x, y, z) pkgpins::call_to_hash(exclude_args = c("x", "z"))
+# ... thus the following three calls will all result in the same hash
 foo(1+1, 'ar', list('1,77'))
+foo(y = 'ar', list('1,77'))
+foo(, "ar",)
 }

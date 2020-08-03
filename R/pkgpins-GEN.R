@@ -336,9 +336,12 @@ rm_obj <- function(id,
 #' bar <- function(b) foo()
 #' bar()
 #'
-#' # Arguments can be excluded by name
-#' foo <- function(a, b, c) pkgpins::call_to_hash(exclude_args = c("a", "c"))
+#' # Arguments can be excluded by name ...
+#' foo <- function(x, y, z) pkgpins::call_to_hash(exclude_args = c("x", "z"))
+#' # ... thus the following three calls will all result in the same hash
 #' foo(1+1, 'ar', list('1,77'))
+#' foo(y = 'ar', list('1,77'))
+#' foo(, "ar",)
 call_to_hash <- function(n_generations_back = 1L,
                          add_namespace = TRUE,
                          exclude_args = c("use_cache", "cache_lifespan")) {
