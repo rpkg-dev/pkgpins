@@ -205,7 +205,7 @@ clear <- function(pkg,
 #' The exact date and time (UTC) of the pinning is stored as the additional metadata `cached` which is of type [integer][base::integer]. You can restore the
 #' actual datetime using [`lubridate::as_datetime(cached)`][lubridate::as_datetime] (note that [pkgpins::ls_cache()] does this automatically).
 #'
-#' See [pkgpins::call_to_name()] for a convenient way to create an `id` that uniquely identifies a function call. Or just use [with_cache()].
+#' See [pkgpins::call_to_hash()] for a convenient way to create an `id` that uniquely identifies a function call. Or just use [with_cache()].
 #'
 #' @inheritParams boardname
 #' @param x An object, local file or remote URL to be cached.
@@ -229,7 +229,7 @@ clear <- function(pkg,
 #'                          cache_lifespan = "6h") {
 #'
 #'   if (use_cache) {
-#'     pin_name <- pkgpins::call_to_name()
+#'     pin_name <- pkgpins::call_to_hash()
 #'     result <- pkgpins::get_obj(id = pin_name,
 #'                                max_age = cache_lifespan,
 #'                                pkg = this_pkg)
@@ -366,48 +366,181 @@ rm_obj <- function(id,
 }
 ```
 
-# Convert the calling function call to a (pin) name
+# Convert the calling function call to a hash
 
 TODO:
 
-- The `args` are not properly evaluated, i.e. the search path (or "env stack", "call stack", or whatever) is "cut off". Real-life example where this matters:
+- **THIS IS SERIOUS!** The `args` are not properly evaluated, i.e. the search path (or "env stack", "call stack", or whatever) is "cut off".
+  
+  Real-life example where this matters:
 
-    ```r
-    testf <- function(param) swissmuni::snapshots(historicized_code = param)
-    testf(TRUE)
+  ```r
+  testf <- function(param) swissmuni::snapshots(historicized_code = param)
+  testf(TRUE)
+  
+  # avoiding calling `call_to_hash()`
+  testf <- function(param) swissmuni::snapshots(historicized_code = param, use_cache = FALSE)
+  testf(TRUE)
+  ```
+  
+  Or a simpler synthetic example:
+  
+  ```r
+  foo <- function(add_ns) pkgpins::call_to_hash(add_namespace = add_ns)
+  bar <- function(really_add_ns) foo(add_ns = really_add_ns)
+  foo(TRUE)
+  bar(TRUE)
+  ```
+  
+  - [x] Thoroughly read the chapter [Environments](https://adv-r.hadley.nz/environments.html), especially the subchapter
+    [Call stacks](https://adv-r.hadley.nz/environments.html#call-stack), of the _Advanced R_ book to better understand the whole situation.
+  
+  NOTES:
+  
+  - As it appears, the current way is likely a dead end because we seem to "break" R's concept of [promises](https://adv-r.hadley.nz/functions.html#promises)
+    (see also the [official doc](https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Promise-objects)) by trying to reconstruct the args from
+    `match.call()`... (is this really true, i.e. there's no way to get the args as the original _promises_ instead of just symbols?)
     
-    # avoiding calling `call_to_name()`
-    testf <- function(param) swissmuni::snapshots(historicized_code = param, use_cache = FALSE)
-    testf(TRUE)
-    ```
+    We could try to work around this by iteratively calling `rlang::env_has(env = parent.frame(n), nms = arg, inherit = TRUE)` with an incresing `n` until it
+    returns TRUE, but this would obviously be bad since it's not guaranteed that we find the right `arg` object.
     
-    Or a simpler synthetic example:
+    Or would simply requiring the calling env as an argument to `call_to_hash()` help? No. Really, nope!
     
-    ```r
-    foo <- function(rmb) pkgpins::call_to_name(rm_blanks = rmb)
-    bar <- function(really_rmb) foo(rmb = really_rmb)
-    foo(TRUE)
-    bar(TRUE)
-    ```
+  - _Quosures_ might provide a way out -> thoroughly read the whole [part IV (Metaprogramming)](https://adv-r.hadley.nz/metaprogramming.html) of the
+    _Advanced R_ book!
+
+```{r}
+#' Convert the calling function call to a hash
+#'
+#' This function strives to create a string that uniquely identifies the function call of the calling function by the function's namespace, name and
+#' a hash of the specified arguments. For example, when called _inside_ the function `foo()`, it will return
+#' `r foo <- function(a, b, c) call_to_hash(); pal::prose_ls(foo(a = F, b = "bar", c = 1), wrap = '"')` when `foo()` was called with
+#' `foo(a = F, b = "bar", c = 1)`.
+#' 
+#' This function does evaluate object names passed as function arguments. I.e. the function call `foo(a = my_var)` will result in
+#' `r my_var <- 100; pal::prose_ls(foo(100), wrap = '"')` if `my_var`'s value is `100`, whereas it will become
+#' `r my_var <- 101; pal::prose_ls(foo(101), wrap = '"')` if `my_var`'s value is `101`.
+#'
+#' @param n_generations_back The number of generations to go back. See [sys.parent()] for details. An integerish scalar.
+#' @param add_namespace Prefix the generated string with the [namespace](https://cran.r-project.org/doc/manuals/r-release/R-ints.html#Namespaces) (i.e.
+#'   package name) the called function belongs to (if any).
+#' @param exclude_args Specify argument names to be excluded from the generated string. A character vector, or `NULL` for no excluded arguments.
+#'
+#' @return A character scalar.
+#' @export
+#'
+#' @examples
+#' # By default, the parent function call is returned ...
+#' foo <- function(a, b, c) pkgpins::call_to_hash()
+#' foo("ya", "hoo")
+#'
+#' # ... but you can go back further and return e.g. the grandparent function call
+#' foo <- function(a) pkgpins::call_to_hash(n_generations_back = 2L)
+#' bar <- function(b) foo()
+#' bar()
+#'
+#' # Arguments can be excluded by name
+#' foo <- function(a, b, c) pkgpins::call_to_hash(exclude_args = c("a", "c"))
+#' foo(1+1, 'ar', list('1,77'))
+call_to_hash <- function(n_generations_back = 1L,
+                         add_namespace = TRUE,
+                         exclude_args = c("use_cache", "cache_lifespan")) {
+  
+  checkmate::assert_flag(add_namespace)
+  
+  parent_frame_nr <- sys.parent(checkmate::assert_count(n_generations_back))
+  parent_frame <- sys.frame(parent_frame_nr)
+  call <- match.call(definition = sys.function(parent_frame_nr),
+                     call = sys.call(parent_frame_nr))
+  fn_name <- as.character(as.list(call)[[1L]])
+  args <- as.list(call[-1L])
+  
+  # add namespace
+  ## extract it if provided in call
+  if (length(fn_name) == 3L) {
     
-    Maybe thoroughly read the chapter [Environments](https://adv-r.hadley.nz/environments.html), especially the subchapter
-    [Call stacks](https://adv-r.hadley.nz/environments.html#call-stack) of the _Advanced R_ book to better understand the whole situation?
+    fn_namespace <- fn_name[2L]
+    fn_name <- fn_name[3L]
     
-    NOTES:
+    ## or otherwise determine it manually
+  } else if (length(fn_name) == 1L) {
     
-    - As it appears, the current way is likely a dead end because we seem to "break" R's concept of [promises](https://adv-r.hadley.nz/functions.html#promises)
-      (see also the [official doc](https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Promise-objects)) by trying to reconstruct the args from
-      `match.call()`... (is this really true, i.e. there's no way to get the args as the original _promises_ instead of just symbols?)
+    fun_envirs <- methods::findFunction(f = fn_name,
+                                        where = parent_frame)
+    
+    ### reduce to the first visible version of the function and extract env and namespace name
+    if (length(fun_envirs)) {
       
-      We could try to work around this by iteratively calling `rlang::env_has(env = parent.frame(n), nms = arg, inherit = TRUE)` with an incresing `n` until it
-      returns TRUE, but this would obviously be bad since it's not guaranteed that we find the right `arg` object.
+      fn_namespace <-
+        fun_envirs %>%
+        dplyr::first() %>%
+        environmentName() %>%
+        ### reduce to actual package _namespace_ (in contrast to _environment_, cf. https://stackoverflow.com/a/38872833/7196903)
+        stringr::str_extract(pattern = "(?<=^package:).+")
       
-      Or would simply requiring the calling env as an argument to `call_to_name()` help? No. Really, nope!
+    } else {
       
-    - _Quosures_ might provide a way out -> thoroughly read the whole [part IV (Metaprogramming)](https://adv-r.hadley.nz/metaprogramming.html) of the
-      _Advanced R_ book!
+      fn_namespace <- NA_character_
+    }
+  } else {
+    
+    rlang::abort("Unknown situation detected: Call's function has a length of 2! Please debug...")
+  }
+  
+  if (add_namespace & !is.na(fn_namespace)) {
+    
+    fn_name %<>% paste0(fn_namespace, "-", .)
+  }
+  
+  # add args
+  if (!is.null(checkmate::assert_character(exclude_args,
+                                           any.missing = FALSE,
+                                           null.ok = TRUE))) {
+    excl <- names(args) %in% exclude_args
+    
+    if (length(excl)) {
+      args <- args[!excl]
+    }
+  }
+  
+  if (length(args) > 0L) {
+    
+    # evaluate the call's arguments in the calling environment
+    result <-
+      args %>%
+      purrr::map(.f = eval,
+                 envir = parent_frame) %>%
+      expr_to_hash() %>%
+      paste0(fn_name, "-", .)
+      
+  } else {
+    
+    result <- fn_name
+  }
+  
+  result
+}
+
+expr_to_hash <- function(expr) {
+  
+  digest::digest(object = expr,
+                 algo = "xxhash64",
+                 serializeVersion = 3L)
+}
+
+# these are necessary for testing the `add_namespace` argument
+test_call_to_hash <- function(...) call_to_hash()
+test_call_to_hash_no_ns <- function(...) call_to_hash(add_namespace = FALSE)
+```
+
+# Convert the calling function call to a name
 
 **Notes:**
+
+- This function is deprecated, use `call_to_hash()` instead.
+
+  The reason is that the path sanitization (`sanitize = TRUE`) using `fs::path_sanitize()` cuts of the name at a maximum of 255 chars which is the maximum for
+  [most FS'](https://en.wikipedia.org/wiki/Comparison_of_file_systems#Limits). And anyway, it was stupid to not use hashing in the first place. 🙄
 
 - The following seemingly weird behaviour is not a bug of `call_to_name()`:
 
@@ -440,12 +573,18 @@ TODO:
   ```
 
 ```{r}
-#' Convert the calling function call to a (pin) name
+#' Convert the calling function call to a name
+#'
+#' @description
+#'
+#' `r lifecycle::badge("deprecated")`
 #'
 #' This function strives to create a string that uniquely identifies the function call of the calling function by the function's namespace, name and
 #' specified arguments. For example, when called _inside_ the function `foo()`, it will return
 #' `r foo <- function(a, b, c) call_to_name(); pal::prose_ls(foo(a = F, b = "bar", c = 1), wrap = '"')` when `foo()` was called with
 #' `foo(a = F, b = "bar", c = 1)`.
+#'
+#' @details
 #' 
 #' This function does evaluate object names passed as function arguments. I.e. the function call `foo(a = my_var)`, where `my_var`'s value is `100`, will be
 #' converted to `r my_var <- 100; pal::prose_ls(foo(100), wrap = '"')`.
@@ -668,7 +807,7 @@ TODO:
                       ...,
                       .use_cache = TRUE,
                       .cache_lifespan = "1 day",
-                      .id = call_to_name(), # this might not work; alternatively default to `NULL` and use `call_to_name()` internally
+                      .id = call_to_hash(), # this might not work; alternatively default to `NULL` and use `call_to_hash()` internally
                       .pkg) {
     
     rlang::new_function() # TODO
@@ -735,7 +874,7 @@ with_cache <- function(.fn,
                        ...,
                        .use_cache = TRUE,
                        .cache_lifespan = "1 day",
-                       .id = call_to_name(n_generations_back = 2L),
+                       .id = call_to_hash(n_generations_back = 2L),
                        .pkg) {
   
   .fn <- rlang::as_function(.fn,

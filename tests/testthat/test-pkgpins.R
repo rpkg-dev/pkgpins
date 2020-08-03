@@ -1,3 +1,46 @@
+# call_to_hash() ----
+test_that("call_to_hash() properly evaluates the call's arguments", {
+
+  foo <- function(a, b, c) call_to_hash()
+
+  expect_identical(foo(1+1, 'ar', list(1, 77)),
+                   foo(3-1, paste0("a", "r"), list(a = 1, 77) %>% rlang::set_names(nm = NULL)))
+})
+
+test_that("call_to_hash() returns the grandparent call when requested", {
+
+  foo <- function(a, b, c) call_to_hash(n_generations_back = 2L)
+  bar <- function() foo()
+
+  expect_identical(bar(),
+                   "bar")
+})
+
+test_that("call_to_hash() excludes arguments as requested", {
+
+  foo <- function(a, b, c) call_to_hash(exclude_args = c("a", "c"))
+
+  expect_identical(foo(1+1, 'ar', list(1, 77)),
+                   paste0("foo-", expr_to_hash(list(b = 'ar'))))
+})
+
+test_that("call_to_hash() adds the namespace by default", {
+
+  skip_if_not_installed(pkg = "pkgpins")
+
+  expect_identical(pkgpins:::test_call_to_hash(),
+                   "pkgpins-test_call_to_hash")
+})
+
+test_that("call_to_hash() doesn't add the namespace when requested", {
+
+  skip_if_not_installed(pkg = "pkgpins")
+
+  expect_identical(pkgpins:::test_call_to_hash_no_ns(),
+                   "test_call_to_hash_no_ns")
+})
+
+
 # call_to_name() ----
 test_that("call_to_name() returns the grandparent call when requested", {
 
