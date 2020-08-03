@@ -21,6 +21,7 @@ Imports:
     digest (>= 0.6.25),
     dplyr (>= 1.0.0),
     fs (>= 1.4.1),
+    lifecycle,
     lubridate (>= 1.7.9),
     magrittr (>= 1.5),
     methods,
@@ -33,7 +34,6 @@ Imports:
 Suggests: 
     bench,
     jsonlite,
-    lifecycle,
     pal,
     pkgsnip,
     testthat
