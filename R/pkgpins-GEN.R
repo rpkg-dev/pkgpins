@@ -458,34 +458,13 @@ call_to_name <- function(n_generations_back = 1L,
       args %>%
       purrr::map(.f = eval,
                  envir = parent_frame) %>%
-      # convert to string
-      # (under rather exotic circumstances this is destructive, see `?..deparseOpts`)
-      deparse1(collapse = "",
-               control = c("keepNA",
-                           "keepInteger",
-                           "niceNames",
-                           "showAttributes",
-                           "warnIncomplete"[checkmate::assert_flag(warn_incomplete)])) %>%
-      # remove enclosing "list()"
-      stringr::str_remove_all(pattern = "(^list\\(|\\)$)") %>%
-      # replace double quotes around character arguments with single quotes to make them filesystem safe
-      # (this is a potentially destructive conversion step, and unnecessary anyway when non_destructive)
-      stringr::str_replace_all(pattern = dplyr::if_else(sanitize & !non_destructive,
-                                                        '(^|[^\\\\])(")(.+?[^\\\\])(")',
-                                                        "^$"),
-                               replacement = "\\1'\\3'") %>%
-      # remove blanks
-      # (this is a potentially destructive conversion step)
-      stringr::str_replace_all(pattern = dplyr::if_else(rm_blanks & !non_destructive,
-                                                        "\\s+",
-                                                        "^$"),
-                               replacement = "") %>%
+      expr_to_name(rm_blanks = rm_blanks,
+                   sanitize = sanitize,
+                   non_destructive = non_destructive,
+                   warn_incomplete = warn_incomplete) %>%
       # add function name
-      paste0(fn_name, dplyr::if_else(nchar(.) > 0L, "-", ""), .) %>%
-      # remove filesystem-unsafe chars
-      # (this is a potentially destructive conversion step)
-      purrr::when(sanitize & !non_destructive ~ fs::path_sanitize(.),
-                  ~ .)
+      paste0(fn_name, dplyr::if_else(nchar(.) > 0L, "-", ""), .)
+      
   } else {
     
     if (sanitize & !non_destructive) {
@@ -496,6 +475,41 @@ call_to_name <- function(n_generations_back = 1L,
   }
   
   result
+}
+
+expr_to_name <- function(expr,
+                         rm_blanks,
+                         sanitize,
+                         non_destructive,
+                         warn_incomplete) {
+  
+  # convert to string
+  # (under rather exotic circumstances this is destructive, see `?..deparseOpts`)
+  deparse1(expr = expr,
+           collapse = "",
+           control = c("keepNA",
+                       "keepInteger",
+                       "niceNames",
+                       "showAttributes",
+                       "warnIncomplete"[checkmate::assert_flag(warn_incomplete)])) %>%
+    # remove enclosing "list()"
+    stringr::str_remove_all(pattern = "(^list\\(|\\)$)") %>%
+    # replace double quotes around character arguments with single quotes to make them filesystem safe
+    # (this is a potentially destructive conversion step, and unnecessary anyway when non_destructive)
+    stringr::str_replace_all(pattern = dplyr::if_else(sanitize & !non_destructive,
+                                                      '(^|[^\\\\])(")(.+?[^\\\\])(")',
+                                                      "^$"),
+                             replacement = "\\1'\\3'") %>%
+    # remove blanks
+    # (this is a potentially destructive conversion step)
+    stringr::str_replace_all(pattern = dplyr::if_else(rm_blanks & !non_destructive,
+                                                      "\\s+",
+                                                      "^$"),
+                             replacement = "") %>%
+    # remove filesystem-unsafe chars
+    # (this is a potentially destructive conversion step)
+    purrr::when(sanitize & !non_destructive ~ fs::path_sanitize(.),
+                ~ .)
 }
 
 # these are necessary for testing the `add_namespace` argument
