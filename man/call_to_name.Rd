@@ -2,7 +2,7 @@
 % Please edit documentation in R/pkgpins-GEN.R
 \name{call_to_name}
 \alias{call_to_name}
-\title{Convert the calling function call to a (pin) name}
+\title{Convert the calling function call to a name}
 \usage{
 call_to_name(
   n_generations_back = 1L,
@@ -37,6 +37,8 @@ default. See \code{\link[fs:path_sanitize]{fs::path_sanitize()}} for details abo
 A character scalar.
 }
 \description{
+\ifelse{html}{\figure{lifecycle-deprecated.svg}{options: alt='Deprecated lifecycle'}}{\strong{Deprecated}}
+
 This function strives to create a string that uniquely identifies the function call of the calling function by the function's namespace, name and
 specified arguments. For example, when called \emph{inside} the function \code{foo()}, it will return
 "foo-a=FALSE,b='bar',c=1" when \code{foo()} was called with

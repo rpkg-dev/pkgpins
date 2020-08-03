@@ -161,7 +161,7 @@ clear <- function(pkg,
 #' The exact date and time (UTC) of the pinning is stored as the additional metadata `cached` which is of type [integer][base::integer]. You can restore the
 #' actual datetime using [`lubridate::as_datetime(cached)`][lubridate::as_datetime] (note that [pkgpins::ls_cache()] does this automatically).
 #'
-#' See [pkgpins::call_to_name()] for a convenient way to create an `id` that uniquely identifies a function call. Or just use [with_cache()].
+#' See [pkgpins::call_to_hash()] for a convenient way to create an `id` that uniquely identifies a function call. Or just use [with_cache()].
 #'
 #' @inheritParams boardname
 #' @param x An object, local file or remote URL to be cached.
@@ -185,7 +185,7 @@ clear <- function(pkg,
 #'                          cache_lifespan = "6h") {
 #'
 #'   if (use_cache) {
-#'     pin_name <- pkgpins::call_to_name()
+#'     pin_name <- pkgpins::call_to_hash()
 #'     result <- pkgpins::get_obj(id = pin_name,
 #'                                max_age = cache_lifespan,
 #'                                pkg = this_pkg)
@@ -307,12 +307,140 @@ rm_obj <- function(id,
                    name = checkmate::assert_string(id))
 }
 
-#' Convert the calling function call to a (pin) name
+#' Convert the calling function call to a hash
+#'
+#' This function strives to create a string that uniquely identifies the function call of the calling function by the function's namespace, name and
+#' a hash of the specified arguments. For example, when called _inside_ the function `foo()`, it will return
+#' `r foo <- function(a, b, c) call_to_hash(); pal::prose_ls(foo(a = F, b = "bar", c = 1), wrap = '"')` when `foo()` was called with
+#' `foo(a = F, b = "bar", c = 1)`.
+#' 
+#' This function does evaluate object names passed as function arguments. I.e. the function call `foo(a = my_var)` will result in
+#' `r my_var <- 100; pal::prose_ls(foo(100), wrap = '"')` if `my_var`'s value is `100`, whereas it will become
+#' `r my_var <- 101; pal::prose_ls(foo(101), wrap = '"')` if `my_var`'s value is `101`.
+#'
+#' @param n_generations_back The number of generations to go back. See [sys.parent()] for details. An integerish scalar.
+#' @param add_namespace Prefix the generated string with the [namespace](https://cran.r-project.org/doc/manuals/r-release/R-ints.html#Namespaces) (i.e.
+#'   package name) the called function belongs to (if any).
+#' @param exclude_args Specify argument names to be excluded from the generated string. A character vector, or `NULL` for no excluded arguments.
+#'
+#' @return A character scalar.
+#' @export
+#'
+#' @examples
+#' # By default, the parent function call is returned ...
+#' foo <- function(a, b, c) pkgpins::call_to_hash()
+#' foo("ya", "hoo")
+#'
+#' # ... but you can go back further and return e.g. the grandparent function call
+#' foo <- function(a) pkgpins::call_to_hash(n_generations_back = 2L)
+#' bar <- function(b) foo()
+#' bar()
+#'
+#' # Arguments can be excluded by name
+#' foo <- function(a, b, c) pkgpins::call_to_hash(exclude_args = c("a", "c"))
+#' foo(1+1, 'ar', list('1,77'))
+call_to_hash <- function(n_generations_back = 1L,
+                         add_namespace = TRUE,
+                         exclude_args = c("use_cache", "cache_lifespan")) {
+  
+  checkmate::assert_flag(add_namespace)
+  
+  parent_frame_nr <- sys.parent(checkmate::assert_count(n_generations_back))
+  parent_frame <- sys.frame(parent_frame_nr)
+  call <- match.call(definition = sys.function(parent_frame_nr),
+                     call = sys.call(parent_frame_nr))
+  fn_name <- as.character(as.list(call)[[1L]])
+  args <- as.list(call[-1L])
+  
+  # add namespace
+  ## extract it if provided in call
+  if (length(fn_name) == 3L) {
+    
+    fn_namespace <- fn_name[2L]
+    fn_name <- fn_name[3L]
+    
+    ## or otherwise determine it manually
+  } else if (length(fn_name) == 1L) {
+    
+    fun_envirs <- methods::findFunction(f = fn_name,
+                                        where = parent_frame)
+    
+    ### reduce to the first visible version of the function and extract env and namespace name
+    if (length(fun_envirs)) {
+      
+      fn_namespace <-
+        fun_envirs %>%
+        dplyr::first() %>%
+        environmentName() %>%
+        ### reduce to actual package _namespace_ (in contrast to _environment_, cf. https://stackoverflow.com/a/38872833/7196903)
+        stringr::str_extract(pattern = "(?<=^package:).+")
+      
+    } else {
+      
+      fn_namespace <- NA_character_
+    }
+  } else {
+    
+    rlang::abort("Unknown situation detected: Call's function has a length of 2! Please debug...")
+  }
+  
+  if (add_namespace & !is.na(fn_namespace)) {
+    
+    fn_name %<>% paste0(fn_namespace, "-", .)
+  }
+  
+  # add args
+  if (!is.null(checkmate::assert_character(exclude_args,
+                                           any.missing = FALSE,
+                                           null.ok = TRUE))) {
+    excl <- names(args) %in% exclude_args
+    
+    if (length(excl)) {
+      args <- args[!excl]
+    }
+  }
+  
+  if (length(args) > 0L) {
+    
+    # evaluate the call's arguments in the calling environment
+    result <-
+      args %>%
+      purrr::map(.f = eval,
+                 envir = parent_frame) %>%
+      expr_to_hash() %>%
+      paste0(fn_name, "-", .)
+      
+  } else {
+    
+    result <- fn_name
+  }
+  
+  result
+}
+
+expr_to_hash <- function(expr) {
+  
+  digest::digest(object = expr,
+                 algo = "xxhash64",
+                 serializeVersion = 3L)
+}
+
+# these are necessary for testing the `add_namespace` argument
+test_call_to_hash <- function(...) call_to_hash()
+test_call_to_hash_no_ns <- function(...) call_to_hash(add_namespace = FALSE)
+
+#' Convert the calling function call to a name
+#'
+#' @description
+#'
+#' `r lifecycle::badge("deprecated")`
 #'
 #' This function strives to create a string that uniquely identifies the function call of the calling function by the function's namespace, name and
 #' specified arguments. For example, when called _inside_ the function `foo()`, it will return
 #' `r foo <- function(a, b, c) call_to_name(); pal::prose_ls(foo(a = F, b = "bar", c = 1), wrap = '"')` when `foo()` was called with
 #' `foo(a = F, b = "bar", c = 1)`.
+#'
+#' @details
 #' 
 #' This function does evaluate object names passed as function arguments. I.e. the function call `foo(a = my_var)`, where `my_var`'s value is `100`, will be
 #' converted to `r my_var <- 100; pal::prose_ls(foo(100), wrap = '"')`.
@@ -478,6 +606,7 @@ call_to_name <- function(n_generations_back = 1L,
 }
 
 expr_to_name <- function(expr,
+                         rm_enclosing_list = TRUE,
                          rm_blanks,
                          sanitize,
                          non_destructive,
@@ -493,7 +622,11 @@ expr_to_name <- function(expr,
                        "showAttributes",
                        "warnIncomplete"[checkmate::assert_flag(warn_incomplete)])) %>%
     # remove enclosing "list()"
-    stringr::str_remove_all(pattern = "(^list\\(|\\)$)") %>%
+    purrr::when(checkmate::assert_flag(rm_enclosing_list) & stringr::str_detect(string = .,
+                                                                                pattern = "^list\\(.*\\)$") ~
+                  stringr::str_remove_all(string = .,
+                                          pattern = "(^list\\(|\\)$)"),
+                ~ .) %>%
     # replace double quotes around character arguments with single quotes to make them filesystem safe
     # (this is a potentially destructive conversion step, and unnecessary anyway when non_destructive)
     stringr::str_replace_all(pattern = dplyr::if_else(sanitize & !non_destructive,
@@ -569,7 +702,7 @@ with_cache <- function(.fn,
                        ...,
                        .use_cache = TRUE,
                        .cache_lifespan = "1 day",
-                       .id = call_to_name(n_generations_back = 2L),
+                       .id = call_to_hash(n_generations_back = 2L),
                        .pkg) {
   
   .fn <- rlang::as_function(.fn,

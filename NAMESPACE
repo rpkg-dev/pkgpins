@@ -2,6 +2,7 @@
 
 export(boardname)
 export(cache_obj)
+export(call_to_hash)
 export(call_to_name)
 export(clear)
 export(deregister)

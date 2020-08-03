@@ -24,7 +24,7 @@ This function stores an object in a package's user-cache pins board.
 The exact date and time (UTC) of the pinning is stored as the additional metadata \code{cached} which is of type \link[base:integer]{integer}. You can restore the
 actual datetime using \code{\link[lubridate:as_date]{lubridate::as_datetime(cached)}} (note that \code{\link[=ls_cache]{ls_cache()}} does this automatically).
 
-See \code{\link[=call_to_name]{call_to_name()}} for a convenient way to create an \code{id} that uniquely identifies a function call. Or just use \code{\link[=with_cache]{with_cache()}}.
+See \code{\link[=call_to_hash]{call_to_hash()}} for a convenient way to create an \code{id} that uniquely identifies a function call. Or just use \code{\link[=with_cache]{with_cache()}}.
 }
 \examples{
 \donttest{
@@ -40,7 +40,7 @@ pkg_sys_deps <- function(pkg,
                          cache_lifespan = "6h") {
 
   if (use_cache) {
-    pin_name <- pkgpins::call_to_name()
+    pin_name <- pkgpins::call_to_hash()
     result <- pkgpins::get_obj(id = pin_name,
                                max_age = cache_lifespan,
                                pkg = this_pkg)

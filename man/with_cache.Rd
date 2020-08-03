@@ -9,7 +9,7 @@ with_cache(
   ...,
   .use_cache = TRUE,
   .cache_lifespan = "1 day",
-  .id = call_to_name(n_generations_back = 2L),
+  .id = call_to_hash(n_generations_back = 2L),
   .pkg
 )
 }
