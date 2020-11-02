@@ -196,8 +196,8 @@ clear <- function(pkg,
 
 **Notes:**
 
-- Pinning an object with `I()` as below [avoids the creation of a CSV copy](https://github.com/rstudio/pins/pull/74) which improves performance. The CSV is
-  not needed by pkgpins anyway.
+-   Pinning an object with `I()` as below [avoids the creation of a CSV copy](https://github.com/rstudio/pins/pull/74) which improves performance. The CSV is
+    not needed by pkgpins anyway.
 
 ```{r}
 #' Cache an object to a package's user-cache pins board
@@ -283,9 +283,9 @@ cache_obj <- function(x,
 
 **Notes:**
 
-- Although `pins::pin_find()` documentation about param `name` says "The exact name of the pin to match when searching" (nothing about being a regular
-  expression), it actually _is_ interpreted as a regex! Thus we wrap `name` in the literal sequence escapes `\\Q...\\E`. Issue has been
-  [reported](https://github.com/rstudio/pins/issues/270).
+-   Although `pins::pin_find()` documentation about param `name` says "The exact name of the pin to match when searching" (nothing about being a regular
+    expression), it actually *is* interpreted as a regex! Thus we wrap `name` in the literal sequence escapes `\\Q...\\E`. Issue has been
+    [reported](https://github.com/rstudio/pins/issues/270).
 
 ```{r}
 #' Get a cached object from a package's user-cache pins board
@@ -374,44 +374,45 @@ rm_obj <- function(id,
 
 TODO:
 
-- **THIS IS SERIOUS!** The `args` are not properly evaluated, i.e. the search path (or "env stack", "call stack", or whatever) is "cut off".
-  
-  Real-life example where this matters:
+-   **THIS IS SERIOUS!** The `args` are not properly evaluated, i.e. the search path (or "env stack", "call stack", or whatever) is "cut off".
 
-  ```r
-  testf <- function(param) swissmuni::snapshots(historicized_code = param)
-  testf(TRUE)
-  
-  # avoiding calling `call_to_hash()`
-  testf <- function(param) swissmuni::snapshots(historicized_code = param, use_cache = FALSE)
-  testf(TRUE)
-  ```
-  
-  Or a simpler synthetic example:
-  
-  ```r
-  foo <- function(add_ns) pkgpins::call_to_hash(add_namespace = add_ns)
-  bar <- function(really_add_ns) foo(add_ns = really_add_ns)
-  foo(TRUE)
-  bar(TRUE)
-  ```
-  
-  - [x] Thoroughly read the chapter [Environments](https://adv-r.hadley.nz/environments.html), especially the subchapter
-    [Call stacks](https://adv-r.hadley.nz/environments.html#call-stack), of the _Advanced R_ book to better understand the whole situation.
-  
-  NOTES:
-  
-  - As it appears, the current way is likely a dead end because we seem to "break" R's concept of [promises](https://adv-r.hadley.nz/functions.html#promises)
-    (see also the [official doc](https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Promise-objects)) by trying to reconstruct the args from
-    `match.call()`... (is this really true, i.e. there's no way to get the args as the original _promises_ instead of just symbols?)
-    
-    We could try to work around this by iteratively calling `rlang::env_has(env = parent.frame(n), nms = arg, inherit = TRUE)` with an incresing `n` until it
-    returns TRUE, but this would obviously be bad since it's not guaranteed that we find the right `arg` object.
-    
-    Or would simply requiring the calling env as an argument to `call_to_hash()` help? No. Really, nope!
-    
-  - _Quosures_ might provide a way out -> thoroughly read the whole [part IV (Metaprogramming)](https://adv-r.hadley.nz/metaprogramming.html) of the
-    _Advanced R_ book!
+    Real-life example where this matters:
+
+    ``` {.r}
+    testf <- function(param) swissmuni::snapshots(historicized_code = param)
+    testf(TRUE)
+
+    # avoiding calling `call_to_hash()`
+    testf <- function(param) swissmuni::snapshots(historicized_code = param, use_cache = FALSE)
+    testf(TRUE)
+    ```
+
+    Or a simpler synthetic example:
+
+    ``` {.r}
+    foo <- function(add_ns) pkgpins::call_to_hash(add_namespace = add_ns)
+    bar <- function(really_add_ns) foo(add_ns = really_add_ns)
+    foo(TRUE)
+    bar(TRUE)
+    ```
+
+    -   [x] Thoroughly read the chapter [Environments](https://adv-r.hadley.nz/environments.html), especially the subchapter [Call
+        stacks](https://adv-r.hadley.nz/environments.html#call-stack), of the *Advanced R* book to better understand the whole situation.
+
+    NOTES:
+
+    -   As it appears, the current way is likely a dead end because we seem to "break" R's concept of
+        [promises](https://adv-r.hadley.nz/functions.html#promises) (see also the [official
+        doc](https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Promise-objects)) by trying to reconstruct the args from `match.call()`... (is this
+        really true, i.e. there's no way to get the args as the original *promises* instead of just symbols?)
+
+        We could try to work around this by iteratively calling `rlang::env_has(env = parent.frame(n), nms = arg, inherit = TRUE)` with an incresing `n` until
+        it returns TRUE, but this would obviously be bad since it's not guaranteed that we find the right `arg` object.
+
+        Or would simply requiring the calling env as an argument to `call_to_hash()` help? No. Really, nope!
+
+    -   *Quosures* might provide a way out -\> thoroughly read the whole [part IV (Metaprogramming)](https://adv-r.hadley.nz/metaprogramming.html) of the
+        *Advanced R* book!
 
 ```{r}
 #' Convert the calling function call to a hash
@@ -544,40 +545,40 @@ test_call_to_hash_no_ns <- function(...) call_to_hash(add_namespace = FALSE)
 
 **Notes:**
 
-- This function is deprecated, use `call_to_hash()` instead.
+-   This function is deprecated, use `call_to_hash()` instead.
 
-  The reason is that the path sanitization (`sanitize = TRUE`) using `fs::path_sanitize()` cuts of the name at a maximum of 255 chars which is the maximum for
-  [most FS'](https://en.wikipedia.org/wiki/Comparison_of_file_systems#Limits). And anyway, it was stupid to not use hashing in the first place. 🙄
+    The reason is that the path sanitization (`sanitize = TRUE`) using `fs::path_sanitize()` cuts of the name at a maximum of 255 chars which is the maximum for
+    [most FS'](https://en.wikipedia.org/wiki/Comparison_of_file_systems#Limits). And anyway, it was stupid to not use hashing in the first place. 🙄
 
-- The following seemingly weird behaviour is not a bug of `call_to_name()`:
+-   The following seemingly weird behaviour is not a bug of `call_to_name()`:
 
-  ```r
-  foo <- function(x, c) call_to_name(exclude_args = c("some_inexistent_arg_name"))
-  # as long as arg `c` is provided, R doesn't care about missing args
-  foo(, 1)
-  # otherwise, R suddenly complains about missing `c`!
-  foo()
-  foo(1)
-  ```
-  
-  While inspecting the function with `browser()`, I've observed that the error occurs as soon as `exclude_args` is accessed. But as it seems, an error only
-  occurs if
-  
-  - one of `foo()`'s params is named `c`
-  - `exclude_args` (or any other param in fact) is set to `c(...)`
-  
-  My best guess is that it has something to do with R's lazy evaluation; because the function `c()` and the variable/param `c` share names/symbols, R has to
-  disambiguate them; accessing the param with the `c(...)` value thus also triggers an evaluation of the param named `c` (since it's found in the current env);
-  no name clashes, no lazy eval.
-  
-  An easy prove that the issue is not specific to `call_to_name()`:
-  
-  ```r
-  foo <- function(x, c) c(1,2)
-  foo(, 1)
-  foo(1)
-  foo()
-  ```
+    ``` {.r}
+    foo <- function(x, c) call_to_name(exclude_args = c("some_inexistent_arg_name"))
+    # as long as arg `c` is provided, R doesn't care about missing args
+    foo(, 1)
+    # otherwise, R suddenly complains about missing `c`!
+    foo()
+    foo(1)
+    ```
+
+    While inspecting the function with `browser()`, I've observed that the error occurs as soon as `exclude_args` is accessed. But as it seems, an error only
+    occurs if
+
+    -   one of `foo()`'s params is named `c`
+    -   `exclude_args` (or any other param in fact) is set to `c(...)`
+
+    My best guess is that it has something to do with R's lazy evaluation; because the function `c()` and the variable/param `c` share names/symbols, R has to
+    disambiguate them; accessing the param with the `c(...)` value thus also triggers an evaluation of the param named `c` (since it's found in the current
+    env); no name clashes, no lazy eval.
+
+    An easy prove that the issue is not specific to `call_to_name()`:
+
+    ``` {.r}
+    foo <- function(x, c) c(1,2)
+    foo(, 1)
+    foo(1)
+    foo()
+    ```
 
 ```{r}
 #' Convert the calling function call to a name
@@ -805,27 +806,28 @@ test_call_to_name_no_ns <- function(...) call_to_name(add_namespace = FALSE)
 
 TODO:
 
-- Use `pal::check_dots_named()` once it has matured.
+-   Use `pal::check_dots_named()` once it has matured.
 
-- Provide an even shorter way, like
-  
-  ```r
-  cachely <- function(.fn,
-                      ...,
-                      .use_cache = TRUE,
-                      .cache_lifespan = "1 day",
-                      .id = call_to_hash(), # this might not work; alternatively default to `NULL` and use `call_to_hash()` internally
-                      .pkg) {
-    
-    rlang::new_function() # TODO
-  }
-  ```
-  
-  which returns a function, similar to `purrr::safely()` 🥳
-  
-  Then change `with_cache()` to cache an expression? does caching an expr even make sense for pkgpins? I guess not... -> then deprecate `with_cache()` instead!
-  
-  It probably makes sense to thoroughly read the chapter [Function factories](https://adv-r.hadley.nz/function-factories.html) of _Advanced R_ first. 🤓
+-   Provide an even shorter way, like
+
+    ``` {.r}
+    cachely <- function(.fn,
+                        ...,
+                        .use_cache = TRUE,
+                        .cache_lifespan = "1 day",
+                        .id = call_to_hash(), # this might not work; alternatively default to `NULL` and use `call_to_hash()` internally
+                        .pkg) {
+
+      rlang::new_function() # TODO
+    }
+    ```
+
+    which returns a function, similar to `purrr::safely()` 🥳
+
+    Then change `with_cache()` to cache an expression? does caching an expr even make sense for pkgpins? I guess not... -\> then deprecate `with_cache()`
+    instead!
+
+    It probably makes sense to thoroughly read the chapter [Function factories](https://adv-r.hadley.nz/function-factories.html) of *Advanced R* first. 🤓
 
 ```{r}
 #' Cache a function call

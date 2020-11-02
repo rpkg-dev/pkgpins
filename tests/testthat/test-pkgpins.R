@@ -3,8 +3,8 @@ test_that("call_to_hash() properly evaluates the call's arguments", {
 
   foo <- function(a, b, c) call_to_hash()
 
-  expect_identical(foo(1+1, 'ar', list(1, 77)),
-                   foo(3-1, paste0("a", "r"), list(a = 1, 77) %>% rlang::set_names(nm = NULL)))
+  expect_identical(foo(1 + 1, 'ar', list(1, 77)),
+                   foo(3 - 1, paste0("a", "r"), list(a = 1, 77) %>% rlang::set_names(nm = NULL)))
 })
 
 test_that("call_to_hash() returns the grandparent call when requested", {
@@ -20,7 +20,7 @@ test_that("call_to_hash() excludes arguments as requested", {
 
   foo <- function(a, b, c) call_to_hash(exclude_args = c("a", "c"))
 
-  expect_identical(foo(1+1, 'ar', list(1, 77)),
+  expect_identical(foo(1 + 1, 'ar', list(1, 77)),
                    paste0("foo-", expr_to_hash(list(b = 'ar'))))
 })
 
@@ -56,7 +56,7 @@ test_that("call_to_name() is destructive as expected by default", {
   foo <- function(a, b, c) call_to_name()
 
   expect_identical(foo(4 - 2, 'a \" r', list("1, 77")),
-                   foo(1+1, 'ar', list('1,77')))
+                   foo(1 + 1, 'ar', list('1,77')))
 })
 
 test_that("call_to_name() is non-destructive when requested", {
@@ -64,14 +64,14 @@ test_that("call_to_name() is non-destructive when requested", {
   foo <- function(a, b, c) call_to_name(non_destructive = TRUE)
 
   expect_identical(foo(4 - 2, "a \" r", list("1, 77")),
-                   foo(1+1, 'a " r', list('1, 77')))
+                   foo(1 + 1, 'a " r', list('1, 77')))
 })
 
 test_that("call_to_name() excludes arguments as requested", {
 
   foo <- function(a, b, c) call_to_name(exclude_args = c("a", "c"))
 
-  expect_identical(foo(1+1, 'ar', list(1, 77)),
+  expect_identical(foo(1 + 1, 'ar', list(1, 77)),
                    "foo-b='ar'")
 })
 
