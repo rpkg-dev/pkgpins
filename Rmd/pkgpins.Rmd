@@ -281,11 +281,14 @@ cache_obj <- function(x,
 
 # Get a cached object from a package's user-cache pins board
 
-**Notes:**
+TODO:
 
 -   Although `pins::pin_find()` documentation about param `name` says "The exact name of the pin to match when searching" (nothing about being a regular
     expression), it actually *is* interpreted as a regex! Thus we wrap `name` in the literal sequence escapes `\\Q...\\E`. Issue has been
     [reported](https://github.com/rstudio/pins/issues/270).
+
+    This has been [fixed](https://github.com/rstudio/pins/commit/371d7c7826d84f3d4738683d280c4505c23603dc) meanwhile -\> Code needs to be updated as soon as a
+    pins version 0.4.5 lands on CRAN (set min required version in DESCRIPTION to that version)!
 
 ```{r}
 #' Get a cached object from a package's user-cache pins board
@@ -374,7 +377,9 @@ rm_obj <- function(id,
 
 TODO:
 
--   **THIS IS SERIOUS!** The `args` are not properly evaluated, i.e. the search path (or "env stack", "call stack", or whatever) is "cut off".
+-   [ ] Fix the environment/frame issue!
+
+    **THIS IS SERIOUS!** The `args` are not properly evaluated, i.e. the search path (or "env stack", "call stack", or whatever) is "cut off".
 
     Real-life example where this matters:
 
@@ -413,6 +418,12 @@ TODO:
 
     -   *Quosures* might provide a way out -\> thoroughly read the whole [part IV (Metaprogramming)](https://adv-r.hadley.nz/metaprogramming.html) of the
         *Advanced R* book!
+
+-   [ ] Switch from `digest::digest(algo = "xxhash64")` to [`rlang::hash()`](https://rlang.r-lib.org/reference/hash.html)?
+
+    Possible contra: The latter is a xxHash 128-bit digest instead of a 64-bit one -\> wasted space?
+
+    Pro: We could drop the *digest* dependency.
 
 ```{r}
 #' Convert the calling function call to a hash
