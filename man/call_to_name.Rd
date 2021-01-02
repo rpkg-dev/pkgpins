@@ -17,8 +17,8 @@ call_to_name(
 \arguments{
 \item{n_generations_back}{The number of generations to go back. See \code{\link[=sys.parent]{sys.parent()}} for details. An integerish scalar.}
 
-\item{add_namespace}{Prefix the generated name with the \href{https://cran.r-project.org/doc/manuals/r-release/R-ints.html#Namespaces}{namespace} (i.e.
-package name) the called function belongs to (if any).}
+\item{add_namespace}{Whether to prefix the generated string with the \href{https://cran.r-project.org/doc/manuals/r-release/R-ints.html#Namespaces}{namespace}
+(i.e. package name) the called function belongs to (if any).}
 
 \item{rm_blanks}{Remove all whitespaces from \code{call}'s evaluated argument names.}
 
@@ -28,7 +28,7 @@ default. See \code{\link[fs:path_sanitize]{fs::path_sanitize()}} for details abo
 \item{non_destructive}{Disable all name conversion steps which are known to be destructive (loss of information). See details. This setting implies
 \code{santize = FALSE} and \code{rm_blanks = FALSE} and has precedence over them.}
 
-\item{exclude_args}{Specify argument names to be excluded from the generated name. A character vector, or \code{NULL} for no excluded arguments.}
+\item{exclude_args}{Argument names to be ignored, i.e. excluded from the generated string. A character vector, or \code{NULL} for no excluded arguments.}
 
 \item{warn_incomplete}{Show a warning if the deparser \emph{suspects} it's unable to properly deparse an argument (might involve false positives). See the
 \code{"warnIncomplete"} section in \code{\link[base:deparseOpts]{base::..deparseOpts}} for details. A logical scalar.}
@@ -39,8 +39,10 @@ A character scalar.
 \description{
 \ifelse{html}{\figure{lifecycle-deprecated.svg}{options: alt='Deprecated lifecycle'}}{\strong{Deprecated}}
 
-This function strives to create a string that uniquely identifies the function call of the calling function by the function's namespace, name and
-specified arguments. For example, when called \emph{inside} the function \code{foo()}, it will return
+\emph{It's recommended to switch to the more reliable/powerful alternative \code{\link[=call_to_hash]{call_to_hash()}} whenever possible.}
+
+Strives to create a string that uniquely identifies the function call of the calling function by the function's namespace, name and specified arguments. For
+example, when called \emph{inside} the function \code{foo()}, it will return
 "foo-a=FALSE,b='bar',c=1" when \code{foo()} was called with
 \code{foo(a = F, b = "bar", c = 1)}.
 }
@@ -57,6 +59,8 @@ Also, characters which are problematic or have special meaning on common filesys
 instead.
 
 To turn off all the known-to-be destructive conversion steps at once, set \code{non_destructive = TRUE}.
+
+A more reliable/powerful alternative to this function is \code{\link[=call_to_hash]{call_to_hash()}} which should be preferred whenever possible.
 }
 \examples{
 # By default, the parent function call is returned ...

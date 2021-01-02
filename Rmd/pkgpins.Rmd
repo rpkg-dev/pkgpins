@@ -428,8 +428,8 @@ TODO:
 ```{r}
 #' Convert the calling function call to a hash
 #'
-#' This function strives to create a string that uniquely identifies the function call of the calling function by the function's namespace, name and
-#' a hash of the specified arguments. For example, when called _inside_ the function `foo()`, it will return
+#' Creates a string that uniquely identifies the function call of the calling function by the function's namespace, name and a hash of the specified arguments.
+#' For example, when called _inside_ the function `foo()`, it will return
 #' `r foo <- function(a, b, c) call_to_hash(); pal::prose_ls(foo(a = F, b = "bar", c = 1), wrap = '"')` when `foo()` was called with
 #' `foo(a = F, b = "bar", c = 1)`.
 #' 
@@ -438,9 +438,9 @@ TODO:
 #' `r my_var <- 101; pal::prose_ls(foo(101), wrap = '"')` if `my_var`'s value is `101`.
 #'
 #' @param n_generations_back The number of generations to go back. See [sys.parent()] for details. An integerish scalar.
-#' @param add_namespace Prefix the generated string with the [namespace](https://cran.r-project.org/doc/manuals/r-release/R-ints.html#Namespaces) (i.e.
-#'   package name) the called function belongs to (if any).
-#' @param exclude_args Specify argument names to be excluded from the generated string. A character vector, or `NULL` for no excluded arguments.
+#' @param add_namespace Whether to prefix the generated string with the [namespace](https://cran.r-project.org/doc/manuals/r-release/R-ints.html#Namespaces)
+#'   (i.e. package name) the called function belongs to (if any).
+#' @param exclude_args Argument names to be ignored, i.e. excluded from the generated string. A character vector, or `NULL` for no excluded arguments.
 #'
 #' @return A character scalar.
 #' @export
@@ -498,16 +498,13 @@ call_to_hash <- function(n_generations_back = 1L,
         stringr::str_extract(pattern = "(?<=^package:).+")
       
     } else {
-      
       fn_namespace <- NA_character_
     }
   } else {
-    
     rlang::abort("Unknown situation detected: Call's function has a length of 2! Please debug...")
   }
   
   if (add_namespace & !is.na(fn_namespace)) {
-    
     fn_name %<>% paste0(fn_namespace, "-", .)
   }
   
@@ -533,7 +530,6 @@ call_to_hash <- function(n_generations_back = 1L,
       paste0(fn_name, "-", .)
       
   } else {
-    
     result <- fn_name
   }
   
@@ -598,8 +594,10 @@ test_call_to_hash_no_ns <- function(...) call_to_hash(add_namespace = FALSE)
 #'
 #' `r lifecycle::badge("deprecated")`
 #'
-#' This function strives to create a string that uniquely identifies the function call of the calling function by the function's namespace, name and
-#' specified arguments. For example, when called _inside_ the function `foo()`, it will return
+#' _It's recommended to switch to the more reliable/powerful alternative [call_to_hash()] whenever possible._
+#'
+#' Strives to create a string that uniquely identifies the function call of the calling function by the function's namespace, name and specified arguments. For
+#' example, when called _inside_ the function `foo()`, it will return
 #' `r foo <- function(a, b, c) call_to_name(); pal::prose_ls(foo(a = F, b = "bar", c = 1), wrap = '"')` when `foo()` was called with
 #' `foo(a = F, b = "bar", c = 1)`.
 #'
@@ -618,17 +616,16 @@ test_call_to_hash_no_ns <- function(...) call_to_hash(add_namespace = FALSE)
 #' 
 #' To turn off all the known-to-be destructive conversion steps at once, set `non_destructive = TRUE`.
 #'
-#' @param n_generations_back The number of generations to go back. See [sys.parent()] for details. An integerish scalar.
-#' @param add_namespace Prefix the generated name with the [namespace](https://cran.r-project.org/doc/manuals/r-release/R-ints.html#Namespaces) (i.e.
-#'   package name) the called function belongs to (if any).
+#' A more reliable/powerful alternative to this function is [call_to_hash()] which should be preferred whenever possible.
+#'
 #' @param rm_blanks Remove all whitespaces from `call`'s evaluated argument names.
 #' @param sanitize Remove characters which are problematic or have special meaning on common filesystems from `call`'s evaluated argument names. Enabled by
 #'   default. See [fs::path_sanitize()] for details about the performed sanitation.
 #' @param non_destructive Disable all name conversion steps which are known to be destructive (loss of information). See details. This setting implies
 #'   `santize = FALSE` and `rm_blanks = FALSE` and has precedence over them.
-#' @param exclude_args Specify argument names to be excluded from the generated name. A character vector, or `NULL` for no excluded arguments.
 #' @param warn_incomplete Show a warning if the deparser _suspects_ it's unable to properly deparse an argument (might involve false positives). See the
 #'   `"warnIncomplete"` section in [`base::..deparseOpts`][base::..deparseOpts] for details. A logical scalar.
+#' @inheritParams call_to_hash
 #'
 #' @return A character scalar.
 #' @export
@@ -718,16 +715,13 @@ call_to_name <- function(n_generations_back = 1L,
         stringr::str_extract(pattern = "(?<=^package:).+")
       
     } else {
-      
       fn_namespace <- NA_character_
     }
   } else {
-    
     rlang::abort("Unknown situation detected: Call's function has a length of 2! Please debug...")
   }
   
   if (add_namespace & !is.na(fn_namespace)) {
-    
     fn_name %<>% paste0(fn_namespace, dplyr::if_else(sanitize & !non_destructive, "-", "::"), .)
   }
   

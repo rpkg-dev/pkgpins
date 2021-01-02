@@ -13,17 +13,17 @@ call_to_hash(
 \arguments{
 \item{n_generations_back}{The number of generations to go back. See \code{\link[=sys.parent]{sys.parent()}} for details. An integerish scalar.}
 
-\item{add_namespace}{Prefix the generated string with the \href{https://cran.r-project.org/doc/manuals/r-release/R-ints.html#Namespaces}{namespace} (i.e.
-package name) the called function belongs to (if any).}
+\item{add_namespace}{Whether to prefix the generated string with the \href{https://cran.r-project.org/doc/manuals/r-release/R-ints.html#Namespaces}{namespace}
+(i.e. package name) the called function belongs to (if any).}
 
-\item{exclude_args}{Specify argument names to be excluded from the generated string. A character vector, or \code{NULL} for no excluded arguments.}
+\item{exclude_args}{Argument names to be ignored, i.e. excluded from the generated string. A character vector, or \code{NULL} for no excluded arguments.}
 }
 \value{
 A character scalar.
 }
 \description{
-This function strives to create a string that uniquely identifies the function call of the calling function by the function's namespace, name and
-a hash of the specified arguments. For example, when called \emph{inside} the function \code{foo()}, it will return
+Creates a string that uniquely identifies the function call of the calling function by the function's namespace, name and a hash of the specified arguments.
+For example, when called \emph{inside} the function \code{foo()}, it will return
 "foo-f5fafeed20ec9481" when \code{foo()} was called with
 \code{foo(a = F, b = "bar", c = 1)}.
 }
