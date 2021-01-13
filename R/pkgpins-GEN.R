@@ -247,8 +247,8 @@ cache_obj <- function(x,
 #'
 #' @examples
 #' \donttest{
-#' pkgpins::get_obj(id = "git2r-syreqs",
-#'                  pkg = "not.a.real.pkg",
+#' pkgpins::get_obj(id = "something",
+#'                  pkg = "some_pkg",
 #'                  max_age = "2 weeks")}
 get_obj <- function(id,
                     pkg,
@@ -256,7 +256,7 @@ get_obj <- function(id,
   
   register(pkg = pkg)
   board <- boardname(pkg)
-  result <- pins::pin_find(name = paste0("\\Q", checkmate::assert_string(id), "\\E"),
+  result <- pins::pin_find(name = checkmate::assert_string(id),
                            board = board,
                            extended = TRUE)
   

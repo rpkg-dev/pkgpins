@@ -21,7 +21,7 @@ This function retrieves a cached object from a package's user-cache pins board \
 }
 \examples{
 \donttest{
-pkgpins::get_obj(id = "git2r-syreqs",
-                 pkg = "not.a.real.pkg",
+pkgpins::get_obj(id = "something",
+                 pkg = "some_pkg",
                  max_age = "2 weeks")}
 }
