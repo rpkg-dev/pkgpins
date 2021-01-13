@@ -281,15 +281,6 @@ cache_obj <- function(x,
 
 # Get a cached object from a package's user-cache pins board
 
-TODO:
-
--   Although `pins::pin_find()` documentation about param `name` says "The exact name of the pin to match when searching" (nothing about being a regular
-    expression), it actually *is* interpreted as a regex! Thus we wrap `name` in the literal sequence escapes `\\Q...\\E`. Issue has been
-    [reported](https://github.com/rstudio/pins/issues/270).
-
-    This has been [fixed](https://github.com/rstudio/pins/commit/371d7c7826d84f3d4738683d280c4505c23603dc) meanwhile -\> Code needs to be updated as soon as a
-    pins version 0.4.5 lands on CRAN (set min required version in DESCRIPTION to that version)!
-
 ```{r}
 #' Get a cached object from a package's user-cache pins board
 #'
