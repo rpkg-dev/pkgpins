@@ -37,7 +37,7 @@ default. See \code{\link[fs:path_sanitize]{fs::path_sanitize()}} for details abo
 A character scalar.
 }
 \description{
-\ifelse{html}{\figure{lifecycle-deprecated.svg}{options: alt='Deprecated lifecycle'}}{\strong{Deprecated}}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 
 \emph{It's recommended to switch to the more reliable/powerful alternative \code{\link[=call_to_hash]{call_to_hash()}} whenever possible.}
 
