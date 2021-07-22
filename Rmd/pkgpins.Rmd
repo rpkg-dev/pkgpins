@@ -199,6 +199,17 @@ clear <- function(pkg,
 -   Pinning an object with `I()` as below [avoids the creation of a CSV copy](https://github.com/rstudio/pins/pull/74) which improves performance. The CSV is
     not needed by pkgpins anyway.
 
+**TODO:**
+
+-   [ ] Improve get performance by creating an in-memory copy and trying to retrieve it first before loading the on-disk copy. Ideally this functionality would
+    be added to the underlying pins package, I guess.
+
+    Another possibility would be to switch to the [storr](https://github.com/richfitz/storr) package which provides exactly this functionality. Additionally it
+    might be worth to use the [thor](https://richfitz.github.io/thor/reference/storr_thor.html) package as the storr driver which provides an
+    [LMDB](https://en.wikipedia.org/wiki/Lightning_Memory-Mapped_Database) interface which might prove faster than using serialized R data (`.rds`).
+
+    See [here](https://richfitz.github.io/storr/articles/external.html#memoisation) for an experimental implementation of memoisation using the storr package.
+
 ```{r}
 #' Cache an object to a package's user-cache pins board
 #'
@@ -409,6 +420,11 @@ TODO:
 
     -   *Quosures* might provide a way out -\> thoroughly read the whole [part IV (Metaprogramming)](https://adv-r.hadley.nz/metaprogramming.html) of the
         *Advanced R* book!
+
+-   [ ] Add a param `add_pkg_version` (default `TRUE`) to add the package version the namespace belongs to to the hash. Only relevant if `add_namespace = TRUE`.
+
+    This would allow for breaking changes in e.g. dataset schema of `c2d::referendums()` without the need for the user to `clear()` the pkg cache as long as the
+    pkg version is updated with the breaking changes!
 
 -   [ ] Switch from `digest::digest(algo = "xxhash64")` to [`rlang::hash()`](https://rlang.r-lib.org/reference/hash.html)?
 
