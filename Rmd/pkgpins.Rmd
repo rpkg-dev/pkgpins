@@ -421,6 +421,8 @@ TODO:
     -   *Quosures* might provide a way out -\> thoroughly read the whole [part IV (Metaprogramming)](https://adv-r.hadley.nz/metaprogramming.html) of the
         *Advanced R* book!
 
+-   [ ] Make sure implicit default arguments are also hashed; currently hashing `fn()` and `fn(defaults)` results in different hashes which is inconvenient.
+
 -   [ ] Add a param `add_pkg_version` (default `TRUE`) to add the package version the namespace belongs to to the hash. Only relevant if `add_namespace = TRUE`.
 
     This would allow for breaking changes in e.g. dataset schema of `c2d::referendums()` without the need for the user to `clear()` the pkg cache as long as the
