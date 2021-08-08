@@ -16,7 +16,7 @@ utils::globalVariables(names = c(".",
                                  "name"))
 ```
 
-# Register a package's user-cache pins board
+# `register`
 
 ```{r}
 #' Register a package's user-cache pins board
@@ -45,7 +45,7 @@ register <- function(pkg) {
 }
 ```
 
-# Unregister a package's user-cache pins board
+# `deregister`
 
 ```{r}
 #' Deregister a package's user-cache pins board
@@ -74,7 +74,7 @@ deregister <- function(pkg) {
 }
 ```
 
-# Get a package's user-cache pins board name
+# `boardname`
 
 By convention, the pins board name is identical to the directory name.
 
@@ -100,7 +100,7 @@ boardname <- function(pkg) {
 }
 ```
 
-# Get a package's user-cache pins board path
+# `path_cache`
 
 ```{r}
 #' Get a package's user-cache pins board path
@@ -124,7 +124,7 @@ path_cache <- function(pkg) {
 }
 ```
 
-# List all objects in a package's user-cache pins board
+# `ls_cache`
 
 ```{r}
 #' List all objects in a package's user-cache pins board
@@ -159,7 +159,7 @@ ls_cache <- function(pkg) {
 }
 ```
 
-# Delete all objects from a package's user-cache pins board exceeding a certain age
+# `clear`
 
 ```{r}
 #' Delete all objects from a package's user-cache pins board exceeding a certain age
@@ -192,7 +192,7 @@ clear <- function(pkg,
 }
 ```
 
-# Cache an object to a package's user-cache pins board
+# `cache_obj`
 
 **Notes:**
 
@@ -290,7 +290,7 @@ cache_obj <- function(x,
 }
 ```
 
-# Get a cached object from a package's user-cache pins board
+# `get_obj`
 
 ```{r}
 #' Get a cached object from a package's user-cache pins board
@@ -347,7 +347,7 @@ get_obj <- function(id,
 }
 ```
 
-# Delete a cached object from a package's user-cache pins board
+# `rm_obj`
 
 ```{r}
 #' Delete a cached object from a package's user-cache pins board
@@ -375,7 +375,7 @@ rm_obj <- function(id,
 }
 ```
 
-# Convert the calling function call to a hash
+# `call_to_hash`
 
 TODO:
 
@@ -557,7 +557,7 @@ test_call_to_hash <- function(...) call_to_hash()
 test_call_to_hash_no_ns <- function(...) call_to_hash(add_namespace = FALSE)
 ```
 
-# Convert the calling function call to a name
+# `call_to_name`
 
 **Notes:**
 
@@ -816,7 +816,7 @@ test_call_to_name <- function(...) call_to_name()
 test_call_to_name_no_ns <- function(...) call_to_name(add_namespace = FALSE)
 ```
 
-# Cache a function call
+# `with_cache`
 
 TODO:
 
