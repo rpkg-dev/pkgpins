@@ -236,11 +236,12 @@ cache_obj <- function(x,
                       id,
                       pkg) {
   
+  checkmate::assert_string(id)
   register(pkg = pkg)
   
   pins::pin(x = I(x),
             board = boardname(pkg),
-            name = checkmate::assert_string(id),
+            name = id,
             metadata = list(cached = lubridate::now(tzone = "UTC")))
 }
 
@@ -264,9 +265,10 @@ get_obj <- function(id,
                     pkg,
                     max_age = "1 day") {
   
+  checkmate::assert_string(id)
   register(pkg = pkg)
   board <- boardname(pkg)
-  result <- pins::pin_find(name = checkmate::assert_string(id),
+  result <- pins::pin_find(name = id,
                            board = board,
                            extended = TRUE)
   
@@ -315,10 +317,11 @@ get_obj <- function(id,
 rm_obj <- function(id,
                    pkg) {
   
+  checkmate::assert_string(id)
   register(pkg = pkg)
   
   pins::pin_remove(board = boardname(pkg),
-                   name = checkmate::assert_string(id))
+                   name = id)
 }
 
 #' Convert the calling function call to a hash
@@ -535,12 +538,16 @@ call_to_name <- function(n_generations_back = 1L,
                          exclude_args = c("use_cache", "cache_lifespan"),
                          warn_incomplete = TRUE) {
   
+  checkmate::assert_count(n_generations_back)
   checkmate::assert_flag(add_namespace)
   checkmate::assert_flag(rm_blanks)
   checkmate::assert_flag(sanitize)
   checkmate::assert_flag(non_destructive)
+  checkmate::assert_character(exclude_args,
+                              any.missing = FALSE,
+                              null.ok = TRUE)
   
-  parent_frame_nr <- sys.parent(checkmate::assert_count(n_generations_back))
+  parent_frame_nr <- sys.parent(n_generations_back)
   parent_frame <- sys.frame(parent_frame_nr)
   call <- match.call(definition = sys.function(parent_frame_nr),
                      call = sys.call(parent_frame_nr))
@@ -582,9 +589,7 @@ call_to_name <- function(n_generations_back = 1L,
   }
   
   # add args
-  if (!is.null(checkmate::assert_character(exclude_args,
-                                           any.missing = FALSE,
-                                           null.ok = TRUE))) {
+  if (!is.null(exclude_args)) {
     excl <- names(args) %in% exclude_args
     
     if (length(excl)) {
@@ -625,6 +630,9 @@ expr_to_name <- function(expr,
                          non_destructive,
                          warn_incomplete) {
   
+  checkmate::assert_flag(rm_enclosing_list)
+  checkmate::assert_flag(warn_incomplete)
+  
   # convert to string
   # (under rather exotic circumstances this is destructive, see `?..deparseOpts`)
   deparse1(expr = expr,
@@ -633,10 +641,10 @@ expr_to_name <- function(expr,
                        "keepInteger",
                        "niceNames",
                        "showAttributes",
-                       "warnIncomplete"[checkmate::assert_flag(warn_incomplete)])) %>%
+                       "warnIncomplete"[warn_incomplete])) %>%
     # remove enclosing "list()"
-    purrr::when(checkmate::assert_flag(rm_enclosing_list) && stringr::str_detect(string = .,
-                                                                                 pattern = "^list\\(.*\\)$") ~
+    purrr::when(rm_enclosing_list && stringr::str_detect(string = .,
+                                                         pattern = "^list\\(.*\\)$") ~
                   stringr::str_remove_all(string = .,
                                           pattern = "(^list\\(|\\)$)"),
                 ~ .) %>%
@@ -718,11 +726,12 @@ with_cache <- function(.fn,
                        .id = call_to_hash(n_generations_back = 2L),
                        .pkg) {
   
+  checkmate::assert_flag(.use_cache)
   .fn <- rlang::as_function(.fn,
                             env = parent.frame())
   fetch <- TRUE
   
-  if (checkmate::assert_flag(.use_cache)) {
+  if (.use_cache) {
     
     result <- get_obj(id = .id,
                       max_age = .cache_lifespan,
