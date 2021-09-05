@@ -57,7 +57,7 @@ pkg_sys_deps <- function(pkg,
       purrr::flatten()
   }
  
-  if (use_cache & fetch) {
+  if (use_cache && fetch) {
     pkgpins::cache_obj(x = result,
                        id = pin_name,
                        pkg = this_pkg)

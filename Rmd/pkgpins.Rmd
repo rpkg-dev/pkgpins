@@ -259,7 +259,7 @@ clear <- function(pkg,
 #'       purrr::flatten()
 #'   }
 #'  
-#'   if (use_cache & fetch) {
+#'   if (use_cache && fetch) {
 #'     pkgpins::cache_obj(x = result,
 #'                        id = pin_name,
 #'                        pkg = this_pkg)
@@ -513,7 +513,7 @@ call_to_hash <- function(n_generations_back = 1L,
     rlang::abort("Unknown situation detected: Call's function has a length of 2! Please debug...")
   }
   
-  if (add_namespace & !is.na(fn_namespace)) {
+  if (add_namespace && !is.na(fn_namespace)) {
     fn_name %<>% paste0(fn_namespace, "-", .)
   }
   
@@ -730,8 +730,8 @@ call_to_name <- function(n_generations_back = 1L,
     rlang::abort("Unknown situation detected: Call's function has a length of 2! Please debug...")
   }
   
-  if (add_namespace & !is.na(fn_namespace)) {
-    fn_name %<>% paste0(fn_namespace, dplyr::if_else(sanitize & !non_destructive, "-", "::"), .)
+  if (add_namespace && !is.na(fn_namespace)) {
+    fn_name %<>% paste0(fn_namespace, dplyr::if_else(sanitize && !non_destructive, "-", "::"), .)
   }
   
   # add args
@@ -761,7 +761,7 @@ call_to_name <- function(n_generations_back = 1L,
       
   } else {
     
-    if (sanitize & !non_destructive) {
+    if (sanitize && !non_destructive) {
       fn_name %<>% fs::path_sanitize()
     }
     
@@ -788,26 +788,26 @@ expr_to_name <- function(expr,
                        "showAttributes",
                        "warnIncomplete"[checkmate::assert_flag(warn_incomplete)])) %>%
     # remove enclosing "list()"
-    purrr::when(checkmate::assert_flag(rm_enclosing_list) & stringr::str_detect(string = .,
-                                                                                pattern = "^list\\(.*\\)$") ~
+    purrr::when(checkmate::assert_flag(rm_enclosing_list) && stringr::str_detect(string = .,
+                                                                                 pattern = "^list\\(.*\\)$") ~
                   stringr::str_remove_all(string = .,
                                           pattern = "(^list\\(|\\)$)"),
                 ~ .) %>%
     # replace double quotes around character arguments with single quotes to make them filesystem safe
     # (this is a potentially destructive conversion step, and unnecessary anyway when non_destructive)
-    stringr::str_replace_all(pattern = dplyr::if_else(sanitize & !non_destructive,
+    stringr::str_replace_all(pattern = dplyr::if_else(sanitize && !non_destructive,
                                                       '(^|[^\\\\])(")(.+?[^\\\\])(")',
                                                       "^$"),
                              replacement = "\\1'\\3'") %>%
     # remove blanks
     # (this is a potentially destructive conversion step)
-    stringr::str_replace_all(pattern = dplyr::if_else(rm_blanks & !non_destructive,
+    stringr::str_replace_all(pattern = dplyr::if_else(rm_blanks && !non_destructive,
                                                       "\\s+",
                                                       "^$"),
                              replacement = "") %>%
     # remove filesystem-unsafe chars
     # (this is a potentially destructive conversion step)
-    purrr::when(sanitize & !non_destructive ~ fs::path_sanitize(.),
+    purrr::when(sanitize && !non_destructive ~ fs::path_sanitize(.),
                 ~ .)
 }
 
@@ -919,7 +919,7 @@ with_cache <- function(.fn,
     result <- .fn(...)
   }
   
-  if (.use_cache & fetch) {
+  if (.use_cache && fetch) {
     
     cache_obj(result,
               id = .id,
