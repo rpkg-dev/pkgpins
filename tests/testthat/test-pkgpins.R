@@ -112,12 +112,10 @@ test_that("call_to_name() prints a warning about incomplete deparse for formula 
   foo <- function(a, b, c) call_to_name()
 
   expect_warning(foo(~ 1),
-                 regexp = "deparse may be incomplete",
-                 all = TRUE)
+                 regexp = "deparse may be incomplete")
 
   expect_warning(foo(function(x){x}),
-                 regexp = "deparse may be incomplete",
-                 all = TRUE)
+                 regexp = "deparse may be incomplete")
 })
 
 test_that("call_to_name() suppresses warnings about incomplete deparse for formula and curly-braced fn args when requested", {
