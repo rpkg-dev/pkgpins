@@ -196,6 +196,7 @@ clear <- function(pkg,
 #' pkg_sys_deps <- function(pkg,
 #'                          use_cache = TRUE,
 #'                          cache_lifespan = "6h") {
+#'   fetch <- TRUE
 #'
 #'   if (use_cache) {
 #'     pin_name <- pkgpins::call_to_hash()
@@ -204,8 +205,6 @@ clear <- function(pkg,
 #'                                pkg = this_pkg)
 #'     fetch <- is.null(result)
 #'       
-#'   } else {
-#'     fetch <- TRUE
 #'   }
 #'   
 #'   if (fetch) {
@@ -719,6 +718,7 @@ with_cache <- function(.fn,
   
   .fn <- rlang::as_function(.fn,
                             env = parent.frame())
+  fetch <- TRUE
   
   if (checkmate::assert_flag(.use_cache)) {
     
@@ -728,8 +728,6 @@ with_cache <- function(.fn,
     
     fetch <- is.null(result)
     
-  } else {
-    fetch <- TRUE
   }
   
   if (fetch) {

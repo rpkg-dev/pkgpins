@@ -38,6 +38,7 @@ this_pkg <- "not.a.real.pkg"
 pkg_sys_deps <- function(pkg,
                          use_cache = TRUE,
                          cache_lifespan = "6h") {
+  fetch <- TRUE
 
   if (use_cache) {
     pin_name <- pkgpins::call_to_hash()
@@ -46,8 +47,6 @@ pkg_sys_deps <- function(pkg,
                                pkg = this_pkg)
     fetch <- is.null(result)
       
-  } else {
-    fetch <- TRUE
   }
   
   if (fetch) {
