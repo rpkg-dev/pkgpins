@@ -473,9 +473,13 @@ call_to_hash <- function(n_generations_back = 1L,
                          add_namespace = TRUE,
                          exclude_args = c("use_cache", "cache_lifespan")) {
   
+  checkmate::assert_count(n_generations_back)
   checkmate::assert_flag(add_namespace)
+  checkmate::assert_character(exclude_args,
+                              any.missing = FALSE,
+                              null.ok = TRUE)
   
-  parent_frame_nr <- sys.parent(checkmate::assert_count(n_generations_back))
+  parent_frame_nr <- sys.parent(n_generations_back)
   parent_frame <- sys.frame(parent_frame_nr)
   call <- match.call(definition = sys.function(parent_frame_nr),
                      call = sys.call(parent_frame_nr))
@@ -492,14 +496,14 @@ call_to_hash <- function(n_generations_back = 1L,
     ## or otherwise determine it manually
   } else if (length(fn_name) == 1L) {
     
-    fun_envirs <- methods::findFunction(f = fn_name,
-                                        where = parent_frame)
+    fn_envs <- methods::findFunction(f = fn_name,
+                                     where = parent_frame)
     
     ### reduce to the first visible version of the function and extract env and namespace name
-    if (length(fun_envirs)) {
+    if (length(fn_envs)) {
       
       fn_namespace <-
-        fun_envirs %>%
+        fn_envs %>%
         dplyr::first() %>%
         environmentName() %>%
         ### reduce to actual package _namespace_ (in contrast to _environment_, cf. https://stackoverflow.com/a/38872833/7196903)
@@ -517,9 +521,7 @@ call_to_hash <- function(n_generations_back = 1L,
   }
   
   # add args
-  if (!is.null(checkmate::assert_character(exclude_args,
-                                           any.missing = FALSE,
-                                           null.ok = TRUE))) {
+  if (!is.null(exclude_args)) {
     excl <- names(args) %in% exclude_args
     
     if (length(excl)) {
@@ -709,14 +711,14 @@ call_to_name <- function(n_generations_back = 1L,
     ## or otherwise determine it manually
   } else if (length(fn_name) == 1L) {
     
-    fun_envirs <- methods::findFunction(f = fn_name,
-                                        where = parent_frame)
+    fn_envs <- methods::findFunction(f = fn_name,
+                                     where = parent_frame)
     
     ### reduce to the first visible version of the function and extract env and namespace name
-    if (length(fun_envirs)) {
+    if (length(fn_envs)) {
       
       fn_namespace <-
-        fun_envirs %>%
+        fn_envs %>%
         dplyr::first() %>%
         environmentName() %>%
         ### reduce to actual package _namespace_ (in contrast to _environment_, cf. https://stackoverflow.com/a/38872833/7196903)
