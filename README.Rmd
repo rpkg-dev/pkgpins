@@ -4,7 +4,7 @@ output: pal::gitlab_document
 
 # `r paste0(pal::desc_value("Package"), ": ", pal::desc_value("Title"))`
 
-`r pal::desc_value("Description") %>% stringr::str_replace(" (pins package) ", " [\\1](https://pins.rstudio.com/) ")`
+`r pal::desc_value("Description") %>% stringr::str_replace(" (pins)( package) ", " [\\1](https://pins.rstudio.com/)\\2 ")`
 
 ## Predefined parameter labels
 
