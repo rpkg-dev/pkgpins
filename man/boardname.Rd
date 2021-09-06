@@ -7,7 +7,7 @@
 boardname(pkg)
 }
 \arguments{
-\item{pkg}{Package name. A character scalar.}
+\item{pkg}{The package name. A character scalar.}
 }
 \value{
 The board name of the \href{https://pins.rstudio.com/articles/boards-understanding.html}{user-cache pins board} belonging to \code{pkg}, which is at the same

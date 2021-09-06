@@ -12,7 +12,7 @@ cache_obj(x, id, pkg)
 \item{id}{The pin name uniquely identifying \code{x} in the \code{pkg}'s user-cache pins board. A character scalar. Necessary to retrieve \code{x} again using
 \code{\link[=get_obj]{get_obj()}}. An already existing pin named \code{id} will be silently overwritten.}
 
-\item{pkg}{Package name. A character scalar.}
+\item{pkg}{The package name. A character scalar.}
 }
 \value{
 \code{x} invisibly.
@@ -24,7 +24,7 @@ This function stores an object in a package's user-cache pins board.
 The exact date and time (UTC) of the pinning is stored as the additional metadata \code{cached} which is of type \link[base:integer]{integer}. You can restore the
 actual datetime using \code{\link[lubridate:as_date]{lubridate::as_datetime(cached, tz = "UTC")}} (note that \code{\link[=ls_cache]{ls_cache()}} does this automatically).
 
-See \code{\link[=call_to_hash]{call_to_hash()}} for a convenient way to create an \code{id} that uniquely identifies a function call. Or just use \code{\link[=with_cache]{with_cache()}}.
+See \code{\link[=hash_fn_call]{hash_fn_call()}} for a convenient way to create an \code{id} that uniquely identifies a function call. Or just use \code{\link[=with_cache]{with_cache()}}.
 }
 \examples{
 \donttest{
@@ -41,12 +41,13 @@ pkg_sys_deps <- function(pkg,
   fetch <- TRUE
 
   if (use_cache) {
-    pin_name <- pkgpins::call_to_hash()
+    pin_name <- pkgpins::hash_fn_call(pkg = this_pkg,
+                                      from_fn = "pkg_sys_deps",
+                                      pkg)
     result <- pkgpins::get_obj(id = pin_name,
                                max_age = cache_lifespan,
                                pkg = this_pkg)
     fetch <- is.null(result)
-      
   }
   
   if (fetch) {
@@ -67,6 +68,7 @@ pkg_sys_deps <- function(pkg,
 
 # now get the sys deps for git2r for the first time (populating the cache)
 pkg_sys_deps("git2r")}
+
 \dontrun{
 # for the `cache_lifespan` (we've set a default of 6h), the cached result will be returned
 # (as long as `use_cache = TRUE`):

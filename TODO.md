@@ -1,12 +1,22 @@
 # TODOs
 
--   [ ] `sys.parent()` and `sys.frame()` is used internally, but tidyverse devs
-    [seem](https://github.com/tidyverse/magrittr/blob/master/NEWS.md#incorrect-call-stack-introspection) to discourage their use and recommend `parent.frame()`
-    instead since it also works when R code is called from non-inspectable frames.
+-   Provide an alternative way to add caching to a function, like
 
-    Investigate!
+    ``` {.r}
+    cachely <- function(.fn,
+                        ...,
+                        .use_cache = TRUE,
+                        .cache_lifespan = "1 day",
+                        .id = call_to_hash(), # this might not work; alternatively default to `NULL` and use `call_to_hash()` internally
+                        .pkg) {
 
--   [ ] fix the major `call_to_hash()` issue
+      rlang::new_function() # TODO
+    }
+    ```
+
+    which returns a function, similar to `purrr::safely()` 🥳
+
+    It probably makes sense to thoroughly read the chapter [Function factories](https://adv-r.hadley.nz/function-factories.html) of *Advanced R* first. 🤓
 
 -   [ ] Experiment with using the [memoise](https://github.com/r-lib/memoise) package (development version if CRAN \<= 1.1.0) internally instead of pins.
 

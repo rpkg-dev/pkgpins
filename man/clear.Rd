@@ -7,7 +7,7 @@
 clear(pkg, max_age = "1 day")
 }
 \arguments{
-\item{pkg}{Package name. A character scalar.}
+\item{pkg}{The package name. A character scalar.}
 
 \item{max_age}{The age above which cached objects will be deleted. A valid \link[lubridate:as.duration]{lubridate duration}. Defaults to 1 day (24 hours).}
 }

@@ -2,11 +2,10 @@
 
 export(boardname)
 export(cache_obj)
-export(call_to_hash)
-export(call_to_name)
 export(clear)
 export(deregister)
 export(get_obj)
+export(hash_fn_call)
 export(ls_cache)
 export(path_cache)
 export(register)

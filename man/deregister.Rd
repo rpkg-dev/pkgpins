@@ -7,7 +7,7 @@
 deregister(pkg)
 }
 \arguments{
-\item{pkg}{Package name. A character scalar.}
+\item{pkg}{The package name. A character scalar.}
 }
 \value{
 \code{NULL}.

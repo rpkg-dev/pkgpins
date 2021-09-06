@@ -2,45 +2,35 @@
 % Please edit documentation in R/pkgpins-GEN.R
 \name{with_cache}
 \alias{with_cache}
-\title{Cache a function call}
+\title{Cache the result of an expression from within a function}
 \usage{
-with_cache(
-  .fn,
-  ...,
-  .use_cache = TRUE,
-  .cache_lifespan = "1 day",
-  .id = call_to_hash(n_generations_back = 2L),
-  .pkg
-)
+with_cache(expr, pkg, from_fn, ..., use_cache = TRUE, cache_lifespan = "1 day")
 }
 \arguments{
-\item{.fn}{A function or formula.
+\item{expr}{The expression to cache.}
 
-If a \strong{function}, it is used as is.
+\item{pkg}{The package name. A character scalar.}
 
-If a \strong{formula}, e.g. \code{~ .x + 2}, it is converted to a function with up to two arguments: \code{.x} (single argument) or \code{.x} and \code{.y} (two arguments). The
-\code{.} placeholder can be used instead of \code{.x}. This allows you to create very compact anonymous functions (lambdas) with up to two inputs. See
-\code{\link[rlang:as_function]{rlang::as_function()}} for details.}
+\item{from_fn}{The name of the function that \code{expr} is cached from, i.e. the name of the function that \code{with_cache()} is called from. A character scalar.}
 
-\item{...}{Additional arguments passed on to \code{.fn}.}
+\item{...}{The arguments received by \code{from_fn} on which the caching should depend. This is fundamental to determine whether \code{expr} was already cached or not.}
 
-\item{.use_cache}{Return cached results if possible. If \code{FALSE}, results are always newly fetched regardless of \code{cache_lifespan}.}
+\item{use_cache}{Return cached results if possible. If \code{FALSE}, results are always newly fetched regardless of \code{cache_lifespan}.}
 
-\item{.cache_lifespan}{The duration after which cached results are refreshed (i.e. newly fetched). A valid \link[lubridate:as.duration]{lubridate duration}. Only relevant if \code{use_cache = TRUE}.}
-
-\item{.id}{The pin name uniquely identifying \code{x} in the \code{.pkg}'s user-cache pins board. A character scalar. An already existing pin named \code{.id} will be
-silently overwritten.}
-
-\item{.pkg}{Package name. A character scalar.}
+\item{cache_lifespan}{The duration after which cached results are refreshed (i.e. newly fetched). A valid \link[lubridate:as.duration]{lubridate duration}. Only relevant if \code{use_cache = TRUE}.}
 }
 \value{
-The result of calling \code{.fn(...)}, from cache if \code{.use_cache = TRUE} and a cached result exists that hasn't exceeded \code{.cache_lifespan}.
+The result of evaluating \code{expr}, from cache if \code{use_cache = TRUE} and a cached result exists that hasn't exceeded \code{cache_lifespan}.
 }
 \description{
-This is a convenience wrapper to cache the result of calling a function \code{.fn(...)}.
+One-stop solution to add caching to an R function.
+}
+\details{
+\code{expr} is evaluated in the environment that \code{with_cache()} is called from.
+
+See \code{\link[=hash_fn_call]{hash_fn_call()}} for details about how the pin name is constructed that uniquely identifies \code{expr} in the \code{pkg}'s user-cache pins board.
 }
 \examples{
-\donttest{
 # if the fn below would be part of a real package, we could instead define `this_pkg`
 # globally using `this_pkg <- utils::packageName()`
 this_pkg <- "not.a.real.pkg"
@@ -50,16 +40,19 @@ pkg_sys_deps <- function(pkg,
                          use_cache = TRUE,
                          cache_lifespan = "6h") {
   pkgpins::with_cache(
-    .fn = ~ purrr::flatten(jsonlite::fromJSON(txt = paste0("https://sysreqs.r-hub.io/pkg/", .x),
-                                              simplifyVector = FALSE)),
+    expr = purrr::flatten(jsonlite::fromJSON(txt = paste0("https://sysreqs.r-hub.io/pkg/", pkg),
+                                             simplifyVector = FALSE)),
+    from_fn = "pkg_sys_deps",
     pkg,
-    .use_cache = use_cache,
-    .cache_lifespan = cache_lifespan,
-    .pkg = this_pkg
+    use_cache = use_cache,
+    cache_lifespan = cache_lifespan,
+    pkg = this_pkg
   )
 }
+
 # now get the sys deps for git2r for the first time (populating the cache)
-pkg_sys_deps("git2r")}
+pkg_sys_deps("git2r")
+
 \dontrun{
 # for the `cache_lifespan` (we've set a default of 6h), the cached result will be returned
 # (as long as `use_cache = TRUE`):

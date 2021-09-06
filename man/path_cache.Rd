@@ -7,7 +7,7 @@
 path_cache(pkg)
 }
 \arguments{
-\item{pkg}{Package name. A character scalar.}
+\item{pkg}{The package name. A character scalar.}
 }
 \value{
 A path of type \link[fs:path]{fs_path}.

@@ -7,7 +7,7 @@
 register(pkg)
 }
 \arguments{
-\item{pkg}{Package name. A character scalar.}
+\item{pkg}{The package name. A character scalar.}
 }
 \value{
 \code{boardname} invisibly if it wasn't registered before, otherwise \code{NULL}.

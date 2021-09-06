@@ -9,7 +9,7 @@ get_obj(id, pkg, max_age = "1 day")
 \arguments{
 \item{id}{The pin name uniquely identifying the object to be retrieved from the \code{pkg}'s user-cache pins board. A character scalar.}
 
-\item{pkg}{Package name. A character scalar.}
+\item{pkg}{The package name. A character scalar.}
 
 \item{max_age}{The maximum age the cached object is allowed to have. A valid \link[lubridate:as.duration]{lubridate duration}. Defaults to 1 day (24 hours).}
 }
