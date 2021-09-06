@@ -1,6 +1,6 @@
 # pkgpins: Facilitates Results Caching in R Packages Using the Pins Package
 
-pkgpins builds upon the pins package and strives to provide R package authors a simple and standardized way to cache results on the filesystem in a suitable user directory.
+pkgpins builds upon the [pins package](https://pins.rstudio.com/) and strives to provide R package authors a simple and standardized way to cache results on the filesystem in a suitable user directory.
 
 ## Predefined parameter labels
 
