@@ -45,10 +45,14 @@ The above inline R code will eventually result in this:
 ## See also
 
 -   R packages that provide a [memoization](http://en.wikipedia.org/wiki/Memoization) infrastructure. Memoization is suited best for caching [purely functional
-    programming](https://en.wikipedia.org/wiki/Purely_functional_programming) results, i.e. caching functions that always return the same result with the same
-    arguments -- something that's often not the case for functions accessing external APIs.
+    programming](https://en.wikipedia.org/wiki/Purely_functional_programming) results, i.e. caching functions that *always* return the same result for the same
+    arguments (complete statelessness) -- something that's often not the case for functions accessing external APIs.
 
     There are at least two actively developed memoization packages:
 
     -   The Tidyverse-style [**memoise**](https://github.com/r-lib/memoise) package.
     -   The [**R.cache**](https://github.com/HenrikBengtsson/R.cache) package.
+
+-   The R package [**storr**](https://richfitz.github.io/storr/) that acts as a simple object cacher supporting various [storage back
+    ends](https://richfitz.github.io/storr/articles/storr.html#supported-backends). Notable is the [**thor**](https://richfitz.github.io/thor/index.html) back
+    end that combines in-memory-mapping via [LMDB](https://symas.com/lmdb/) with on-disk caching.
