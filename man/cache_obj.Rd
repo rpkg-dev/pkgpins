@@ -18,21 +18,33 @@ cache_obj(x, id, pkg)
 \code{x} invisibly.
 }
 \description{
-This function stores an object in a package's user-cache pins board.
+Stores an object in \code{pkg}'s user-cache pins board, i.e. caches it to the filesystem.
 }
 \details{
-The exact date and time (UTC) of the pinning is stored as the additional metadata \code{cached} which is of type \link[base:integer]{integer}. You can restore the
-actual datetime using \code{\link[lubridate:as_date]{lubridate::as_datetime(cached, tz = "UTC")}} (note that \code{\link[=ls_cache]{ls_cache()}} does this automatically).
+The following additional metadata is stored together with the actual object:
+\itemize{
+\item \strong{\code{pkg_version}}: The version number of \code{pkg} that is currently installed (i.e. at the time of caching the object). A
+\code{\link[base:numeric_version]{package_version}}, stored as character. You can restore it using \code{\link[=as.package_version]{as.package_version(package_version)}}.
+\item \strong{\code{date_time_cached}}: The exact date and time (UTC) of the pinning. Stored as an \link[base:integer]{integer}. You can restore the actual datetime using
+\code{\link[lubridate:as_date]{lubridate::as_datetime(date_time_cached, tz = "UTC")}} (note that \code{\link[=ls_cache]{ls_cache()}} does this automatically).
+}
 
-See \code{\link[=hash_fn_call]{hash_fn_call()}} for a convenient way to create an \code{id} that uniquely identifies a function call. Or just use \code{\link[=with_cache]{with_cache()}}.
+Note that an object is identified by its \code{id} only, meaning \code{cache_obj()} will overwrite an existing cached object of the same \code{id} regardless of the
+metadata. See \code{\link[=hash_fn_call]{hash_fn_call()}} for a convenient way to create an \code{id} that uniquely identifies a function call. Or just use \code{\link[=with_cache]{with_cache()}} that internally
+relies on the former.
+
+Note that reading in the cached result from the user-cache pins board (i.e. from the filesystem) might produce a noticeable delay depending on the size of
+the cached object. Therefore, it's only recommended to cache results that take a considerable amount of time when recomputed. To avoid the overhead of
+re-reading a cached result when accessing it multiple times, you can always assign it to an R variable to benefit from direct storage in memory.
 }
 \examples{
 \donttest{
 library(magrittr)
 
-# if the fn below would be part of a real package, we could instead define `this_pkg`
-# globally using `this_pkg <- utils::packageName()`
-this_pkg <- "not.a.real.pkg"
+# if the fn below would be part of a real package, we could instead define `this_pkg` globally
+# using `this_pkg <- utils::packageName()`; instead, we now cache to pkgpins's cache (which
+# itself never uses the cache)
+this_pkg <- "pkgpins"
 
 # let's define a fn that returns R pkg sys deps from cache
 pkg_sys_deps <- function(pkg,
@@ -41,8 +53,7 @@ pkg_sys_deps <- function(pkg,
   fetch <- TRUE
 
   if (use_cache) {
-    pin_name <- pkgpins::hash_fn_call(pkg = this_pkg,
-                                      from_fn = "pkg_sys_deps",
+    pin_name <- pkgpins::hash_fn_call(from_fn = "pkg_sys_deps",
                                       pkg)
     result <- pkgpins::get_obj(id = pin_name,
                                max_age = cache_lifespan,
@@ -76,4 +87,7 @@ bench::mark("with cache" = pkg_sys_deps("git2r"),
             "without cache" = pkg_sys_deps("git2r", use_cache = FALSE),
             iterations = 10,
             relative = TRUE)}
+
+# purge cache from the above example
+pkgpins::purge_cache("pkgpins")
 }

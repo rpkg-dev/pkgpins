@@ -13,13 +13,8 @@ path_cache(pkg)
 A path of type \link[fs:path]{fs_path}.
 }
 \description{
-This function allows to the determine the filesystem path to the \code{pkg}'s user-cache pins board. Note that this path depends on the operating system this
-function is called from.
+Determines the filesystem path to the \code{pkg}'s user-cache pins board. Note that this path depends on the operating system this function is called from.
 }
 \details{
 It shouldn't be necessary to rely on this function for the tasks this package is intended to perform, though.
-}
-\examples{
-\donttest{
-pkgpins::path_cache(pkg = "not.a.real.pkg")}
 }

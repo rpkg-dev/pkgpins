@@ -13,9 +13,5 @@ ls_cache(pkg)
 A \link[tibble:tbl_df-class]{tibble}.
 }
 \description{
-This function lists all object \code{id}s belonging to a \code{pkg}'s user-cache pins board, together with the date and time they were \code{cached}.
-}
-\examples{
-\donttest{
-pkgpins::ls_cache(pkg = "not.a.real.pkg")}
+Lists all object \code{id}s belonging to a \code{pkg}'s user-cache pins board, together with some metadata (see \code{\link[=cache_obj]{cache_obj()}} for details).
 }

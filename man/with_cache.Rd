@@ -13,7 +13,8 @@ with_cache(expr, pkg, from_fn, ..., use_cache = TRUE, cache_lifespan = "1 day")
 
 \item{from_fn}{The name of the function that \code{expr} is cached from, i.e. the name of the function that \code{with_cache()} is called from. A character scalar.}
 
-\item{...}{The arguments received by \code{from_fn} on which the caching should depend. This is fundamental to determine whether \code{expr} was already cached or not.}
+\item{...}{The arguments received by \code{from_fn} on which the caching should depend. This is fundamental to determine whether \code{expr} was already cached or not.
+The arguments must be specified \emph{unnamed} (see examples)\link[rlang:dyn-dots]{Dynamic dots} are supported.)`}
 
 \item{use_cache}{Return cached results if possible. If \code{FALSE}, results are always newly fetched regardless of \code{cache_lifespan}.}
 
@@ -31,9 +32,10 @@ One-stop solution to add caching to an R function.
 See \code{\link[=hash_fn_call]{hash_fn_call()}} for details about how the pin name is constructed that uniquely identifies \code{expr} in the \code{pkg}'s user-cache pins board.
 }
 \examples{
-# if the fn below would be part of a real package, we could instead define `this_pkg`
-# globally using `this_pkg <- utils::packageName()`
-this_pkg <- "not.a.real.pkg"
+# if the fn below would be part of a real package, we could instead define `this_pkg` globally
+# using `this_pkg <- utils::packageName()`; instead, we now cache to pkgpins's cache (which
+# itself never uses the cache)
+this_pkg <- "pkgpins"
 
 # let's define a fn that returns R pkg sys deps from cache
 pkg_sys_deps <- function(pkg,
@@ -60,4 +62,7 @@ bench::mark("with cache" = pkg_sys_deps("git2r"),
             "without cache" = pkg_sys_deps("git2r", use_cache = FALSE),
             iterations = 10,
             relative = TRUE)}
+
+# purge cache from the above example
+pkgpins::purge_cache("pkgpins")
 }

@@ -14,12 +14,8 @@ The board name of the \href{https://pins.rstudio.com/articles/boards-understandi
 time the name of the filesystem directory beneath \code{\link[=path_cache]{path_cache()}}. A character scalar.
 }
 \description{
-This function returns the board name of the \code{pks}'s user-cache pins board.
+Returns the board name of the \code{pkg}'s user-cache pins board. Note that it is not checked whether the board actually exists on the filesystem or not.
 }
 \details{
 It shouldn't be necessary to rely on this function for the tasks this package is intended to perform, though.
-}
-\examples{
-\donttest{
-pkgpins::boardname(pkg = "not.a.real.pkg")}
 }

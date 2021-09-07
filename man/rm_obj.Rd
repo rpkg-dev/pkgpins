@@ -11,13 +11,14 @@ rm_obj(id, pkg)
 
 \item{pkg}{The package name. A character scalar.}
 }
+\value{
+\code{id}, invisibly.
+}
 \description{
+Removes a cached object from a package's user-cache pins board.
+}
+\details{
 Note that it normally won't be necessary to delete a cached object using this function because \code{\link[=cache_obj]{cache_obj()}} will always overwrite a possibly existing object
 in the cache with the same \code{id}. If you want to ensure that no "data corpses" are left behind from using \code{\link[=cache_obj]{cache_obj()}}, consider clearing the whole package
 user-cache pins board at once using \code{\link[=clear]{clear()}}.
-}
-\examples{
-\donttest{
-pkgpins::rm_obj(id = "git2r-syreqs",
-                pkg = "not.a.real.pkg")}
 }

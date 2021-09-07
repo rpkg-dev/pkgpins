@@ -2,7 +2,7 @@
 % Please edit documentation in R/pkgpins-GEN.R
 \name{clear}
 \alias{clear}
-\title{Delete all objects from a package's user-cache pins board exceeding a certain age}
+\title{Clear a package's user-cache pins board}
 \usage{
 clear(pkg, max_age = "1 day")
 }
@@ -15,7 +15,11 @@ clear(pkg, max_age = "1 day")
 The IDs of the deleted objects invisibly.
 }
 \description{
-This function allows to clean up old caching left-overs. It could be called on package load/unload, for example.
+Deletes all objects from a package's user-cache pins board that exceed a certain \code{max_age} or were cached with a different version of \code{pkg} than the
+currently installed one.
+}
+\details{
+This function could be called on package load/unload, for example.
 }
 \examples{
 \dontrun{

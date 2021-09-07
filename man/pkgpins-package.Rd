@@ -4,12 +4,11 @@
 \name{pkgpins-package}
 \alias{pkgpins}
 \alias{pkgpins-package}
-\title{pkgpins: Facilitates Results Caching in R Packages Using the Pins
-    Package}
+\title{pkgpins: Facilitates Results Caching in R Packages Using the Pins Package}
 \description{
-pkgpins builds upon the pins package and
-    strives to provide R package authors a simple and standardized way to
-    cache results on the filesystem in a suitable user directory.
+pkgpins builds upon the pins package and strives to provide R
+    package authors a simple and standardized way to cache results on the
+    filesystem in a suitable user directory.
 }
 \seealso{
 Useful links:

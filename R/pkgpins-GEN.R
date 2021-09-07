@@ -13,13 +13,26 @@
 # You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 utils::globalVariables(names = c(".",
-                                 "cached",
+                                 "date_time_cached",
                                  "id",
-                                 "name"))
+                                 "name",
+                                 "pkg_version"))
+
+assert_board_valid <- function(data,
+                               pkg) {
+  
+  if (!all(c("pkg_version", "date_time_cached") %in% colnames(data))) {
+    
+    cli::cli_abort(paste0("Corrupted package cache detected. Please delete the directory {.path {path_cache(pkg = pkg)}} by running ",
+                          "{.code pkgpins::purge({pkg})} and then try again."))
+  }
+  
+  data
+}
 
 #' Register a package's user-cache pins board
 #'
-#' This function registers a package's user-cache pins board. It will be automatically called when needed.
+#' Registers a package's user-cache pins board. It will be automatically called when needed.
 #'
 #' @inheritParams boardname
 #'
@@ -34,9 +47,15 @@ utils::globalVariables(names = c(".",
 #' }}
 register <- function(pkg) {
   
-  if (!(boardname(pkg) %in% pins::board_list())) {
+  pal::assert_pkg(pkg,
+                  message = "Package {.pkg {pkg}} is not installed on the current system.",
+                  install_hint = "")
+  
+  board <- boardname(pkg)
+  
+  if (!(board %in% pins::board_list())) {
     
-    pins::board_register_local(name = boardname(pkg),
+    pins::board_register_local(name = board,
                                cache = pins::board_cache_path(),
                                versions = FALSE)
   }
@@ -44,7 +63,7 @@ register <- function(pkg) {
 
 #' Deregister a package's user-cache pins board
 #'
-#' This function deregisters a package's user-cache pins board.
+#' Deregisters a package's user-cache pins board.
 #'
 #' Ideally, you call this function on [package unload][base::.onUnload]. See the examples for details.
 #'
@@ -57,7 +76,7 @@ register <- function(pkg) {
 #' \dontrun{
 #' # deregister the cache on package unload (recommended)
 #' .onUnload <- function(libpath) {
-#'   pkgpins::deregister()
+#'   pkgpins::deregister("my.package")
 #' }}
 deregister <- function(pkg) {
   
@@ -69,7 +88,7 @@ deregister <- function(pkg) {
 
 #' Get a package's user-cache pins board name
 #'
-#' This function returns the board name of the `pks`'s user-cache pins board. 
+#' Returns the board name of the `pkg`'s user-cache pins board. Note that it is not checked whether the board actually exists on the filesystem or not.
 #' 
 #' It shouldn't be necessary to rely on this function for the tasks this package is intended to perform, though.
 #'
@@ -78,10 +97,6 @@ deregister <- function(pkg) {
 #' @return The board name of the [user-cache pins board](https://pins.rstudio.com/articles/boards-understanding.html) belonging to `pkg`, which is at the same
 #'   time the name of the filesystem directory beneath [path_cache()]. A character scalar.
 #' @export
-#'
-#' @examples
-#' \donttest{
-#' pkgpins::boardname(pkg = "not.a.real.pkg")}
 boardname <- function(pkg) {
   
   paste0("pkg-cache-", checkmate::assert_string(pkg))
@@ -89,8 +104,7 @@ boardname <- function(pkg) {
 
 #' Get a package's user-cache pins board path
 #'
-#' This function allows to the determine the filesystem path to the `pkg`'s user-cache pins board. Note that this path depends on the operating system this
-#' function is called from.
+#' Determines the filesystem path to the `pkg`'s user-cache pins board. Note that this path depends on the operating system this function is called from.
 #' 
 #' It shouldn't be necessary to rely on this function for the tasks this package is intended to perform, though.
 #'
@@ -98,10 +112,6 @@ boardname <- function(pkg) {
 #'
 #' @return A path of type [fs_path][fs::path()].
 #' @export
-#'
-#' @examples
-#' \donttest{
-#' pkgpins::path_cache(pkg = "not.a.real.pkg")}
 path_cache <- function(pkg) {
   
   fs::path(pins::board_cache_path(), boardname(pkg))
@@ -109,38 +119,46 @@ path_cache <- function(pkg) {
 
 #' List all objects in a package's user-cache pins board
 #'
-#' This function lists all object `id`s belonging to a `pkg`'s user-cache pins board, together with the date and time they were `cached`.
+#' Lists all object `id`s belonging to a `pkg`'s user-cache pins board, together with some metadata (see [cache_obj()] for details).
 #'
 #' @inheritParams boardname
 #'
 #' @return A [tibble][tibble::tbl_df].
 #' @export
-#'
-#' @examples
-#' \donttest{
-#' pkgpins::ls_cache(pkg = "not.a.real.pkg")}
 ls_cache <- function(pkg) {
   
+  # NOTE: we need to first register the package's user-cache pins board, otherwise `pins::pin_find()` doesn't know about it and throws an error
   register(pkg = pkg)
   result <- pins::pin_find(board = boardname(pkg),
                            extended = TRUE)
   
-  if ("cached" %in% colnames(result)) {
-    result %<>% dplyr::transmute(id = name,
-                                 cached = lubridate::as_datetime(cached,
-                                                                 tz = "UTC"))
+  # restore `date_time_cached`
+  if (nrow(result)) {
+    
+    result %<>%
+      assert_board_valid(pkg = pkg) %>%
+      dplyr::mutate(date_time_cached = lubridate::as_datetime(date_time_cached,
+                                                              tz = "UTC"))
+    
+    # add custom metadata cols to empty result
   } else {
-    result <- tibble::tibble(id = character(),
-                             cached = lubridate::as_datetime(integer(),
-                                                             tz = "UTC"))
+    
+    result %<>% tibble::add_column(pkg_version = character(),
+                                   date_time_cached = lubridate::as_datetime(integer(),
+                                                                             tz = "UTC"))
   }
   
-  result
+  result %>% dplyr::select(id = name,
+                           pkg_version,
+                           date_time_cached)
 }
 
-#' Delete all objects from a package's user-cache pins board exceeding a certain age
+#' Clear a package's user-cache pins board
 #'
-#' This function allows to clean up old caching left-overs. It could be called on package load/unload, for example.
+#' Deletes all objects from a package's user-cache pins board that exceed a certain `max_age` or were cached with a different version of `pkg` than the
+#' currently installed one.
+#'
+#' This function could be called on package load/unload, for example.
 #'
 #' @inheritParams boardname
 #' @param max_age The age above which cached objects will be deleted. A valid [lubridate duration][lubridate::as.duration]. Defaults to 1 day (24 hours).
@@ -161,20 +179,61 @@ clear <- function(pkg,
   register(pkg = pkg)
   
   ls_cache(pkg) %>%
-    dplyr::filter(lubridate::now(tzone = "UTC") - cached > lubridate::as.duration(max_age)) %$%
+    dplyr::filter(pkg_version != utils::packageVersion(pkg = pkg)
+                  | lubridate::now(tzone = "UTC") - date_time_cached > lubridate::as.duration(max_age)) %$%
     id %>%
     purrr::walk(.f = pins::pin_remove,
                 board = boardname(pkg))
 }
 
+#' Purge a package's user-cache pins board
+#'
+#' Deletes *all* objects from a package's user-cache pins board.
+#'
+#' @inheritParams boardname
+#'
+#' @return The deleted filesystem [path][fs::fs_path], invisibly. Of length 0 if the package's user-cache pins board didn't exist.
+#' @export
+purge_cache <- function(pkg) {
+  
+  deregister(pkg)
+  cache_path <- path_cache(pkg)
+  
+  if (fs::dir_exists(cache_path)) fs::dir_delete(cache_path)
+}
+
+#' Purge all package user-cache pins boards
+#'
+#' Deletes the user-cache pins board of *all* packages.
+#'
+#' @return The deleted filesystem [paths][fs::fs_path], invisibly. Of length 0 if no package user-cache pins boards did exist.
+#' @export
+purge_caches <- function() {
+  
+  pins::board_cache_path() %>%
+    fs::dir_ls(type = "directory",
+               # note that supported regex syntax in fs slightly differs from the one in stringr!
+               regexp = "/pkg-cache-(\\w|\\.)+$") %>%
+    fs::dir_delete()
+}
+
 #' Cache an object to a package's user-cache pins board
 #'
-#' This function stores an object in a package's user-cache pins board.
+#' Stores an object in `pkg`'s user-cache pins board, i.e. caches it to the filesystem.
 #' 
-#' The exact date and time (UTC) of the pinning is stored as the additional metadata `cached` which is of type [integer][base::integer]. You can restore the
-#' actual datetime using [`lubridate::as_datetime(cached, tz = "UTC")`][lubridate::as_datetime] (note that [ls_cache()] does this automatically).
+#' The following additional metadata is stored together with the actual object:
+#' - **`pkg_version`**: The version number of `pkg` that is currently installed (i.e. at the time of caching the object). A
+#'   [`package_version`][base::package_version()], stored as character. You can restore it using [`as.package_version(package_version)`][as.package_version].
+#' - **`date_time_cached`**: The exact date and time (UTC) of the pinning. Stored as an [integer][base::integer]. You can restore the actual datetime using
+#'   [`lubridate::as_datetime(date_time_cached, tz = "UTC")`][lubridate::as_datetime] (note that [ls_cache()] does this automatically).
 #'
-#' See [hash_fn_call()] for a convenient way to create an `id` that uniquely identifies a function call. Or just use [with_cache()].
+#' Note that an object is identified by its `id` only, meaning `cache_obj()` will overwrite an existing cached object of the same `id` regardless of the
+#' metadata. See [hash_fn_call()] for a convenient way to create an `id` that uniquely identifies a function call. Or just use [with_cache()] that internally
+#' relies on the former.
+#'
+#' Note that reading in the cached result from the user-cache pins board (i.e. from the filesystem) might produce a noticeable delay depending on the size of
+#' the cached object. Therefore, it's only recommended to cache results that take a considerable amount of time when recomputed. To avoid the overhead of
+#' re-reading a cached result when accessing it multiple times, you can always assign it to an R variable to benefit from direct storage in memory.
 #'
 #' @inheritParams boardname
 #' @param x An object, local file or remote URL to be cached.
@@ -188,9 +247,10 @@ clear <- function(pkg,
 #' \donttest{
 #' library(magrittr)
 #'
-#' # if the fn below would be part of a real package, we could instead define `this_pkg`
-#' # globally using `this_pkg <- utils::packageName()`
-#' this_pkg <- "not.a.real.pkg"
+#' # if the fn below would be part of a real package, we could instead define `this_pkg` globally
+#' # using `this_pkg <- utils::packageName()`; instead, we now cache to pkgpins's cache (which
+#' # itself never uses the cache)
+#' this_pkg <- "pkgpins"
 #' 
 #' # let's define a fn that returns R pkg sys deps from cache
 #' pkg_sys_deps <- function(pkg,
@@ -199,8 +259,7 @@ clear <- function(pkg,
 #'   fetch <- TRUE
 #'
 #'   if (use_cache) {
-#'     pin_name <- pkgpins::hash_fn_call(pkg = this_pkg,
-#'                                       from_fn = "pkg_sys_deps",
+#'     pin_name <- pkgpins::hash_fn_call(from_fn = "pkg_sys_deps",
 #'                                       pkg)
 #'     result <- pkgpins::get_obj(id = pin_name,
 #'                                max_age = cache_lifespan,
@@ -234,6 +293,9 @@ clear <- function(pkg,
 #'             "without cache" = pkg_sys_deps("git2r", use_cache = FALSE),
 #'             iterations = 10,
 #'             relative = TRUE)}
+#' 
+#' # purge cache from the above example
+#' pkgpins::purge_cache("pkgpins")
 cache_obj <- function(x,
                       id,
                       pkg) {
@@ -244,25 +306,21 @@ cache_obj <- function(x,
   pins::pin(x = I(x),
             board = boardname(pkg),
             name = id,
-            metadata = list(cached = lubridate::now(tzone = "UTC")))
+            metadata = list(pkg_version = as.character(utils::packageVersion(pkg = pkg)),
+                            date_time_cached = lubridate::now(tzone = "UTC")))
 }
 
 #' Get a cached object from a package's user-cache pins board
 #'
-#' This function retrieves a cached object from a package's user-cache pins board _if_ it is not older than `max_age`.
+#' Retrieves a cached object from a package's user-cache pins board _if_ it is not older than `max_age` and the currently installed version of `pkg` matches the
+#' version that was effective when the object was cached.
 #'
 #' @inheritParams boardname
 #' @param id The pin name uniquely identifying the object to be retrieved from the `pkg`'s user-cache pins board. A character scalar.
 #' @param max_age The maximum age the cached object is allowed to have. A valid [lubridate duration][lubridate::as.duration]. Defaults to 1 day (24 hours).
 #'
-#' @return The cached object if it is not older than `max_age`, otherwise `NULL`.
+#' @return The cached object if it is not older than `max_age` and the `pkg` versions match, otherwise `NULL`.
 #' @export
-#'
-#' @examples
-#' \donttest{
-#' pkgpins::get_obj(id = "something",
-#'                  pkg = "some_pkg",
-#'                  max_age = "2 weeks")}
 get_obj <- function(id,
                     pkg,
                     max_age = "1 day") {
@@ -270,29 +328,28 @@ get_obj <- function(id,
   checkmate::assert_string(id)
   register(pkg = pkg)
   board <- boardname(pkg)
+  
   result <- pins::pin_find(name = id,
                            board = board,
                            extended = TRUE)
   
-  if (nrow(result) > 1L) {
-    rlang::abort(paste0("Multiple pins found for board '", board, "'!\nThis should not happen since versioning is disabled for pkgpins boards... \U1F41E"))
-    
-  } else if (nrow(result) == 1L) {
-    
-    if (!("cached" %in% colnames(result))) {
-      rlang::abort(paste0("Corrupted package cache detected! Please delete the directory `", path_cache(pkg = pkg), "` and then try again."))
-    }
-    
+  if (nrow(result)) {
+   
     result %<>%
-      dplyr::filter(lubridate::now(tzone = "UTC") - lubridate::as_datetime(cached, tz = "UTC") <= lubridate::as.duration(max_age)) %$%
-      name
+      assert_board_valid(pkg = pkg) %>%
+      dplyr::filter(pkg_version == utils::packageVersion(pkg = pkg)
+                    & lubridate::now(tzone = "UTC") - lubridate::as_datetime(date_time_cached, tz = "UTC") <= lubridate::as.duration(max_age)) %$%
+      name 
+  } else {
+    result <- NULL
+  }
+  
+  if (length(result) > 1L) {
+    cli::cli_abort("Multiple pins found for board {.val {board}}. This should not happen since versioning is disabled for pkgpins boards... \U1F41E")
     
-    if (length(result) > 0L) {
-      result <- pins::pin_get(board = board,
-                              name = id)
-    } else{
-      result <- NULL
-    }
+  } else if (length(result) == 1L) {
+    result <- pins::pin_get(board = board,
+                            name = id)
     
   } else {
     result <- NULL
@@ -303,6 +360,8 @@ get_obj <- function(id,
 
 #' Delete a cached object from a package's user-cache pins board
 #'
+#' Removes a cached object from a package's user-cache pins board.
+#'
 #' Note that it normally won't be necessary to delete a cached object using this function because [cache_obj()] will always overwrite a possibly existing object
 #' in the cache with the same `id`. If you want to ensure that no "data corpses" are left behind from using [cache_obj()], consider clearing the whole package
 #' user-cache pins board at once using [clear()].
@@ -310,12 +369,8 @@ get_obj <- function(id,
 #' @inheritParams boardname
 #' @param id The pin name uniquely identifying the object to be deleted from the `pkg`'s user-cache pins board. A character scalar.
 #'
+#' @return `id`, invisibly.
 #' @export
-#'
-#' @examples
-#' \donttest{
-#' pkgpins::rm_obj(id = "git2r-syreqs",
-#'                 pkg = "not.a.real.pkg")}
 rm_obj <- function(id,
                    pkg) {
   
@@ -324,27 +379,28 @@ rm_obj <- function(id,
   
   pins::pin_remove(board = boardname(pkg),
                    name = id)
+  
+  invisible(id)
 }
 
 #' Hash a function call
 #'
-#' Creates a string that uniquely identifies a function call by the function's namespace, name and a hash of the specified arguments.
+#' Creates a string that uniquely identifies a function call by the function's name and a hash of the specified arguments.
 #' 
-#' `r foo <- function(a) pkgpins::hash_fn_call("mypkg", "foo", a); NULL`
+#' `r foo <- function(a) pkgpins::hash_fn_call("foo", a); NULL`
 #' 
-#' This function does evaluate object names passed as function arguments. I.e. the function call `mypkg::foo(a = my_var)` will be cached as
+#' This function does evaluate all arguments in `...`. I.e. the function call `mypkg::foo(a = my_var)` will be cached as
 #' `r pal::wrap_chr(foo(100))` if `my_var`'s value is `100`, whereas it will become `r pal::wrap_chr(foo(101))` if `my_var`'s value is `101`. See examples
 #' below.
 #'
 #' @param from_fn The name of the function from which `hash_fn_call()` is called. A character scalar.
-#' @param pkg The namespace `from_fn` belongs to, typically a package name. A character scalar.
 #' @param ... The arguments `from_fn` was called with. Any arguments omitted here won't be taken into account when generating the hash.
 #'
 #' @return A character scalar.
 #' @export
 #'
 #' @examples
-#' foo <- function(a, b = "default") pkgpins::hash_fn_call("mypkg", "foo", a, b)
+#' foo <- function(a, b = "default") pkgpins::hash_fn_call("foo", a, b)
 #' 
 #' foo("bar")
 #' a <- "bar"
@@ -355,17 +411,16 @@ rm_obj <- function(id,
 #' a |> foo(b = "default")
 #' 
 #' # you can also create a hash that is based on a subset of all function arguments
-#' foo <- function(a, b = "default") pkgpins::hash_fn_call("mypkg", "foo", b)
+#' foo <- function(a, b = "default") pkgpins::hash_fn_call("foo", b)
 #' 
 #' foo("bar")
 #' foo("barrr")
 #' foo(b = "bar")
-hash_fn_call <- function(pkg,
-                         from_fn,
+hash_fn_call <- function(from_fn,
                          ...) {
   
   checkmate::assert_string(from_fn)
-  checkmate::assert_string(pkg)
+  ellipsis::check_dots_unnamed()
   
   rlang::dots_list(...,
                    .homonyms = "error",
@@ -373,7 +428,7 @@ hash_fn_call <- function(pkg,
                    .preserve_empty = FALSE,
                    .check_assign = TRUE) %>%
     rlang::hash() %>%
-    paste(pkg, from_fn, .,
+    paste(from_fn, .,
           sep = "-")
 }
 
@@ -389,6 +444,7 @@ hash_fn_call <- function(pkg,
 #' @param expr The expression to cache.
 #' @param from_fn The name of the function that `expr` is cached from, i.e. the name of the function that `with_cache()` is called from. A character scalar.
 #' @param ... The arguments received by `from_fn` on which the caching should depend. This is fundamental to determine whether `expr` was already cached or not.
+#'   The arguments must be specified _unnamed_ (see examples). `r pkgsnip::param_label("dyn_dots_support")`
 #' @param use_cache `r pkgsnip::param_label("use_cache")`
 #' @param cache_lifespan `r pkgsnip::param_label("cache_lifespan")` 
 #'
@@ -396,9 +452,10 @@ hash_fn_call <- function(pkg,
 #' @export
 #'
 #' @examples
-#' # if the fn below would be part of a real package, we could instead define `this_pkg`
-#' # globally using `this_pkg <- utils::packageName()`
-#' this_pkg <- "not.a.real.pkg"
+#' # if the fn below would be part of a real package, we could instead define `this_pkg` globally
+#' # using `this_pkg <- utils::packageName()`; instead, we now cache to pkgpins's cache (which
+#' # itself never uses the cache)
+#' this_pkg <- "pkgpins"
 #' 
 #' # let's define a fn that returns R pkg sys deps from cache
 #' pkg_sys_deps <- function(pkg,
@@ -425,6 +482,9 @@ hash_fn_call <- function(pkg,
 #'             "without cache" = pkg_sys_deps("git2r", use_cache = FALSE),
 #'             iterations = 10,
 #'             relative = TRUE)}
+#' 
+#' # purge cache from the above example
+#' pkgpins::purge_cache("pkgpins")
 with_cache <- function(expr,
                        pkg,
                        from_fn,
@@ -438,7 +498,6 @@ with_cache <- function(expr,
   if (use_cache) {
     
     id <- hash_fn_call(from_fn = from_fn,
-                       pkg = pkg,
                        ...)
     
     result <- get_obj(id = id,

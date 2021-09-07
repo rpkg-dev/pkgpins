@@ -13,7 +13,7 @@ deregister(pkg)
 \code{NULL}.
 }
 \description{
-This function deregisters a package's user-cache pins board.
+Deregisters a package's user-cache pins board.
 }
 \details{
 Ideally, you call this function on \link[base:ns-hooks]{package unload}. See the examples for details.
@@ -22,6 +22,6 @@ Ideally, you call this function on \link[base:ns-hooks]{package unload}. See the
 \dontrun{
 # deregister the cache on package unload (recommended)
 .onUnload <- function(libpath) {
-  pkgpins::deregister()
+  pkgpins::deregister("my.package")
 }}
 }

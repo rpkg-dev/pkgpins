@@ -14,14 +14,9 @@ get_obj(id, pkg, max_age = "1 day")
 \item{max_age}{The maximum age the cached object is allowed to have. A valid \link[lubridate:as.duration]{lubridate duration}. Defaults to 1 day (24 hours).}
 }
 \value{
-The cached object if it is not older than \code{max_age}, otherwise \code{NULL}.
+The cached object if it is not older than \code{max_age} and the \code{pkg} versions match, otherwise \code{NULL}.
 }
 \description{
-This function retrieves a cached object from a package's user-cache pins board \emph{if} it is not older than \code{max_age}.
-}
-\examples{
-\donttest{
-pkgpins::get_obj(id = "something",
-                 pkg = "some_pkg",
-                 max_age = "2 weeks")}
+Retrieves a cached object from a package's user-cache pins board \emph{if} it is not older than \code{max_age} and the currently installed version of \code{pkg} matches the
+version that was effective when the object was cached.
 }
