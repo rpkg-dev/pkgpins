@@ -704,7 +704,7 @@ cachely <- function(.pkg,
                            env = parent.frame())
   
   rlang::new_function(args = rlang::fn_fmls(fn),
-                      body = quote(expr = with_cache(expr = do.call(what = fn,
+                      body = quote(expr = with_cache(expr = do.call(what = fn, # an alternative would be rlang::exec(), JFYI
                                                                     args = rlang::fn_fmls_syms(fn)),
                                                      pkg = .pkg,
                                                      from_fn = .fn_name,
