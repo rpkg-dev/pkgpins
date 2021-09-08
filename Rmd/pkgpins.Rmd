@@ -375,6 +375,11 @@ cache_obj <- function(x,
   checkmate::assert_string(id)
   register(pkg = pkg)
   
+  # we can't cache `NULL` since no `class = "AsIs"` attribute can be set by `I()`
+  if (is.null(x)) {
+    cli::cli_abort("Unable to cache object with value {.val NULL} due to technical limitations.")
+  }
+  
   pins::pin(x = I(x),
             board = boardname(pkg),
             name = id,
@@ -608,9 +613,14 @@ with_cache <- function(expr,
   
   if (use_cache && fetch) {
     
-    cache_obj(result,
-              id = id,
-              pkg = pkg)
+    if (is.null(result)) {
+      cli::cli_warn("Results of value {.val NULL} cannot be cached due to technical limitations.")
+      
+    } else {
+      cache_obj(result,
+                id = id,
+                pkg = pkg)
+    }
   }
   
   result
