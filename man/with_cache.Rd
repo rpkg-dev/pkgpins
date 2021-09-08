@@ -14,7 +14,7 @@ with_cache(expr, pkg, from_fn, ..., use_cache = TRUE, cache_lifespan = "1 day")
 \item{from_fn}{The name of the function that \code{expr} is cached from, i.e. the name of the function that \code{with_cache()} is called from. A character scalar.}
 
 \item{...}{The arguments received by \code{from_fn} on which the caching should depend. This is fundamental to determine whether \code{expr} was already cached or not.
-The arguments must be specified \emph{unnamed} (see examples)\link[rlang:dyn-dots]{Dynamic dots} are supported.)`}
+The arguments must be specified \emph{unnamed} (see examples). \link[rlang:dyn-dots]{Dynamic dots} are supported.}
 
 \item{use_cache}{Return cached results if possible. If \code{FALSE}, results are always newly fetched regardless of \code{cache_lifespan}.}
 

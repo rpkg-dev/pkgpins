@@ -538,7 +538,7 @@ NOTES:
 #' @param expr The expression to cache.
 #' @param from_fn The name of the function that `expr` is cached from, i.e. the name of the function that `with_cache()` is called from. A character scalar.
 #' @param ... The arguments received by `from_fn` on which the caching should depend. This is fundamental to determine whether `expr` was already cached or not.
-#'   The arguments must be specified _unnamed_ (see examples). `r pkgsnip::param_label("dyn_dots_support")`
+#' The arguments must be specified _unnamed_ (see examples). `r pkgsnip::param_label("dyn_dots_support")`
 #' @param use_cache `r pkgsnip::param_label("use_cache")`
 #' @param cache_lifespan `r pkgsnip::param_label("cache_lifespan")` 
 #'
