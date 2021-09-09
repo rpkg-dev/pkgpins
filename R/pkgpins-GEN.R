@@ -30,6 +30,37 @@ assert_board_valid <- function(data,
   data
 }
 
+cached_id <- function(id,
+                      pkg,
+                      max_age = "1 day") {
+  
+  checkmate::assert_string(id)
+  register(pkg = pkg)
+  board <- boardname(pkg)
+  
+  result <- pins::pin_find(name = id,
+                           board = board,
+                           extended = TRUE)
+  
+  if (nrow(result)) {
+    
+    result %<>%
+      assert_board_valid(pkg = pkg) %>%
+      dplyr::filter(pkg_version == utils::packageVersion(pkg = pkg)
+                    & lubridate::now(tzone = "UTC") - lubridate::as_datetime(date_time_cached, tz = "UTC") <= lubridate::as.duration(!!max_age)) %$%
+      name
+    
+  } else {
+    result <- NULL
+  }
+  
+  if (length(result) > 1L) {
+    cli::cli_abort("Multiple pins found for board {.val {board}}. This should not happen since versioning is disabled for pkgpins boards... \U1F41E")
+  }
+  
+  result
+}
+
 #' Register a package's user-cache pins board
 #'
 #' Registers a package's user-cache pins board. It will be automatically called when needed.
@@ -303,12 +334,12 @@ cache_obj <- function(x,
   checkmate::assert_string(id)
   register(pkg = pkg)
   
-  # we can't cache `NULL` since no `class = "AsIs"` attribute can be set by `I()`
-  if (is.null(x)) {
-    cli::cli_abort("Unable to cache object with value {.val NULL} due to technical limitations.")
+  # we can't cache `NULL` as-is since no `class = "AsIs"` attribute can be set on `NULL`
+  if (!is.null(x)) {
+    x %<>% I()
   }
   
-  pins::pin(x = I(x),
+  pins::pin(x = x,
             board = boardname(pkg),
             name = id,
             metadata = list(pkg_version = as.character(utils::packageVersion(pkg = pkg)),
@@ -330,29 +361,11 @@ get_obj <- function(id,
                     pkg,
                     max_age = "1 day") {
   
-  checkmate::assert_string(id)
-  register(pkg = pkg)
-  board <- boardname(pkg)
+  result <- cached_id(id = id,
+                      pkg = pkg,
+                      max_age = max_age)
   
-  result <- pins::pin_find(name = id,
-                           board = board,
-                           extended = TRUE)
-  
-  if (nrow(result)) {
-   
-    result %<>%
-      assert_board_valid(pkg = pkg) %>%
-      dplyr::filter(pkg_version == utils::packageVersion(pkg = pkg)
-                    & lubridate::now(tzone = "UTC") - lubridate::as_datetime(date_time_cached, tz = "UTC") <= lubridate::as.duration(max_age)) %$%
-      name 
-  } else {
-    result <- NULL
-  }
-  
-  if (length(result) > 1L) {
-    cli::cli_abort("Multiple pins found for board {.val {board}}. This should not happen since versioning is disabled for pkgpins boards... \U1F41E")
-    
-  } else if (length(result) == 1L) {
+  if (length(result)) {
     result <- pins::pin_get(board = board,
                             name = id)
     
@@ -505,11 +518,15 @@ with_cache <- function(expr,
     id <- hash_fn_call(from_fn = from_fn,
                        ...)
     
-    result <- get_obj(id = id,
-                      max_age = cache_lifespan,
-                      pkg = pkg)
+    id_cached <- cached_id(id = id,
+                           pkg = pkg,
+                           max_age = cache_lifespan)
     
-    fetch <- is.null(result)
+    if (length(id_cached)) {
+      result <- pins::pin_get(board = boardname(pkg),
+                              name = id_cached)
+      fetch <- FALSE
+    }
   }
   
   if (fetch) {
@@ -519,14 +536,9 @@ with_cache <- function(expr,
   
   if (use_cache && fetch) {
     
-    if (is.null(result)) {
-      cli::cli_warn("Results of value {.val NULL} cannot be cached due to technical limitations.")
-      
-    } else {
-      cache_obj(result,
-                id = id,
-                pkg = pkg)
-    }
+    cache_obj(result,
+              id = id,
+              pkg = pkg)
   }
   
   result
