@@ -30,37 +30,6 @@ assert_board_valid <- function(data,
   data
 }
 
-cached_id <- function(id,
-                      pkg,
-                      max_age = "1 day") {
-  
-  checkmate::assert_string(id)
-  register(pkg = pkg)
-  board <- boardname(pkg)
-  
-  result <- pins::pin_find(name = id,
-                           board = board,
-                           extended = TRUE)
-  
-  if (nrow(result)) {
-    
-    result %<>%
-      assert_board_valid(pkg = pkg) %>%
-      dplyr::filter(pkg_version == utils::packageVersion(pkg = pkg)
-                    & lubridate::now(tzone = "UTC") - lubridate::as_datetime(date_time_cached, tz = "UTC") <= lubridate::as.duration(!!max_age)) %$%
-      name
-    
-  } else {
-    result <- NULL
-  }
-  
-  if (length(result) > 1L) {
-    cli::cli_abort("Multiple pins found for board {.val {board}}. This should not happen since versioning is disabled for pkgpins boards... \U1F41E")
-  }
-  
-  result
-}
-
 #' Register a package's user-cache pins board
 #'
 #' Registers a package's user-cache pins board. It will be automatically called when needed.
@@ -230,7 +199,11 @@ purge_cache <- function(pkg) {
   deregister(pkg)
   cache_path <- path_cache(pkg)
   
-  if (fs::dir_exists(cache_path)) fs::dir_delete(cache_path)
+  if (fs::dir_exists(cache_path)) {
+    fs::dir_delete(cache_path)
+  } else {
+    fs::path()
+  }
 }
 
 #' Purge all package user-cache pins boards
@@ -346,14 +319,50 @@ cache_obj <- function(x,
                             date_time_cached = lubridate::now(tzone = "UTC")))
 }
 
+#' Test whether an object exists in a package's user-cache pins board
+#'
+#' Returns `TRUE` if the object is present in the `pkg`'s user-cache pins board and hasn't exceeded `max_age`, otherwise `FALSE`.
+#'
+#' @inheritParams boardname
+#' @param id The pin name uniquely identifying the object to be checked in the `pkg`'s user-cache pins board. A character scalar.
+#' @param max_age The maximum age the cached object is allowed to have. A valid [lubridate duration][lubridate::as.duration]. Defaults to 1 day (24 hours).
+#'
+#' @return A character scalar, or `NULL` if no cached object exists that hasn't exceeded `max_age`.
+#' @export
+is_cached <- function(id,
+                      pkg,
+                      max_age = "1 day") {
+  
+  checkmate::assert_string(id)
+  register(pkg = pkg)
+  
+  board <- boardname(pkg)
+  cache <- pins::pin_find(name = id,
+                          board = board,
+                          extended = TRUE)
+  
+  if (nrow(cache)) {
+    
+    cache %<>%
+      assert_board_valid(pkg = pkg) %>%
+      dplyr::filter(pkg_version == utils::packageVersion(pkg = pkg)
+                    & lubridate::now(tzone = "UTC") - lubridate::as_datetime(date_time_cached, tz = "UTC") <= lubridate::as.duration(!!max_age))
+    
+    if (nrow(cache) > 1L) {
+      cli::cli_abort("Multiple pins found for board {.val {board}}. This should not happen since versioning is disabled for pkgpins boards... \U1F41E")
+    }
+  }
+  
+  nrow(cache) > 0L
+}
+
 #' Get a cached object from a package's user-cache pins board
 #'
 #' Retrieves a cached object from a package's user-cache pins board _if_ it is not older than `max_age` and the currently installed version of `pkg` matches the
 #' version that was effective when the object was cached.
 #'
-#' @inheritParams boardname
+#' @inheritParams is_cached
 #' @param id The pin name uniquely identifying the object to be retrieved from the `pkg`'s user-cache pins board. A character scalar.
-#' @param max_age The maximum age the cached object is allowed to have. A valid [lubridate duration][lubridate::as.duration]. Defaults to 1 day (24 hours).
 #'
 #' @return The cached object if it is not older than `max_age` and the `pkg` versions match, otherwise `NULL`.
 #' @export
@@ -361,12 +370,11 @@ get_obj <- function(id,
                     pkg,
                     max_age = "1 day") {
   
-  result <- cached_id(id = id,
-                      pkg = pkg,
-                      max_age = max_age)
-  
-  if (length(result)) {
-    result <- pins::pin_get(board = board,
+  if (is_cached(id = id,
+                pkg = pkg,
+                max_age = max_age)) {
+    
+    result <- pins::pin_get(board = boardname(pkg),
                             name = id)
     
   } else {
@@ -518,18 +526,20 @@ with_cache <- function(expr,
     id <- hash_fn_call(from_fn = from_fn,
                        ...)
     
-    id_cached <- cached_id(id = id,
-                           pkg = pkg,
-                           max_age = cache_lifespan)
-    
-    if (length(id_cached)) {
+    # NOTE: we can't use `get_obj()` here because in case of return value `NULL` we wouldn't know whether it means there's no cached result or the cached
+    #       result is just `NULL`
+    if (is_cached(id = id,
+                  pkg = pkg,
+                  max_age = cache_lifespan)) {
+      
       result <- pins::pin_get(board = boardname(pkg),
-                              name = id_cached)
+                              name = id)
       fetch <- FALSE
     }
   }
   
   if (fetch) {
+    
     result <- rlang::eval_bare(expr = expr,
                                env = parent.frame(n = 2L))
   }
