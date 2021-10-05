@@ -1,6 +1,6 @@
 Package: pkgpins
 Title: Facilitates Results Caching in R Packages Using the Pins Package
-Version: 0.6.2
+Version: 0.6.3
 Authors@R: 
     person(given = "Salim",
            family = "Brüggemann",
@@ -25,7 +25,8 @@ Imports:
     magrittr (>= 2.0.1),
     methods,
     pal (>= 0.0.9066),
-    pins (>= 0.4.5),
+    pins (>= 1.0.0),
+    rappdirs (>= 0.3.3),
     purrr (>= 0.3.4),
     rlang (>= 0.4.6),
     stringr (>= 1.4.0),
@@ -43,4 +44,4 @@ Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1.9001
+RoxygenNote: 7.1.2

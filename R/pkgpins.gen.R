@@ -56,7 +56,6 @@ register <- function(pkg) {
   if (!(board %in% pins::board_list())) {
     
     pins::board_register_local(name = board,
-                               cache = pins::board_cache_path(),
                                versions = FALSE)
   }
 }
@@ -114,7 +113,7 @@ boardname <- function(pkg) {
 #' @export
 path_cache <- function(pkg) {
   
-  fs::path(pins::board_cache_path(), boardname(pkg))
+  pins::board_cache_path(name = boardname(pkg))
 }
 
 #' List all objects in a package's user-cache pins board
@@ -214,7 +213,7 @@ purge_cache <- function(pkg) {
 #' @export
 purge_caches <- function() {
   
-  pins::board_cache_path() %>%
+  rappdirs::user_cache_dir(appname = "pins") %>%
     fs::dir_ls(type = "directory",
                # note that supported regex syntax in fs slightly differs from the one in stringr!
                regexp = "/pkg-cache-(\\w|\\.)+$") %>%
