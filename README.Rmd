@@ -6,6 +6,10 @@ output: pal::gitlab_document
 
 `r pal::desc_value("Description") %>% stringr::str_replace(" (pins)( package) ", " [\\1](https://pins.rstudio.com/)\\2 ")`
 
+## How it works
+
+TODO: describe design (separate [user-cache pins board](https://pins.rstudio.com/articles/boards-understanding.html) per pkg etc.)
+
 ## Predefined parameter labels
 
 There are two predefined parameter labels available in [pkgsnip](https://gitlab.com/salim_b/r/pkgs/pkgsnip) which fit typical use cases of this package. They
