@@ -24,7 +24,7 @@ assert_board_valid <- function(data,
   if (!all(c("pkg_version", "date_time_cached") %in% colnames(data))) {
     
     cli::cli_abort(paste0("Corrupted package cache detected. Please delete the directory {.path {path_cache(pkg = pkg)}} by running ",
-                          "{.code pkgpins::purge_cache({pkg})} and then try again."))
+                          "{.code pkgpins::purge_cache({\"pkg\"})} and then try again."))
   }
   
   data
