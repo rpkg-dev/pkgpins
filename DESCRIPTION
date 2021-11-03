@@ -1,6 +1,6 @@
 Package: pkgpins
 Title: Facilitates Results Caching in R Packages Using the Pins Package
-Version: 0.6.4
+Version: 0.6.4.9000
 Authors@R: 
     person(given = "Salim",
            family = "Brüggemann",
