@@ -27,7 +27,7 @@ Note that \code{cache_obj()} will always overwrite an already existing cached ob
 that uniquely identifies a function call. Or just use \code{\link[=with_cache]{with_cache()}} that internally relies on the former.
 
 Note that reading in the cached result from the user-cache pins board (i.e. from the filesystem) might produce a noticeable delay depending on the size of
-the cached object. Therefore, it's only recommended to cache results that take a considerable amount of time when recomputed. To avoid the overhead of
+the cached object. Therefore, it's only recommended to cache results that take a considerable amount of time to recompute. To avoid the overhead of
 re-reading a cached result when accessing it multiple times, you can always assign it to an R variable to benefit from direct storage in memory.
 }
 \examples{
@@ -81,3 +81,11 @@ bench::mark("with cache" = pkg_sys_deps("git2r"),
 # purge cache from the above example
 pkgpins::purge_cache(board = board)
 }
+\seealso{
+Other object handling functions:
+\code{\link{get_obj}()},
+\code{\link{hash_fn_call}()},
+\code{\link{is_cached}()},
+\code{\link{rm_obj}()}
+}
+\concept{obj_handling}

@@ -18,3 +18,12 @@ Returns the filesystem path to the \code{pkg}'s user-cache pins board. Note that
 \details{
 It shouldn't be necessary to rely on this function for the tasks this package is intended to perform, though.
 }
+\seealso{
+Other package cache management functions:
+\code{\link{board}()},
+\code{\link{clear_cache}()},
+\code{\link{ls_cache}()},
+\code{\link{purge_caches}()},
+\code{\link{purge_cache}()}
+}
+\concept{pkg_cache_mgmt}

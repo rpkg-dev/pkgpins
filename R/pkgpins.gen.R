@@ -37,9 +37,9 @@ ls_board_paths <- function(pkg) {
 #'
 #' @inheritParams board
 #' @param expr Expression to cache.
-#' @param pkg_version Optional version number of `pkg` to include when caching the result. A [package version number][utils::packageVersion] or `NULL`. If not
-#'   `NULL`, a separate user-cache pins board is created each time `pkg`'s version number changes (e.g. after an upgrade), ensuring to never return cached
-#'   results from a different (old) package version, irrespective of `cache_lifespan`.
+#' @param pkg_version Optional version number of `pkg` to include when caching the result. A [package version number][utils::packageVersion] or `NULL`. If
+#'   `NULL`, caching is agnostic about `pkg`'s version number. Otherwise, a separate user-cache pins board is created each time `pkg`'s version number changes
+#'   (e.g. after an upgrade), ensuring to never return cached results from a different (old) package version, irrespective of `cache_lifespan`.
 #' @param from_fn Name of the function that `expr` is cached from, i.e. the name of the function that `with_cache()` is called from. A character scalar.
 #' @param ... Arguments received by `from_fn` on which the caching should depend. This is fundamental to determine whether `expr` was already cached or not. The
 #' arguments must be specified _unnamed_ (see examples). `r pkgsnip::param_label("dyn_dots_support")`
@@ -47,6 +47,7 @@ ls_board_paths <- function(pkg) {
 #' @param cache_lifespan `r pkgsnip::param_label("cache_lifespan")` 
 #'
 #' @return The result of evaluating `expr`, from cache if `use_cache = TRUE` and a cached result exists that hasn't exceeded `cache_lifespan`.
+#' @family high_lvl
 #' @export
 #'
 #' @examples
@@ -141,12 +142,13 @@ with_cache <- function(expr,
 #'   board is agnostic about `pkg`'s version number. Otherwise, a separate board is created for each `pkg` version number.
 #'
 #' @return The user-cache pins board belonging to `pkg` and `pkg_version`. An object ob class [`pins_board_folder`][pins::board_folder].
+#' @family pkg_cache_mgmt
 #' @export
 board <- function(pkg,
                   pkg_version = utils::packageVersion(pkg = pkg)) {
   
   checkmate::assert_string(pkg)
-  test_pkg_version <- is.null(pkg_version) || is.package_version(pkg_version)
+  test_pkg_version <- is.package_version(pkg_version) || is.null(pkg_version)
   
   if (!test_pkg_version) {
     cli::cli_abort("{.arg pkg_version} must either be an object of class {.cls package_version} or {.val NULL}.")
@@ -172,6 +174,7 @@ board <- function(pkg,
 #' @param board [Package's user-cache pins board][board()].
 #'
 #' @return `r pkgsnip::return_label("path")`
+#' @family pkg_cache_mgmt
 #' @export
 path_cache <- function(board) {
   
@@ -182,11 +185,12 @@ path_cache <- function(board) {
 
 #' List all objects in a package's user-cache pins board
 #'
-#' Lists all object `id`s belonging to a `pkg`'s user-cache pins board, together with some metadata (see [cache_obj()] for details).
+#' Lists all objects stored in a `pkg`'s user-cache pins board.
 #'
 #' @inheritParams path_cache
 #'
-#' @return A [tibble][tibble::tbl_df].
+#' @return A [tibble][tibble::tbl_df] containing the columns `id`, `date_time_cached`, `file_size` and `pins_api_version`.
+#' @family pkg_cache_mgmt
 #' @export
 ls_cache <- function(board) {
   
@@ -212,6 +216,7 @@ ls_cache <- function(board) {
 #' @param max_age Age above which cached objects will be deleted. A valid [lubridate duration][lubridate::as.duration]. Defaults to 1 day (24 hours).
 #'
 #' @return `board`, invisibly.
+#' @family pkg_cache_mgmt
 #' @export
 #'
 #' @examples
@@ -252,6 +257,7 @@ clear_cache <- function(board,
 #'
 #' @inheritParams path_cache
 #'
+#' @family pkg_cache_mgmt
 #' @export
 purge_cache <- function(board) {
   
@@ -264,9 +270,10 @@ purge_cache <- function(board) {
 
 #' Purge all package user-cache pins boards
 #'
-#' Deletes the user-cache pins board of *all* packages.
+#' Deletes the user-cache pins boards of *all* packages.
 #'
 #' @return The deleted filesystem [paths][fs::fs_path], invisibly. Of length 0 if no package user-cache pins boards did exist.
+#' @family pkg_cache_mgmt
 #' @export
 purge_caches <- function() {
   
@@ -286,6 +293,7 @@ purge_caches <- function() {
 #' @param ... Arguments `from_fn` was called with. Any arguments omitted here won't be taken into account when generating the hash.
 #'
 #' @return A character scalar.
+#' @family obj_handling
 #' @export
 #'
 #' @examples
@@ -330,6 +338,7 @@ hash_fn_call <- function(from_fn,
 #' @param max_age Maximum age the cached object is allowed to have. A valid [lubridate duration][lubridate::as.duration]. Defaults to 1 day (24 hours).
 #'
 #' @return A character scalar, or `NULL` if no cached object exists that hasn't exceeded `max_age`.
+#' @family obj_handling
 #' @export
 is_cached <- function(board,
                       id,
@@ -361,7 +370,7 @@ is_cached <- function(board,
 #' that uniquely identifies a function call. Or just use [with_cache()] that internally relies on the former.
 #'
 #' Note that reading in the cached result from the user-cache pins board (i.e. from the filesystem) might produce a noticeable delay depending on the size of
-#' the cached object. Therefore, it's only recommended to cache results that take a considerable amount of time when recomputed. To avoid the overhead of
+#' the cached object. Therefore, it's only recommended to cache results that take a considerable amount of time to recompute. To avoid the overhead of
 #' re-reading a cached result when accessing it multiple times, you can always assign it to an R variable to benefit from direct storage in memory.
 #'
 #' @inheritParams path_cache
@@ -371,6 +380,7 @@ is_cached <- function(board,
 #' @param qs_preset The serialization algorithm preset to use. See [qs::qsave()] (section *Presets*) for details.
 #'
 #' @return `x`, invisibly.
+#' @family obj_handling
 #' @export
 #'
 #' @examples
@@ -472,13 +482,13 @@ cache_obj <- function(board,
 
 #' Get a cached object from a package's user-cache pins board
 #'
-#' Retrieves a cached object from a package's user-cache pins board _if_ it is not older than `max_age` and the currently installed version of `pkg` matches the
-#' version that was effective when the object was cached.
+#' Retrieves a cached object from a package's user-cache pins board _if_ it is not older than `max_age`.
 #'
 #' @inheritParams is_cached
 #' @param id Pin name uniquely identifying the object to be retrieved from the `pkg`'s user-cache pins board. A character scalar.
 #'
-#' @return The cached object if it is not older than `max_age` and the `pkg` versions match, otherwise `NULL`.
+#' @return The cached object if it is not older than `max_age`, otherwise `NULL`.
+#' @family obj_handling
 #' @export
 get_obj <- function(board,
                     id,
@@ -509,6 +519,7 @@ get_obj <- function(board,
 #' @param id Pin name uniquely identifying the object to be deleted from the `pkg`'s user-cache pins board. A character scalar.
 #'
 #' @return `id`, invisibly.
+#' @family obj_handling
 #' @export
 rm_obj <- function(board,
                    id) {

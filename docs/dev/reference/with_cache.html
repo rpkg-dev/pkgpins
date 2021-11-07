@@ -154,9 +154,9 @@ arguments must be specified <em>unnamed</em> (see examples). <a href='https://rl
     </tr>
     <tr>
       <th>pkg_version</th>
-      <td><p>Optional version number of <code>pkg</code> to include when caching the result. A <a href='https://rdrr.io/r/utils/packageDescription.html'>package version number</a> or <code>NULL</code>. If not
-<code>NULL</code>, a separate user-cache pins board is created each time <code>pkg</code>'s version number changes (e.g. after an upgrade), ensuring to never return cached
-results from a different (old) package version, irrespective of <code>cache_lifespan</code>.</p></td>
+      <td><p>Optional version number of <code>pkg</code> to include when caching the result. A <a href='https://rdrr.io/r/utils/packageDescription.html'>package version number</a> or <code>NULL</code>. If
+<code>NULL</code>, caching is agnostic about <code>pkg</code>'s version number. Otherwise, a separate user-cache pins board is created each time <code>pkg</code>'s version number changes
+(e.g. after an upgrade), ensuring to never return cached results from a different (old) package version, irrespective of <code>cache_lifespan</code>.</p></td>
     </tr>
     <tr>
       <th>use_cache</th>

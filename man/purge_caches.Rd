@@ -10,5 +10,14 @@ purge_caches()
 The deleted filesystem \link[fs:fs_path]{paths}, invisibly. Of length 0 if no package user-cache pins boards did exist.
 }
 \description{
-Deletes the user-cache pins board of \emph{all} packages.
+Deletes the user-cache pins boards of \emph{all} packages.
 }
+\seealso{
+Other package cache management functions:
+\code{\link{board}()},
+\code{\link{clear_cache}()},
+\code{\link{ls_cache}()},
+\code{\link{path_cache}()},
+\code{\link{purge_cache}()}
+}
+\concept{pkg_cache_mgmt}

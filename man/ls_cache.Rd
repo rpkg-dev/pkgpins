@@ -10,8 +10,17 @@ ls_cache(board)
 \item{board}{\link[=board]{Package's user-cache pins board}.}
 }
 \value{
-A \link[tibble:tbl_df-class]{tibble}.
+A \link[tibble:tbl_df-class]{tibble} containing the columns \code{id}, \code{date_time_cached}, \code{file_size} and \code{pins_api_version}.
 }
 \description{
-Lists all object \code{id}s belonging to a \code{pkg}'s user-cache pins board, together with some metadata (see \code{\link[=cache_obj]{cache_obj()}} for details).
+Lists all objects stored in a \code{pkg}'s user-cache pins board.
 }
+\seealso{
+Other package cache management functions:
+\code{\link{board}()},
+\code{\link{clear_cache}()},
+\code{\link{path_cache}()},
+\code{\link{purge_caches}()},
+\code{\link{purge_cache}()}
+}
+\concept{pkg_cache_mgmt}

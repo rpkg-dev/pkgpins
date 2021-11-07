@@ -18,3 +18,12 @@ The user-cache pins board belonging to \code{pkg} and \code{pkg_version}. An obj
 \description{
 Returns a \code{pkg}'s user-cache pins board. The board is automatically created if it doesn't already exist.
 }
+\seealso{
+Other package cache management functions:
+\code{\link{clear_cache}()},
+\code{\link{ls_cache}()},
+\code{\link{path_cache}()},
+\code{\link{purge_caches}()},
+\code{\link{purge_cache}()}
+}
+\concept{pkg_cache_mgmt}

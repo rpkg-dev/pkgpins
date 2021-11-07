@@ -43,8 +43,8 @@
 
 
 <meta property="og:title" content="List all objects in a package's user-cache pins board — ls_cache" />
-<meta name="description" content="Lists all object ids belonging to a pkg's user-cache pins board, together with some metadata (see cache_obj() for details).">
-<meta property="og:description" content="Lists all object ids belonging to a pkg's user-cache pins board, together with some metadata (see cache_obj() for details)." />
+<meta name="description" content="Lists all objects stored in a pkg's user-cache pins board.">
+<meta property="og:description" content="Lists all objects stored in a pkg's user-cache pins board." />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:creator" content="@2BSalim" />
 <meta name="twitter:site" content="@2BSalim" />
@@ -119,7 +119,7 @@
     </div>
 
     <div class="ref-description">
-    <p>Lists all object <code>id</code>s belonging to a <code>pkg</code>'s user-cache pins board, together with some metadata (see <code><a href='cache_obj.html'>cache_obj()</a></code> for details).</p>
+    <p>Lists all objects stored in a <code>pkg</code>'s user-cache pins board.</p>
     </div>
 
     <pre class="usage"><span class='fu'>ls_cache</span><span class='op'>(</span><span class='va'>board</span><span class='op'>)</span></pre>
@@ -135,7 +135,15 @@
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A <a href='https://tibble.tidyverse.org/reference/tbl_df-class.html'>tibble</a>.</p>
+    <p>A <a href='https://tibble.tidyverse.org/reference/tbl_df-class.html'>tibble</a> containing the columns <code>id</code>, <code>date_time_cached</code>, <code>file_size</code> and <code>pins_api_version</code>.</p>
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p>Other package cache management functions:
+<code><a href='board.html'>board</a>()</code>,
+<code><a href='clear_cache.html'>clear_cache</a>()</code>,
+<code><a href='path_cache.html'>path_cache</a>()</code>,
+<code><a href='purge_caches.html'>purge_caches</a>()</code>,
+<code><a href='purge_cache.html'>purge_cache</a>()</code></p></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

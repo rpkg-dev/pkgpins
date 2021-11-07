@@ -22,3 +22,11 @@ Note that it normally won't be necessary to delete a cached object using this fu
 in the cache with the same \code{id}. If you want to ensure that no "data corpses" are left behind from using \code{\link[=cache_obj]{cache_obj()}}, consider \link[=clear_cache]{clearing} or
 even \link[=purge_cache]{purging} the whole package user-cache pins board at once.
 }
+\seealso{
+Other object handling functions:
+\code{\link{cache_obj}()},
+\code{\link{get_obj}()},
+\code{\link{hash_fn_call}()},
+\code{\link{is_cached}()}
+}
+\concept{obj_handling}

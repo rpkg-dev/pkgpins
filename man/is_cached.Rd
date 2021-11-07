@@ -19,3 +19,11 @@ A character scalar, or \code{NULL} if no cached object exists that hasn't exceed
 \description{
 Returns \code{TRUE} if the object is present in the \code{pkg}'s user-cache pins board and hasn't exceeded \code{max_age}, otherwise \code{FALSE}.
 }
+\seealso{
+Other object handling functions:
+\code{\link{cache_obj}()},
+\code{\link{get_obj}()},
+\code{\link{hash_fn_call}()},
+\code{\link{rm_obj}()}
+}
+\concept{obj_handling}

@@ -154,8 +154,15 @@ Necessary to retrieve <code>x</code> again using <code><a href='get_obj.html'>ge
     <p>Note that <code>cache_obj()</code> will always overwrite an already existing cached object of the same <code>id</code>. See <code><a href='hash_fn_call.html'>hash_fn_call()</a></code> for a convenient way to create an <code>id</code>
 that uniquely identifies a function call. Or just use <code><a href='with_cache.html'>with_cache()</a></code> that internally relies on the former.</p>
 <p>Note that reading in the cached result from the user-cache pins board (i.e. from the filesystem) might produce a noticeable delay depending on the size of
-the cached object. Therefore, it's only recommended to cache results that take a considerable amount of time when recomputed. To avoid the overhead of
+the cached object. Therefore, it's only recommended to cache results that take a considerable amount of time to recompute. To avoid the overhead of
 re-reading a cached result when accessing it multiple times, you can always assign it to an R variable to benefit from direct storage in memory.</p>
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p>Other object handling functions:
+<code><a href='get_obj.html'>get_obj</a>()</code>,
+<code><a href='hash_fn_call.html'>hash_fn_call</a>()</code>,
+<code><a href='is_cached.html'>is_cached</a>()</code>,
+<code><a href='rm_obj.html'>rm_obj</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><span class='r-in'><span class='co'># if the fn below would be part of a real package, we could instead define `this_pkg` globally</span></span>

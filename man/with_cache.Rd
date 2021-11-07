@@ -24,9 +24,9 @@ with_cache(
 \item{...}{Arguments received by \code{from_fn} on which the caching should depend. This is fundamental to determine whether \code{expr} was already cached or not. The
 arguments must be specified \emph{unnamed} (see examples). \link[rlang:dyn-dots]{Dynamic dots} are supported.}
 
-\item{pkg_version}{Optional version number of \code{pkg} to include when caching the result. A \link[utils:packageDescription]{package version number} or \code{NULL}. If not
-\code{NULL}, a separate user-cache pins board is created each time \code{pkg}'s version number changes (e.g. after an upgrade), ensuring to never return cached
-results from a different (old) package version, irrespective of \code{cache_lifespan}.}
+\item{pkg_version}{Optional version number of \code{pkg} to include when caching the result. A \link[utils:packageDescription]{package version number} or \code{NULL}. If
+\code{NULL}, caching is agnostic about \code{pkg}'s version number. Otherwise, a separate user-cache pins board is created each time \code{pkg}'s version number changes
+(e.g. after an upgrade), ensuring to never return cached results from a different (old) package version, irrespective of \code{cache_lifespan}.}
 
 \item{use_cache}{Return cached results if possible. If \code{FALSE}, results are always newly fetched regardless of \code{cache_lifespan}.}
 
@@ -78,3 +78,4 @@ bench::mark("with cache" = pkg_sys_deps("git2r"),
 # purge cache from the above example
 pkgpins::board(pkg = "pkgpins") |> pkgpins::purge_cache()
 }
+\concept{high_lvl}

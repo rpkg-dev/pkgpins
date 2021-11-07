@@ -43,8 +43,8 @@
 
 
 <meta property="og:title" content="Get a cached object from a package's user-cache pins board — get_obj" />
-<meta name="description" content="Retrieves a cached object from a package's user-cache pins board if it is not older than max_age and the currently installed version of pkg matches the version that was effective when the object was cached.">
-<meta property="og:description" content="Retrieves a cached object from a package's user-cache pins board if it is not older than max_age and the currently installed version of pkg matches the version that was effective when the object was cached." />
+<meta name="description" content="Retrieves a cached object from a package's user-cache pins board if it is not older than max_age.">
+<meta property="og:description" content="Retrieves a cached object from a package's user-cache pins board if it is not older than max_age." />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:creator" content="@2BSalim" />
 <meta name="twitter:site" content="@2BSalim" />
@@ -119,8 +119,7 @@
     </div>
 
     <div class="ref-description">
-    <p>Retrieves a cached object from a package's user-cache pins board <em>if</em> it is not older than <code>max_age</code> and the currently installed version of <code>pkg</code> matches the
-version that was effective when the object was cached.</p>
+    <p>Retrieves a cached object from a package's user-cache pins board <em>if</em> it is not older than <code>max_age</code>.</p>
     </div>
 
     <pre class="usage"><span class='fu'>get_obj</span><span class='op'>(</span><span class='va'>board</span>, <span class='va'>id</span>, max_age <span class='op'>=</span> <span class='st'>"1 day"</span><span class='op'>)</span></pre>
@@ -144,7 +143,14 @@ version that was effective when the object was cached.</p>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>The cached object if it is not older than <code>max_age</code> and the <code>pkg</code> versions match, otherwise <code>NULL</code>.</p>
+    <p>The cached object if it is not older than <code>max_age</code>, otherwise <code>NULL</code>.</p>
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p>Other object handling functions:
+<code><a href='cache_obj.html'>cache_obj</a>()</code>,
+<code><a href='hash_fn_call.html'>hash_fn_call</a>()</code>,
+<code><a href='is_cached.html'>is_cached</a>()</code>,
+<code><a href='rm_obj.html'>rm_obj</a>()</code></p></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

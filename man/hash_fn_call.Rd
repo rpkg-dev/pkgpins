@@ -39,3 +39,11 @@ foo("bar")
 foo("barrr")
 foo(b = "bar")
 }
+\seealso{
+Other object handling functions:
+\code{\link{cache_obj}()},
+\code{\link{get_obj}()},
+\code{\link{is_cached}()},
+\code{\link{rm_obj}()}
+}
+\concept{obj_handling}
