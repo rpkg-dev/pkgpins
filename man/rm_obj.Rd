@@ -4,12 +4,12 @@
 \alias{rm_obj}
 \title{Delete a cached object from a package's user-cache pins board}
 \usage{
-rm_obj(id, pkg)
+rm_obj(board, id)
 }
 \arguments{
-\item{id}{The pin name uniquely identifying the object to be deleted from the \code{pkg}'s user-cache pins board. A character scalar.}
+\item{board}{\link[=board]{Package's user-cache pins board}.}
 
-\item{pkg}{The package name. A character scalar.}
+\item{id}{Pin name uniquely identifying the object to be deleted from the \code{pkg}'s user-cache pins board. A character scalar.}
 }
 \value{
 \code{id}, invisibly.
@@ -19,6 +19,6 @@ Removes a cached object from a package's user-cache pins board.
 }
 \details{
 Note that it normally won't be necessary to delete a cached object using this function because \code{\link[=cache_obj]{cache_obj()}} will always overwrite a possibly existing object
-in the cache with the same \code{id}. If you want to ensure that no "data corpses" are left behind from using \code{\link[=cache_obj]{cache_obj()}}, consider clearing the whole package
-user-cache pins board at once using \code{\link[=clear]{clear()}}.
+in the cache with the same \code{id}. If you want to ensure that no "data corpses" are left behind from using \code{\link[=cache_obj]{cache_obj()}}, consider \link[=clear_cache]{clearing} or
+even \link[=purge_cache]{purging} the whole package user-cache pins board at once.
 }

@@ -4,16 +4,16 @@
 \alias{path_cache}
 \title{Get a package's user-cache pins board path}
 \usage{
-path_cache(pkg)
+path_cache(board)
 }
 \arguments{
-\item{pkg}{The package name. A character scalar.}
+\item{board}{\link[=board]{Package's user-cache pins board}.}
 }
 \value{
-A path of type \link[fs:path]{fs_path}.
+A \link[fs:fs_path]{path}.
 }
 \description{
-Determines the filesystem path to the \code{pkg}'s user-cache pins board. Note that this path depends on the operating system this function is called from.
+Returns the filesystem path to the \code{pkg}'s user-cache pins board. Note that this path depends on the operating system this function is called from.
 }
 \details{
 It shouldn't be necessary to rely on this function for the tasks this package is intended to perform, though.

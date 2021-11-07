@@ -4,14 +4,14 @@
 \alias{is_cached}
 \title{Test whether an object exists in a package's user-cache pins board}
 \usage{
-is_cached(id, pkg, max_age = "1 day")
+is_cached(board, id, max_age = "1 day")
 }
 \arguments{
-\item{id}{The pin name uniquely identifying the object to be checked in the \code{pkg}'s user-cache pins board. A character scalar.}
+\item{board}{\link[=board]{Package's user-cache pins board}.}
 
-\item{pkg}{The package name. A character scalar.}
+\item{id}{Pin name uniquely identifying the object to be checked in the \code{pkg}'s user-cache pins board. A character scalar.}
 
-\item{max_age}{The maximum age the cached object is allowed to have. A valid \link[lubridate:as.duration]{lubridate duration}. Defaults to 1 day (24 hours).}
+\item{max_age}{Maximum age the cached object is allowed to have. A valid \link[lubridate:as.duration]{lubridate duration}. Defaults to 1 day (24 hours).}
 }
 \value{
 A character scalar, or \code{NULL} if no cached object exists that hasn't exceeded \code{max_age}.

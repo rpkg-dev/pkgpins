@@ -1,0 +1,36 @@
+development:
+  mode: auto
+template:
+  opengraph:
+    twitter:
+      card: summary
+      creator: '@2BSalim'
+  params:
+    analytics:
+      goatcounter:
+        endpoint: https://rpkg-dev.goatcounter.com/count
+    bootswatch: yeti
+    mathjax: no
+    selfhost_assets: yes
+url: https://rpkg.dev/pkgpins
+reference:
+- title: High-level functions
+- contents: with_cache
+- title: Low-level functions
+- subtitle: Manage package cache
+  desc: Functions to manage package user-cache pins board(s).
+- contents:
+  - board
+  - path_cache
+  - ls_cache
+  - clear_cache
+  - purge_cache
+  - purge_caches
+- subtitle: Handle objects
+  desc: Functions to cache/retrieve/delete results of a function call.
+- contents:
+  - hash_fn_call
+  - is_cached
+  - cache_obj
+  - get_obj
+  - rm_obj

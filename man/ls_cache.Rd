@@ -4,10 +4,10 @@
 \alias{ls_cache}
 \title{List all objects in a package's user-cache pins board}
 \usage{
-ls_cache(pkg)
+ls_cache(board)
 }
 \arguments{
-\item{pkg}{The package name. A character scalar.}
+\item{board}{\link[=board]{Package's user-cache pins board}.}
 }
 \value{
 A \link[tibble:tbl_df-class]{tibble}.

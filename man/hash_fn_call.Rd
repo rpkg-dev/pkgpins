@@ -7,9 +7,9 @@
 hash_fn_call(from_fn, ...)
 }
 \arguments{
-\item{from_fn}{The name of the function from which \code{hash_fn_call()} is called. A character scalar.}
+\item{from_fn}{Name of the function from which \code{hash_fn_call()} is called. A character scalar.}
 
-\item{...}{The arguments \code{from_fn} was called with. Any arguments omitted here won't be taken into account when generating the hash.}
+\item{...}{Arguments \code{from_fn} was called with. Any arguments omitted here won't be taken into account when generating the hash.}
 }
 \value{
 A character scalar.
@@ -18,9 +18,8 @@ A character scalar.
 Creates a string that uniquely identifies a function call by the function's name and a hash of the specified arguments.
 }
 \details{
-This function does evaluate all arguments in \code{...}. I.e. the function call \code{mypkg::foo(a = my_var)} will be cached as
-"foo-ff6a1ba723cae45aeee265a71493cecf" if \code{my_var}'s value is \code{100}, whereas it will become "foo-3f6860362d51e26829cc6f2f3b2968e9" if \code{my_var}'s value is \code{101}. See examples
-below.
+This function does evaluate all arguments in \code{...}. I.e. the function call \code{mypkg::foo(a = my_var)} will be cached as "foo-ff6a1ba723cae45aeee265a71493cecf" if
+\code{my_var}'s value is \code{100}, whereas it will become "foo-3f6860362d51e26829cc6f2f3b2968e9" if \code{my_var}'s value is \code{101}. See examples below.
 }
 \examples{
 foo <- function(a, b = "default") pkgpins::hash_fn_call("foo", a, b)

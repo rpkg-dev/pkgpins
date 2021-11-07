@@ -2,6 +2,10 @@
 
 pkgpins builds upon the [pins](https://pins.rstudio.com/) package and strives to provide R package authors a simple and standardized way to cache results on the filesystem in a suitable user directory.
 
+## How it works
+
+TODO: describe design (separate [user-cache pins board](https://pins.rstudio.com/articles/boards-understanding.html) per pkg and pkg version etc.)
+
 ## Predefined parameter labels
 
 There are two predefined parameter labels available in [pkgsnip](https://gitlab.com/salim_b/r/pkgs/pkgsnip) which fit typical use cases of this package. They are intended to be used in `@param` [roxygen2 tags](https://roxygen2.r-lib.org/articles/rd.html#functions)[^1] as follows:
@@ -37,7 +41,7 @@ remotes::install_gitlab(repo = "salim_b/r/pkgs/pkgpins")
 
 This package’s source code is written in the [R Markdown](https://rmarkdown.rstudio.com/) file format to facilitate practices commonly referred to as [*literate programming*](https://en.wikipedia.org/wiki/Literate_programming). It allows the actual code to be freely mixed with explanatory and supplementary information in expressive Markdown format instead of having to rely on [`#` comments](https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Comments) only.
 
-All the `-GEN.R` suffixed R source code found under [`R/`](R/) is generated from the respective R Markdown counterparts under [`Rmd/`](Rmd/) using [`pkgpurl::purl_rmd()`](https://gitlab.com/salim_b/r/pkgs/pkgpurl/)[^2]. Always make changes only to the `.Rmd` files – never the `.R` files – and then run `pkgpurl::purl_rmd()` to regenerate the R source files.
+All the `.gen.R` suffixed R source code found under [`R/`](R/) is generated from the respective R Markdown counterparts under [`Rmd/`](Rmd/) using [`pkgpurl::purl_rmd()`](https://rpkg.dev/pkgpurl/reference/purl_rmd.html)[^2]. Always make changes only to the `.Rmd` files – never the `.R` files – and then run `pkgpurl::purl_rmd()` to regenerate the R source files.
 
 ### Coding style
 

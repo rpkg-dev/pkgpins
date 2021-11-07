@@ -1,11 +1,8 @@
 Package: pkgpins
 Title: Facilitates Results Caching in R Packages Using the Pins Package
-Version: 0.6.4.9000
+Version: 0.7.0.9000
 Authors@R: 
-    person(given = "Salim",
-           family = "Brüggemann",
-           role = c("aut", "cre"),
-           email = "salim-b@pm.me",
+    person("Salim", "Brüggemann", , "salim-b@pm.me", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-5329-5987"))
 Description: pkgpins builds upon the pins package and strives to provide R
     package authors a simple and standardized way to cache results on the
@@ -18,24 +15,26 @@ Depends:
 Imports: 
     checkmate (>= 2.0.0),
     cli (>= 3.0.1),
-    dplyr (>= 1.0.0),
+    dplyr (>= 1.0.7),
     ellipsis (>= 0.3.2),
     fs (>= 1.4.1),
+    glue (>= 1.4.2),
     lubridate (>= 1.7.9),
     magrittr (>= 2.0.1),
-    methods,
-    pal (>= 0.0.9066),
     pins (>= 1.0.0),
-    rappdirs (>= 0.3.3),
     purrr (>= 0.3.4),
+    qs (>= 0.25.1),
+    rappdirs (>= 0.3.3),
     rlang (>= 0.4.6),
     stringr (>= 1.4.0),
-    tibble (>= 3.0.1),
-    utils
+    tibble (>= 3.1.5),
+    utils,
+    yaml (>= 2.2.1)
 Suggests: 
     bench,
     jsonlite,
-    pkgsnip,
+    pal (>= 0.0.9073),
+    pkgsnip (>= 0.0.9026),
     testthat (>= 3.0.0)
 Remotes:
     gitlab::salim_b/r/pkgs/pal,

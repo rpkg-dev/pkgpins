@@ -8,7 +8,7 @@ output: pal::gitlab_document
 
 ## How it works
 
-TODO: describe design (separate [user-cache pins board](https://pins.rstudio.com/articles/boards-understanding.html) per pkg etc.)
+TODO: describe design (separate [user-cache pins board](https://pins.rstudio.com/articles/boards-understanding.html) per pkg and pkg version etc.)
 
 ## Predefined parameter labels
 

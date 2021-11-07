@@ -4,14 +4,14 @@
 \alias{get_obj}
 \title{Get a cached object from a package's user-cache pins board}
 \usage{
-get_obj(id, pkg, max_age = "1 day")
+get_obj(board, id, max_age = "1 day")
 }
 \arguments{
-\item{id}{The pin name uniquely identifying the object to be retrieved from the \code{pkg}'s user-cache pins board. A character scalar.}
+\item{board}{\link[=board]{Package's user-cache pins board}.}
 
-\item{pkg}{The package name. A character scalar.}
+\item{id}{Pin name uniquely identifying the object to be retrieved from the \code{pkg}'s user-cache pins board. A character scalar.}
 
-\item{max_age}{The maximum age the cached object is allowed to have. A valid \link[lubridate:as.duration]{lubridate duration}. Defaults to 1 day (24 hours).}
+\item{max_age}{Maximum age the cached object is allowed to have. A valid \link[lubridate:as.duration]{lubridate duration}. Defaults to 1 day (24 hours).}
 }
 \value{
 The cached object if it is not older than \code{max_age} and the \code{pkg} versions match, otherwise \code{NULL}.

@@ -4,14 +4,11 @@
 \alias{purge_cache}
 \title{Purge a package's user-cache pins board}
 \usage{
-purge_cache(pkg)
+purge_cache(board)
 }
 \arguments{
-\item{pkg}{The package name. A character scalar.}
-}
-\value{
-The deleted filesystem \link[fs:fs_path]{path}, invisibly. Of length 0 if the package's user-cache pins board didn't exist.
+\item{board}{\link[=board]{Package's user-cache pins board}.}
 }
 \description{
-Deletes \emph{all} objects from a package's user-cache pins board.
+Deletes \emph{all} objects from a package's user-cache pins board. All boards belonging to the same package as \code{board} are deleted, too.
 }

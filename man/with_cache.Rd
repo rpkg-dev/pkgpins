@@ -4,17 +4,29 @@
 \alias{with_cache}
 \title{Cache the result of an expression from within a function}
 \usage{
-with_cache(expr, pkg, from_fn, ..., use_cache = TRUE, cache_lifespan = "1 day")
+with_cache(
+  expr,
+  pkg,
+  from_fn,
+  ...,
+  pkg_version = utils::packageVersion(pkg = pkg),
+  use_cache = TRUE,
+  cache_lifespan = "1 day"
+)
 }
 \arguments{
-\item{expr}{The expression to cache.}
+\item{expr}{Expression to cache.}
 
-\item{pkg}{The package name. A character scalar.}
+\item{pkg}{Package name. A character scalar.}
 
-\item{from_fn}{The name of the function that \code{expr} is cached from, i.e. the name of the function that \code{with_cache()} is called from. A character scalar.}
+\item{from_fn}{Name of the function that \code{expr} is cached from, i.e. the name of the function that \code{with_cache()} is called from. A character scalar.}
 
-\item{...}{The arguments received by \code{from_fn} on which the caching should depend. This is fundamental to determine whether \code{expr} was already cached or not.
-The arguments must be specified \emph{unnamed} (see examples). \link[rlang:dyn-dots]{Dynamic dots} are supported.}
+\item{...}{Arguments received by \code{from_fn} on which the caching should depend. This is fundamental to determine whether \code{expr} was already cached or not. The
+arguments must be specified \emph{unnamed} (see examples). \link[rlang:dyn-dots]{Dynamic dots} are supported.}
+
+\item{pkg_version}{Optional version number of \code{pkg} to include when caching the result. A \link[utils:packageDescription]{package version number} or \code{NULL}. If not
+\code{NULL}, a separate user-cache pins board is created each time \code{pkg}'s version number changes (e.g. after an upgrade), ensuring to never return cached
+results from a different (old) package version, irrespective of \code{cache_lifespan}.}
 
 \item{use_cache}{Return cached results if possible. If \code{FALSE}, results are always newly fetched regardless of \code{cache_lifespan}.}
 
@@ -44,11 +56,11 @@ pkg_sys_deps <- function(pkg,
   pkgpins::with_cache(
     expr = purrr::flatten(jsonlite::fromJSON(txt = paste0("https://sysreqs.r-hub.io/pkg/", pkg),
                                              simplifyVector = FALSE)),
+    pkg = this_pkg,
     from_fn = "pkg_sys_deps",
     pkg,
     use_cache = use_cache,
-    cache_lifespan = cache_lifespan,
-    pkg = this_pkg
+    cache_lifespan = cache_lifespan
   )
 }
 
@@ -64,5 +76,5 @@ bench::mark("with cache" = pkg_sys_deps("git2r"),
             relative = TRUE)}
 
 # purge cache from the above example
-pkgpins::purge_cache("pkgpins")
+pkgpins::board(pkg = "pkgpins") |> pkgpins::purge_cache()
 }

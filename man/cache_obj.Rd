@@ -4,47 +4,37 @@
 \alias{cache_obj}
 \title{Cache an object to a package's user-cache pins board}
 \usage{
-cache_obj(x, id, pkg)
+cache_obj(board, x, id, qs_preset = c("fast", "balanced", "high", "archive"))
 }
 \arguments{
-\item{x}{An object, local file or remote URL to be cached.}
+\item{board}{\link[=board]{Package's user-cache pins board}.}
 
-\item{id}{The pin name uniquely identifying \code{x} in the \code{pkg}'s user-cache pins board. A character scalar. Necessary to retrieve \code{x} again using
-\code{\link[=get_obj]{get_obj()}}. An already existing pin named \code{id} will be silently overwritten.}
+\item{x}{Object to be cached.}
 
-\item{pkg}{The package name. A character scalar.}
+\item{id}{Pin name uniquely identifying \code{x} in the \code{pkg}'s user-cache pins board. A character scalar which is safe to use in paths of common file systems.
+Necessary to retrieve \code{x} again using \code{\link[=get_obj]{get_obj()}}. An already existing pin named \code{id} will be silently overwritten.}
+
+\item{qs_preset}{The serialization algorithm preset to use. See \code{\link[qs:qsave]{qs::qsave()}} (section \emph{Presets}) for details.}
 }
 \value{
-\code{x} invisibly.
+\code{x}, invisibly.
 }
 \description{
 Stores an object in \code{pkg}'s user-cache pins board, i.e. caches it to the filesystem.
 }
 \details{
-The following additional metadata is stored together with the actual object:
-\itemize{
-\item \strong{\code{pkg_version}}: The version number of \code{pkg} that is currently installed (i.e. at the time of caching the object). A
-\code{\link[base:numeric_version]{package_version}}, stored as character. You can restore it using \code{\link[=as.package_version]{as.package_version(package_version)}}.
-\item \strong{\code{date_time_cached}}: The exact date and time (UTC) of the pinning. Stored as an \link[base:integer]{integer}. You can restore the actual datetime using
-\code{\link[lubridate:as_date]{lubridate::as_datetime(date_time_cached, tz = "UTC")}} (note that \code{\link[=ls_cache]{ls_cache()}} does this automatically).
-}
-
-Note that an object is identified by its \code{id} only, meaning \code{cache_obj()} will overwrite an existing cached object of the same \code{id} regardless of the
-metadata. See \code{\link[=hash_fn_call]{hash_fn_call()}} for a convenient way to create an \code{id} that uniquely identifies a function call. Or just use \code{\link[=with_cache]{with_cache()}} that internally
-relies on the former.
+Note that \code{cache_obj()} will always overwrite an already existing cached object of the same \code{id}. See \code{\link[=hash_fn_call]{hash_fn_call()}} for a convenient way to create an \code{id}
+that uniquely identifies a function call. Or just use \code{\link[=with_cache]{with_cache()}} that internally relies on the former.
 
 Note that reading in the cached result from the user-cache pins board (i.e. from the filesystem) might produce a noticeable delay depending on the size of
 the cached object. Therefore, it's only recommended to cache results that take a considerable amount of time when recomputed. To avoid the overhead of
 re-reading a cached result when accessing it multiple times, you can always assign it to an R variable to benefit from direct storage in memory.
 }
 \examples{
-\donttest{
-library(magrittr)
-
 # if the fn below would be part of a real package, we could instead define `this_pkg` globally
 # using `this_pkg <- utils::packageName()`; instead, we now cache to pkgpins's cache (which
 # itself never uses the cache)
-this_pkg <- "pkgpins"
+board <- pkgpins::board(pkg = "pkgpins")
 
 # let's define a fn that returns R pkg sys deps from cache
 pkg_sys_deps <- function(pkg,
@@ -55,30 +45,30 @@ pkg_sys_deps <- function(pkg,
   if (use_cache) {
     pin_name <- pkgpins::hash_fn_call(from_fn = "pkg_sys_deps",
                                       pkg)
-    result <- pkgpins::get_obj(id = pin_name,
-                               max_age = cache_lifespan,
-                               pkg = this_pkg)
+    result <- pkgpins::get_obj(board = board,
+                               id = pin_name,
+                               max_age = cache_lifespan)
     fetch <- is.null(result)
   }
   
   if (fetch) {
     result <-
       jsonlite::fromJSON(txt = paste0("https://sysreqs.r-hub.io/pkg/", pkg),
-                         simplifyVector = FALSE) \%>\%
+                         simplifyVector = FALSE) |>
       purrr::flatten()
   }
  
   if (use_cache && fetch) {
-    pkgpins::cache_obj(x = result,
-                       id = pin_name,
-                       pkg = this_pkg)
+    pkgpins::cache_obj(board = board,
+                       x = result,
+                       id = pin_name)
   }
 
   result
 }
 
 # now get the sys deps for git2r for the first time (populating the cache)
-pkg_sys_deps("git2r")}
+pkg_sys_deps("git2r")
 
 \dontrun{
 # for the `cache_lifespan` (we've set a default of 6h), the cached result will be returned
@@ -89,5 +79,5 @@ bench::mark("with cache" = pkg_sys_deps("git2r"),
             relative = TRUE)}
 
 # purge cache from the above example
-pkgpins::purge_cache("pkgpins")
+pkgpins::purge_cache(board = board)
 }
