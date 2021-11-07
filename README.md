@@ -2,6 +2,10 @@
 
 pkgpins builds upon the [pins](https://pins.rstudio.com/) package and strives to provide R package authors a simple and standardized way to cache results on the filesystem in a suitable user directory.
 
+## Documentation
+
+The documentation of this package is found [here](https://rpkg.dev/pkgpins).
+
 ## How it works
 
 TODO: describe design (separate [user-cache pins board](https://pins.rstudio.com/articles/boards-understanding.html) per pkg and pkg version etc.)

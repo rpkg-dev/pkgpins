@@ -6,6 +6,12 @@ output: pal::gitlab_document
 
 `r pal::desc_value("Description") %>% stringr::str_replace(" (pins)( package) ", " [\\1](https://pins.rstudio.com/)\\2 ")`
 
+```{r, pkgdown, eval = !isTRUE(getOption("pal.build_readme.is_pkgdown")), results = "asis", echo = FALSE}
+pkgsnip::md_snip(name = "pkgdown_notice") %>%
+  paste0("## Documentation\n\n", .) %>%
+  pal::cat_lines()
+```
+
 ## How it works
 
 TODO: describe design (separate [user-cache pins board](https://pins.rstudio.com/articles/boards-understanding.html) per pkg and pkg version etc.)
