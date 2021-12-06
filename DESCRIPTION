@@ -1,6 +1,6 @@
 Package: pkgpins
 Title: Facilitates Results Caching in R Packages Using the Pins Package
-Version: 0.7.0.9000
+Version: 0.7.0.9001
 Authors@R: 
     person("Salim", "Brüggemann", , "salim-b@pm.me", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-5329-5987"))

@@ -291,9 +291,11 @@ board <- function(pkg,
                    sep = "-")
   }
   
-  pins::board_folder(path = fs::path(rappdirs::user_cache_dir(appname = "pkgpins"),
-                                     pkg),
-                     versioned = FALSE)
+  rappdirs::user_cache_dir(appname = "pkgpins") %>%
+    fs::path(pkg) %>%
+    # TODO: remove `fs::path_expand()` below as soon as [issue #325](https://github.com/r-lib/fs/issues/325) is resolved
+    fs::path_expand() %>%
+    pins::board_folder(versioned = FALSE)
 }
 ```
 
@@ -549,8 +551,8 @@ NOTES:
 -   We don't rely on `pins::pin_write()` because it
 
     1.  has quite a lot of overhead for our purpose, e.g. it always first stores the object in system's temp dir and afterwards copies it to the actual board
-        and deletes the temp copy. And it does quite a lot of other processing we don't need,
-    2.  doesn't allow to alter the defaults of `qs::qsave()`, and
+        and deletes the temp copy. And it does quite a lot of other processing we don't need.
+    2.  doesn't allow to alter the defaults of `qs::qsave()`.
     3.  always displays an annoying message like `Creating new version '20211106T044834Z-dcd18'` which cannot be disabled.
 
 ```{r}
