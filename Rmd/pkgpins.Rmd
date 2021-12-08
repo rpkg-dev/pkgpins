@@ -172,7 +172,7 @@ EXPERIMENTAL; doesn't work as supposed (yet)!
 
 TODO:
 
--   Figure out how to properly pass on `...` to `fn()`; Currently only works with lamda fns, not with "normal" non-lamda fns:
+-   Figure out how to properly pass on `...` to `fn()`; Currently only works with lambda fns, not with "normal" non-lambda fns:
 
     ``` r
     sleepy <- function(x) { Sys.sleep(x); x }
