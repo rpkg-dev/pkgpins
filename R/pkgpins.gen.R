@@ -162,8 +162,6 @@ board <- function(pkg,
   
   rappdirs::user_cache_dir(appname = "pkgpins") %>%
     fs::path(pkg) %>%
-    # TODO: remove `fs::path_expand()` below as soon as [issue #325](https://github.com/r-lib/fs/issues/325) is resolved
-    fs::path_expand() %>%
     pins::board_folder(versioned = FALSE)
 }
 
