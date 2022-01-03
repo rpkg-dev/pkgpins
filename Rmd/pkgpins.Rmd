@@ -61,9 +61,9 @@ NOTES:
     thus also works when R code is called from *non-inspectable* frames. See `?rlang::stack` for more information on the *call* vs. the *context stack* in R.
 
 ```{r}
-#' Cache the result of an expression from within a function
+#' Cache the result of an expression
 #'
-#' One-stop solution to add caching to an R function.
+#' One-stop solution to add caching to any R expression, for example from within a function. See the examples.
 #'
 #' `expr` is evaluated in the environment that `with_cache()` is called from.
 #'

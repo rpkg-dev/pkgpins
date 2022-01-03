@@ -2,7 +2,7 @@
 % Please edit documentation in R/pkgpins.gen.R
 \name{with_cache}
 \alias{with_cache}
-\title{Cache the result of an expression from within a function}
+\title{Cache the result of an expression}
 \usage{
 with_cache(
   expr,
@@ -36,7 +36,7 @@ arguments must be specified \emph{unnamed} (see examples). \link[rlang:dyn-dots]
 The result of evaluating \code{expr}, from cache if \code{use_cache = TRUE} and a cached result exists that hasn't exceeded \code{cache_lifespan}.
 }
 \description{
-One-stop solution to add caching to an R function.
+One-stop solution to add caching to any R expression, for example from within a function. See the examples.
 }
 \details{
 \code{expr} is evaluated in the environment that \code{with_cache()} is called from.

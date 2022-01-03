@@ -2,7 +2,7 @@
 # See `README.md#r-markdown-format` for more information on the literate programming approach used applying the R Markdown format.
 
 # pkgpins: Facilitates Results Caching in R Packages Using the Pins Package
-# Copyright (C) 2021 Salim Brüggemann
+# Copyright (C) 2022 Salim Brüggemann
 # 
 # This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free
 # Software Foundation, either version 3 of the License, or any later version.
@@ -27,9 +27,9 @@ ls_board_paths <- function(pkg) {
                regexp = glue::glue("/{pkg}(-.+)?$"))
 }
 
-#' Cache the result of an expression from within a function
+#' Cache the result of an expression
 #'
-#' One-stop solution to add caching to an R function.
+#' One-stop solution to add caching to any R expression, for example from within a function. See the examples.
 #'
 #' `expr` is evaluated in the environment that `with_cache()` is called from.
 #'
