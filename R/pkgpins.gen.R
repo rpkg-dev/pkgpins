@@ -317,7 +317,7 @@ hash_fn_call <- function(from_fn,
                          ...) {
   
   checkmate::assert_string(from_fn)
-  ellipsis::check_dots_unnamed()
+  rlang::check_dots_unnamed()
   
   rlang::dots_list(...,
                    .homonyms = "error",
