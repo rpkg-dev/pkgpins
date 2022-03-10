@@ -8,7 +8,7 @@ Description: pkgpins builds upon the pins package and strives to provide R
     package authors a simple and standardized way to cache results on the
     filesystem in a suitable user directory.
 License: AGPL (>= 3)
-URL: https://gitlab.com/salim_b/r/pkgs/pkgpins
+URL: https://rpkg.dev/pkgpins, https://gitlab.com/salim_b/r/pkgs/pkgpins
 BugReports: https://gitlab.com/salim_b/r/pkgs/pkgpins/issues
 Depends: 
     R (>= 4.1)

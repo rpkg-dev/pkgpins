@@ -11,6 +11,7 @@ pkgpins builds upon the pins package and strives to provide R package authors a 
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://rpkg.dev/pkgpins}
   \item \url{https://gitlab.com/salim_b/r/pkgs/pkgpins}
   \item Report bugs at \url{https://gitlab.com/salim_b/r/pkgs/pkgpins/issues}
 }
