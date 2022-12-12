@@ -22,7 +22,8 @@ utils::globalVariables(names = c(".",
 
 ls_board_paths <- function(pkg) {
   
-  rappdirs::user_cache_dir(appname = "pkgpins") %>%
+  tools::R_user_dir(package = "pkgpins",
+                    which = "cache") %>%
     fs::dir_ls(type = "dir",
                regexp = glue::glue("/{pkg}(-.+)?$"))
 }
@@ -37,12 +38,12 @@ ls_board_paths <- function(pkg) {
 #'
 #' @inheritParams board
 #' @param expr Expression to cache.
-#' @param pkg_version Optional version number of `pkg` to include when caching the result. A [package version number][utils::packageVersion] or `NULL`. If
-#'   `NULL`, caching is agnostic about `pkg`'s version number. Otherwise, a separate user-cache pins board is created each time `pkg`'s version number changes
-#'   (e.g. after an upgrade), ensuring to never return cached results from a different (old) package version, irrespective of `cache_lifespan`.
+#' @param pkg_versioned Whether or not to make the caching dependent on the version number of `pkg`. If `FALSE`, caching is agnostic about `pkg`'s version
+#'   number. Otherwise, a separate user-cache pins board is created each time `pkg`'s version number changes (e.g. after an upgrade), ensuring to never return
+#'   cached results from a different (old) package version, irrespective of `cache_lifespan`.
 #' @param from_fn Name of the function that `expr` is cached from, i.e. the name of the function that `with_cache()` is called from. A character scalar.
 #' @param ... Arguments received by `from_fn` on which the caching should depend. This is fundamental to determine whether `expr` was already cached or not. The
-#' arguments must be specified _unnamed_ (see examples). `r pkgsnip::param_label("dyn_dots_support")`
+#'   arguments must be specified _unnamed_ (see examples). `r pkgsnip::param_label("dyn_dots_support")`
 #' @param use_cache `r pkgsnip::param_label("use_cache")`
 #' @param cache_lifespan `r pkgsnip::param_label("cache_lifespan")` 
 #'
@@ -88,7 +89,7 @@ with_cache <- function(expr,
                        pkg,
                        from_fn,
                        ...,
-                       pkg_version = utils::packageVersion(pkg = pkg),
+                       pkg_versioned = TRUE,
                        use_cache = TRUE,
                        cache_lifespan = "1 day") {
   
@@ -99,7 +100,7 @@ with_cache <- function(expr,
   if (use_cache) {
     
     board <- board(pkg = pkg,
-                   pkg_version = pkg_version)
+                   pkg_versioned = pkg_versioned)
     id <- hash_fn_call(from_fn = from_fn,
                        ...)
     
@@ -138,29 +139,27 @@ with_cache <- function(expr,
 #' Returns a `pkg`'s user-cache pins board. The board is automatically created if it doesn't already exist.
 #'
 #' @param pkg Package name. A character scalar.
-#' @param pkg_version Optional version number of `pkg` to include in the board name. A [package version number][utils::packageVersion] or `NULL`. If `NULL`, the
-#'   board is agnostic about `pkg`'s version number. Otherwise, a separate board is created for each `pkg` version number.
+#' @param pkg_versioned Whether or not to make the board name dependent on `pkg`'s version number. If `FALSE`, the board is agnostic about `pkg`'s version
+#'   number. Otherwise, a separate board is created for each `pkg` version number (e.g. after an upgrade).
 #'
-#' @return The user-cache pins board belonging to `pkg` and `pkg_version`. An object ob class [`pins_board_folder`][pins::board_folder].
+#' @return The user-cache pins board belonging to `pkg` (and its version number if `pkg_versioned = TRUE`). An object of class
+#'   [`pins_board_folder`][pins::board_folder].
 #' @family pkg_cache_mgmt
 #' @export
 board <- function(pkg,
-                  pkg_version = utils::packageVersion(pkg = pkg)) {
+                  pkg_versioned = TRUE) {
   
   checkmate::assert_string(pkg)
-  test_pkg_version <- is.package_version(pkg_version) || is.null(pkg_version)
+  checkmate::assert_flag(pkg_versioned)
   
-  if (!test_pkg_version) {
-    cli::cli_abort("{.arg pkg_version} must either be an object of class {.cls package_version} or {.val NULL}.")
-  }
-  
-  if (!is.null(pkg_version)) {
+  if (pkg_versioned) {
     
     pkg %<>% paste(utils::packageVersion(pkg = pkg),
                    sep = "-")
   }
   
-  rappdirs::user_cache_dir(appname = "pkgpins") %>%
+  tools::R_user_dir(package = "pkgpins",
+                    which = "cache") %>%
     fs::path(pkg) %>%
     pins::board_folder(versioned = FALSE)
 }
@@ -207,8 +206,8 @@ ls_cache <- function(board) {
 
 #' Clear a package's user-cache pins board
 #'
-#' Deletes all objects from a package's user-cache pins board that exceed a certain `max_age`. If `board` is set to include `pkg_version`, additionally
-#' deletes all user-cache pins boards belonging to versions of the package other than the currently installed one .
+#' Deletes all objects from a package's user-cache pins board that exceed a certain `max_age`. If `board` is `pkg_versioned`, additionally deletes all
+#' user-cache pins boards belonging to versions of the package other than the currently installed one.
 #'
 #' This function could be called on package load/unload, for example.
 #'
@@ -277,7 +276,8 @@ purge_cache <- function(board) {
 #' @export
 purge_caches <- function() {
   
-  fs::dir_delete(path = rappdirs::user_cache_dir(appname = "pkgpins"))
+  fs::dir_delete(path = tools::R_user_dir(package = "pkgpins",
+                                          which = "cache"))
 }
 
 #' Hash a function call

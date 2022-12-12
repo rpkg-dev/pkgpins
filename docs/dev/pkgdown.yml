@@ -1,9 +1,9 @@
-pandoc: 2.17.1.1
-pkgdown: 1.6.1.9000
-pkgdown_sha: ~
+pandoc: 2.19.2
+pkgdown: 2.0.6.9000
+pkgdown_sha: a9acf503411cbf26bb09fc19dee814968e8af944
 articles: {}
-last_built: 2022-03-10T13:23Z
+last_built: 2022-12-12T00:38Z
 urls:
-  reference: https://rpkg.dev/pkgpins/reference
-  article: https://rpkg.dev/pkgpins/articles
+  reference: https://pkgpins.rpkg.dev/reference
+  article: https://pkgpins.rpkg.dev/articles
 

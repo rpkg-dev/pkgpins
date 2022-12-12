@@ -4,16 +4,17 @@
 \alias{board}
 \title{Get a package's user-cache pins board}
 \usage{
-board(pkg, pkg_version = utils::packageVersion(pkg = pkg))
+board(pkg, pkg_versioned = TRUE)
 }
 \arguments{
 \item{pkg}{Package name. A character scalar.}
 
-\item{pkg_version}{Optional version number of \code{pkg} to include in the board name. A \link[utils:packageDescription]{package version number} or \code{NULL}. If \code{NULL}, the
-board is agnostic about \code{pkg}'s version number. Otherwise, a separate board is created for each \code{pkg} version number.}
+\item{pkg_versioned}{Whether or not to make the board name dependent on \code{pkg}'s version number. If \code{FALSE}, the board is agnostic about \code{pkg}'s version
+number. Otherwise, a separate board is created for each \code{pkg} version number (e.g. after an upgrade).}
 }
 \value{
-The user-cache pins board belonging to \code{pkg} and \code{pkg_version}. An object ob class \code{\link[pins:board_folder]{pins_board_folder}}.
+The user-cache pins board belonging to \code{pkg} (and its version number if \code{pkg_versioned = TRUE}). An object of class
+\code{\link[pins:board_folder]{pins_board_folder}}.
 }
 \description{
 Returns a \code{pkg}'s user-cache pins board. The board is automatically created if it doesn't already exist.

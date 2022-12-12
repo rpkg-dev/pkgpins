@@ -1,5 +1,7 @@
 # pkgpins: Facilitates Results Caching in R Packages Using the Pins Package
 
+[![CRAN Status](https://r-pkg.org/badges/version/pkgpins)](https://cran.r-project.org/package=pkgpins){.pkgdown-release}
+
 pkgpins builds upon the [pins](https://pins.rstudio.com/) package and strives to provide R package authors a simple and standardized way to cache results on the filesystem in a suitable user directory.
 
 ## How it works
@@ -34,6 +36,10 @@ if (!("remotes" %in% rownames(installed.packages()))) {
 
 remotes::install_gitlab(repo = "salim_b/r/pkgs/pkgpins")
 ```
+
+## Usage
+
+The (function) reference is found [here](reference).
 
 ## Development
 

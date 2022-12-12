@@ -1,10 +1,12 @@
 # pkgpins: Facilitates Results Caching in R Packages Using the Pins Package
 
+<a href="https://cran.r-project.org/package=pkgpins" class="pkgdown-release"><img src="https://r-pkg.org/badges/version/pkgpins" alt="CRAN Status" /></a>
+
 pkgpins builds upon the [pins](https://pins.rstudio.com/) package and strives to provide R package authors a simple and standardized way to cache results on the filesystem in a suitable user directory.
 
 ## Documentation
 
-The documentation of this package is found [here](https://rpkg.dev/pkgpins).
+The documentation of this package is found [here](https://pkgpins.rpkg.dev).
 
 ## How it works
 

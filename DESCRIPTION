@@ -1,6 +1,6 @@
 Package: pkgpins
 Title: Facilitates Results Caching in R Packages Using the Pins Package
-Version: 0.7.0.9003
+Version: 0.7.0.9004
 Authors@R: 
     person("Salim", "Brüggemann", , "salim-b@pm.me", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-5329-5987"))
@@ -8,7 +8,7 @@ Description: pkgpins builds upon the pins package and strives to provide R
     package authors a simple and standardized way to cache results on the
     filesystem in a suitable user directory.
 License: AGPL (>= 3)
-URL: https://rpkg.dev/pkgpins, https://gitlab.com/salim_b/r/pkgs/pkgpins
+URL: https://pkgpins.rpkg.dev, https://gitlab.com/salim_b/r/pkgs/pkgpins
 BugReports: https://gitlab.com/salim_b/r/pkgs/pkgpins/issues
 Depends: 
     R (>= 4.1)
@@ -23,10 +23,9 @@ Imports:
     pins (>= 1.0.0),
     purrr (>= 0.3.4),
     qs (>= 0.25.1),
-    rappdirs (>= 0.3.3),
     rlang (>= 1.0.0),
     stringr (>= 1.4.0),
-    tibble (>= 3.1.5),
+    tools,
     utils,
     yaml (>= 2.2.1)
 Suggests: 
@@ -34,7 +33,8 @@ Suggests:
     jsonlite,
     pal (>= 0.0.9079),
     pkgsnip (>= 0.0.9027),
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    tibble (>= 3.1.5)
 Remotes:
     gitlab::salim_b/r/pkgs/pal,
     gitlab::salim_b/r/pkgs/pkgsnip
@@ -42,4 +42,4 @@ Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.2

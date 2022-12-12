@@ -15,8 +15,8 @@ clear_cache(board, max_age = "1 day")
 \code{board}, invisibly.
 }
 \description{
-Deletes all objects from a package's user-cache pins board that exceed a certain \code{max_age}. If \code{board} is set to include \code{pkg_version}, additionally
-deletes all user-cache pins boards belonging to versions of the package other than the currently installed one .
+Deletes all objects from a package's user-cache pins board that exceed a certain \code{max_age}. If \code{board} is \code{pkg_versioned}, additionally deletes all
+user-cache pins boards belonging to versions of the package other than the currently installed one.
 }
 \details{
 This function could be called on package load/unload, for example.
