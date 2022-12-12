@@ -6,7 +6,7 @@ pkgpins builds upon the [pins](https://pins.rstudio.com/) package and strives to
 
 ## Documentation
 
-The documentation of this package is found [here](https://pkgpins.rpkg.dev).
+[![Netlify Status](https://api.netlify.com/api/v1/badges/db173373-dd17-47ef-959b-695d01482a1d/deploy-status)](https://app.netlify.com/sites/pkgpins-rpkg-dev/deploys)The documentation of this package is found [here](https://pkgpins.rpkg.dev).
 
 ## How it works
 
