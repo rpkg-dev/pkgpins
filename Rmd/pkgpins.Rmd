@@ -96,8 +96,9 @@ NOTES:
 #'                          use_cache = TRUE,
 #'                          cache_lifespan = "6h") {
 #'   pkgpins::with_cache(
-#'     expr = purrr::flatten(jsonlite::fromJSON(txt = paste0("https://sysreqs.r-hub.io/pkg/", pkg),
-#'                                              simplifyVector = FALSE)),
+#'     expr = purrr::list_flatten(jsonlite::fromJSON(txt = paste0("https://sysreqs.r-hub.io/pkg/",
+#'                                                                pkg),
+#'                                                   simplifyVector = FALSE)),
 #'     pkg = this_pkg,
 #'     from_fn = "pkg_sys_deps",
 #'     pkg,
@@ -151,13 +152,11 @@ with_cache <- function(expr,
   }
   
   if (fetch) {
-    
     result <- rlang::eval_bare(expr = expr,
                                env = parent.frame(n = 2L))
   }
   
   if (use_cache && fetch) {
-    
     cache_obj(board = board,
               x = result,
               id = id)
@@ -600,7 +599,7 @@ NOTES:
 #'     result <-
 #'       jsonlite::fromJSON(txt = paste0("https://sysreqs.r-hub.io/pkg/", pkg),
 #'                          simplifyVector = FALSE) |>
-#'       purrr::flatten()
+#'       purrr::list_flatten()
 #'   }
 #'  
 #'   if (use_cache && fetch) {

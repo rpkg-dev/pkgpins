@@ -30,7 +30,7 @@ cached results from a different (old) package version, irrespective of \code{cac
 
 \item{use_cache}{Return cached results if possible. If \code{FALSE}, results are always newly fetched regardless of \code{cache_lifespan}.}
 
-\item{cache_lifespan}{The duration after which cached results are refreshed (i.e. newly fetched). A valid \link[lubridate:as.duration]{lubridate duration}. Only relevant if \code{use_cache = TRUE}.}
+\item{cache_lifespan}{The duration after which cached results are refreshed (i.e. newly fetched). A valid \link[lubridate:as.duration]{lubridate duration}. Use \code{Inf} to disable cache expiry. Only relevant if \code{use_cache = TRUE}.}
 }
 \value{
 The result of evaluating \code{expr}, from cache if \code{use_cache = TRUE} and a cached result exists that hasn't exceeded \code{cache_lifespan}.
@@ -54,8 +54,9 @@ pkg_sys_deps <- function(pkg,
                          use_cache = TRUE,
                          cache_lifespan = "6h") {
   pkgpins::with_cache(
-    expr = purrr::flatten(jsonlite::fromJSON(txt = paste0("https://sysreqs.r-hub.io/pkg/", pkg),
-                                             simplifyVector = FALSE)),
+    expr = purrr::list_flatten(jsonlite::fromJSON(txt = paste0("https://sysreqs.r-hub.io/pkg/",
+                                                               pkg),
+                                                  simplifyVector = FALSE)),
     pkg = this_pkg,
     from_fn = "pkg_sys_deps",
     pkg,

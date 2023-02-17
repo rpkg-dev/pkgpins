@@ -2,7 +2,7 @@
 # See `README.md#r-markdown-format` for more information on the literate programming approach used applying the R Markdown format.
 
 # pkgpins: Facilitates Results Caching in R Packages Using the Pins Package
-# Copyright (C) 2022 Salim Brüggemann
+# Copyright (C) 2023 Salim Brüggemann
 # 
 # This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free
 # Software Foundation, either version 3 of the License, or any later version.
@@ -62,8 +62,9 @@ ls_board_paths <- function(pkg) {
 #'                          use_cache = TRUE,
 #'                          cache_lifespan = "6h") {
 #'   pkgpins::with_cache(
-#'     expr = purrr::flatten(jsonlite::fromJSON(txt = paste0("https://sysreqs.r-hub.io/pkg/", pkg),
-#'                                              simplifyVector = FALSE)),
+#'     expr = purrr::list_flatten(jsonlite::fromJSON(txt = paste0("https://sysreqs.r-hub.io/pkg/",
+#'                                                                pkg),
+#'                                                   simplifyVector = FALSE)),
 #'     pkg = this_pkg,
 #'     from_fn = "pkg_sys_deps",
 #'     pkg,
@@ -117,13 +118,11 @@ with_cache <- function(expr,
   }
   
   if (fetch) {
-    
     result <- rlang::eval_bare(expr = expr,
                                env = parent.frame(n = 2L))
   }
   
   if (use_cache && fetch) {
-    
     cache_obj(board = board,
               x = result,
               id = id)
@@ -408,7 +407,7 @@ is_cached <- function(board,
 #'     result <-
 #'       jsonlite::fromJSON(txt = paste0("https://sysreqs.r-hub.io/pkg/", pkg),
 #'                          simplifyVector = FALSE) |>
-#'       purrr::flatten()
+#'       purrr::list_flatten()
 #'   }
 #'  
 #'   if (use_cache && fetch) {

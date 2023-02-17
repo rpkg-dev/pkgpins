@@ -55,7 +55,7 @@ pkg_sys_deps <- function(pkg,
     result <-
       jsonlite::fromJSON(txt = paste0("https://sysreqs.r-hub.io/pkg/", pkg),
                          simplifyVector = FALSE) |>
-      purrr::flatten()
+      purrr::list_flatten()
   }
  
   if (use_cache && fetch) {
