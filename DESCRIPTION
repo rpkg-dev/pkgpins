@@ -1,6 +1,6 @@
 Package: pkgpins
 Title: Facilitates Results Caching in R Packages Using the Pins Package
-Version: 0.7.0.9004
+Version: 0.8.0.9000
 Authors@R: 
     person("Salim", "Brüggemann", , "salim-b@pm.me", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-5329-5987"))
@@ -31,8 +31,8 @@ Imports:
 Suggests: 
     bench,
     jsonlite,
-    pal (>= 0.0.9079),
-    pkgsnip (>= 0.0.9027),
+    pal (>= 0.0.9093),
+    pkgsnip (>= 0.0.9034),
     testthat (>= 3.0.0),
     tibble (>= 3.1.5)
 Remotes:

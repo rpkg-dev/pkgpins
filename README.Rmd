@@ -31,14 +31,14 @@ There are two predefined parameter labels available in [pkgsnip](https://gitlab.
 are intended to be used in `@param` [roxygen2 tags](https://roxygen2.r-lib.org/articles/rd.html#functions)[^1] as follows:
 
 ``` r
-#' @param cache_lifespan `r '\x60r pkgsnip::param_label("cache_lifespan")\x60'`
+#' @param max_cache_age `r '\x60r pkgsnip::param_label("max_cache_age")\x60'`
 #' @param use_cache `r '\x60r pkgsnip::param_label("use_cache")\x60'`
 ```
 
 The above inline R code will eventually result in this:
 
 ``` r
-#' @param cache_lifespan `r pkgsnip::param_label("cache_lifespan")`
+#' @param max_cache_age `r pkgsnip::param_label("max_cache_age")`
 #' @param use_cache `r pkgsnip::param_label("use_cache")`
 ```
 

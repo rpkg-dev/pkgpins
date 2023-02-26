@@ -39,7 +39,7 @@ board <- pkgpins::board(pkg = "pkgpins")
 # let's define a fn that returns R pkg sys deps from cache
 pkg_sys_deps <- function(pkg,
                          use_cache = TRUE,
-                         cache_lifespan = "6h") {
+                         max_cache_age = "6h") {
   fetch <- TRUE
 
   if (use_cache) {
@@ -47,7 +47,7 @@ pkg_sys_deps <- function(pkg,
                                       pkg)
     result <- pkgpins::get_obj(board = board,
                                id = pin_name,
-                               max_age = cache_lifespan)
+                               max_age = max_cache_age)
     fetch <- is.null(result)
   }
   
@@ -71,7 +71,7 @@ pkg_sys_deps <- function(pkg,
 pkg_sys_deps("git2r")
 
 \dontrun{
-# for the `cache_lifespan` (we've set a default of 6h), the cached result will be returned
+# for the `max_cache_age` (we've set a default of 6h), the cached result will be returned
 # (as long as `use_cache = TRUE`):
 bench::mark("with cache" = pkg_sys_deps("git2r"),
             "without cache" = pkg_sys_deps("git2r", use_cache = FALSE),

@@ -40,14 +40,14 @@ ls_board_paths <- function(pkg) {
 #' @param expr Expression to cache.
 #' @param pkg_versioned Whether or not to make the caching dependent on the version number of `pkg`. If `FALSE`, caching is agnostic about `pkg`'s version
 #'   number. Otherwise, a separate user-cache pins board is created each time `pkg`'s version number changes (e.g. after an upgrade), ensuring to never return
-#'   cached results from a different (old) package version, irrespective of `cache_lifespan`.
+#'   cached results from a different (old) package version, irrespective of `max_cache_age`.
 #' @param from_fn Name of the function that `expr` is cached from, i.e. the name of the function that `with_cache()` is called from. A character scalar.
 #' @param ... Arguments received by `from_fn` on which the caching should depend. This is fundamental to determine whether `expr` was already cached or not. The
 #'   arguments must be specified _unnamed_ (see examples). `r pkgsnip::param_label("dyn_dots_support")`
 #' @param use_cache `r pkgsnip::param_label("use_cache")`
-#' @param cache_lifespan `r pkgsnip::param_label("cache_lifespan")` 
+#' @param max_cache_age `r pkgsnip::param_label("max_cache_age")` 
 #'
-#' @return The result of evaluating `expr`, from cache if `use_cache = TRUE` and a cached result exists that hasn't exceeded `cache_lifespan`.
+#' @return The result of evaluating `expr`, from cache if `use_cache = TRUE` and a cached result exists that hasn't exceeded `max_cache_age`.
 #' @family high_lvl
 #' @export
 #'
@@ -60,7 +60,7 @@ ls_board_paths <- function(pkg) {
 #' # let's define a fn that returns R pkg sys deps from cache
 #' pkg_sys_deps <- function(pkg,
 #'                          use_cache = TRUE,
-#'                          cache_lifespan = "6h") {
+#'                          max_cache_age = "6h") {
 #'   pkgpins::with_cache(
 #'     expr = purrr::list_flatten(jsonlite::fromJSON(txt = paste0("https://sysreqs.r-hub.io/pkg/",
 #'                                                                pkg),
@@ -69,7 +69,7 @@ ls_board_paths <- function(pkg) {
 #'     from_fn = "pkg_sys_deps",
 #'     pkg,
 #'     use_cache = use_cache,
-#'     cache_lifespan = cache_lifespan
+#'     max_cache_age = max_cache_age
 #'   )
 #' }
 #' 
@@ -77,7 +77,7 @@ ls_board_paths <- function(pkg) {
 #' pkg_sys_deps("git2r")
 #' 
 #' \dontrun{
-#' # for the `cache_lifespan` (we've set a default of 6h), the cached result will be returned
+#' # for the `max_cache_age` (we've set a default of 6h), the cached result will be returned
 #' # (as long as `use_cache = TRUE`):
 #' bench::mark("with cache" = pkg_sys_deps("git2r"),
 #'             "without cache" = pkg_sys_deps("git2r", use_cache = FALSE),
@@ -92,7 +92,7 @@ with_cache <- function(expr,
                        ...,
                        pkg_versioned = TRUE,
                        use_cache = TRUE,
-                       cache_lifespan = "1 day") {
+                       max_cache_age = "1 day") {
   
   checkmate::assert_flag(use_cache)
   
@@ -109,7 +109,7 @@ with_cache <- function(expr,
     #       result is just `NULL`
     if (is_cached(board = board,
                   id = id,
-                  max_age = cache_lifespan)) {
+                  max_age = max_cache_age)) {
       
       result <- pins::pin_read(board = board,
                                name = id)
@@ -391,7 +391,7 @@ is_cached <- function(board,
 #' # let's define a fn that returns R pkg sys deps from cache
 #' pkg_sys_deps <- function(pkg,
 #'                          use_cache = TRUE,
-#'                          cache_lifespan = "6h") {
+#'                          max_cache_age = "6h") {
 #'   fetch <- TRUE
 #'
 #'   if (use_cache) {
@@ -399,7 +399,7 @@ is_cached <- function(board,
 #'                                       pkg)
 #'     result <- pkgpins::get_obj(board = board,
 #'                                id = pin_name,
-#'                                max_age = cache_lifespan)
+#'                                max_age = max_cache_age)
 #'     fetch <- is.null(result)
 #'   }
 #'   
@@ -423,7 +423,7 @@ is_cached <- function(board,
 #' pkg_sys_deps("git2r")
 #'
 #' \dontrun{
-#' # for the `cache_lifespan` (we've set a default of 6h), the cached result will be returned
+#' # for the `max_cache_age` (we've set a default of 6h), the cached result will be returned
 #' # (as long as `use_cache = TRUE`):
 #' bench::mark("with cache" = pkg_sys_deps("git2r"),
 #'             "without cache" = pkg_sys_deps("git2r", use_cache = FALSE),

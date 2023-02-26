@@ -11,7 +11,7 @@ with_cache(
   ...,
   pkg_versioned = TRUE,
   use_cache = TRUE,
-  cache_lifespan = "1 day"
+  max_cache_age = "1 day"
 )
 }
 \arguments{
@@ -26,14 +26,14 @@ arguments must be specified \emph{unnamed} (see examples). \link[rlang:dyn-dots]
 
 \item{pkg_versioned}{Whether or not to make the caching dependent on the version number of \code{pkg}. If \code{FALSE}, caching is agnostic about \code{pkg}'s version
 number. Otherwise, a separate user-cache pins board is created each time \code{pkg}'s version number changes (e.g. after an upgrade), ensuring to never return
-cached results from a different (old) package version, irrespective of \code{cache_lifespan}.}
+cached results from a different (old) package version, irrespective of \code{max_cache_age}.}
 
-\item{use_cache}{Return cached results if possible. If \code{FALSE}, results are always newly fetched regardless of \code{cache_lifespan}.}
+\item{use_cache}{Return cached results if possible. If \code{FALSE}, results are always newly fetched regardless of \code{max_cache_age}.}
 
-\item{cache_lifespan}{The duration after which cached results are refreshed (i.e. newly fetched). A valid \link[lubridate:as.duration]{lubridate duration}. Use \code{Inf} to disable cache expiry. Only relevant if \code{use_cache = TRUE}.}
+\item{max_cache_age}{The duration after which cached results are refreshed (i.e. newly fetched). A valid \link[lubridate:as.duration]{lubridate duration}. Use \code{Inf} to disable cache expiry. Only relevant if \code{use_cache = TRUE}.}
 }
 \value{
-The result of evaluating \code{expr}, from cache if \code{use_cache = TRUE} and a cached result exists that hasn't exceeded \code{cache_lifespan}.
+The result of evaluating \code{expr}, from cache if \code{use_cache = TRUE} and a cached result exists that hasn't exceeded \code{max_cache_age}.
 }
 \description{
 One-stop solution to add caching to any R expression, for example from within a function. See the examples.
@@ -52,7 +52,7 @@ this_pkg <- "pkgpins"
 # let's define a fn that returns R pkg sys deps from cache
 pkg_sys_deps <- function(pkg,
                          use_cache = TRUE,
-                         cache_lifespan = "6h") {
+                         max_cache_age = "6h") {
   pkgpins::with_cache(
     expr = purrr::list_flatten(jsonlite::fromJSON(txt = paste0("https://sysreqs.r-hub.io/pkg/",
                                                                pkg),
@@ -61,7 +61,7 @@ pkg_sys_deps <- function(pkg,
     from_fn = "pkg_sys_deps",
     pkg,
     use_cache = use_cache,
-    cache_lifespan = cache_lifespan
+    max_cache_age = max_cache_age
   )
 }
 
@@ -69,7 +69,7 @@ pkg_sys_deps <- function(pkg,
 pkg_sys_deps("git2r")
 
 \dontrun{
-# for the `cache_lifespan` (we've set a default of 6h), the cached result will be returned
+# for the `max_cache_age` (we've set a default of 6h), the cached result will be returned
 # (as long as `use_cache = TRUE`):
 bench::mark("with cache" = pkg_sys_deps("git2r"),
             "without cache" = pkg_sys_deps("git2r", use_cache = FALSE),

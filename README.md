@@ -19,15 +19,15 @@ TODO: describe design (separate [user-cache pins board](https://pins.rstudio.com
 There are two predefined parameter labels available in [pkgsnip](https://gitlab.com/salim_b/r/pkgs/pkgsnip) which fit typical use cases of this package. They are intended to be used in `@param` [roxygen2 tags](https://roxygen2.r-lib.org/articles/rd.html#functions)[^1] as follows:
 
 ``` r
-#' @param cache_lifespan `r pkgsnip::param_label("cache_lifespan")`
+#' @param max_cache_age `r pkgsnip::param_label("max_cache_age")`
 #' @param use_cache `r pkgsnip::param_label("use_cache")`
 ```
 
 The above inline R code will eventually result in this:
 
 ``` r
-#' @param cache_lifespan The duration after which cached results are refreshed (i.e. newly fetched). A valid [lubridate duration][lubridate::as.duration]. Use `Inf` to disable cache expiry. Only relevant if `use_cache = TRUE`.
-#' @param use_cache Return cached results if possible. If `FALSE`, results are always newly fetched regardless of `cache_lifespan`.
+#' @param max_cache_age The duration after which cached results are refreshed (i.e. newly fetched). A valid [lubridate duration][lubridate::as.duration]. Use `Inf` to disable cache expiry. Only relevant if `use_cache = TRUE`.
+#' @param use_cache Return cached results if possible. If `FALSE`, results are always newly fetched regardless of `max_cache_age`.
 ```
 
 ## Installation
