@@ -11,7 +11,7 @@ is_cached(board, id, max_age = "1 day")
 
 \item{id}{Pin name uniquely identifying the object to be checked in the \code{pkg}'s user-cache pins board. A character scalar.}
 
-\item{max_age}{Maximum age the cached object is allowed to have. A valid \link[lubridate:as.duration]{lubridate duration}. Defaults to 1 day (24 hours).}
+\item{max_age}{Maximum age the cached object is allowed to have. A valid \link[lubridate:as.duration]{lubridate duration}. Defaults to 1 day (24 hours).}
 }
 \value{
 A character scalar, or \code{NULL} if no cached object exists that hasn't exceeded \code{max_age}.

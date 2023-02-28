@@ -20,6 +20,19 @@ utils::globalVariables(names = c(".",
                                  "pins_api_version",
                                  "pin_hash"))
 
+as_duration <- function(max_age) {
+  
+  max_age_num <- lubridate::as.duration(max_age)
+  
+  # ensure `max_age` is valid
+  if (is.na(max_age_num)) {
+    cli::cli_abort(paste0("{.arg max_age} is set to {.val {max_age}} which is {.emph not} interpretable as a valid lubridate duration (using {.fun ",
+                          "lubridate::as.duration})."))
+  }
+  
+  max_age_num
+}
+
 ls_board_paths <- function(pkg) {
   
   tools::R_user_dir(package = "pkgpins",
@@ -244,7 +257,7 @@ clear_cache <- function(board,
   # delete results that exceed max age
   board %>%
     pins::pin_search() %>%
-    dplyr::filter(lubridate::now(tzone = "UTC") - created > lubridate::as.duration(!!max_age)) %$%
+    dplyr::filter(lubridate::now(tzone = "UTC") - created > as_duration(!!max_age)) %$%
     name %>%
     pins::pin_delete(board = board)
 }
@@ -334,7 +347,7 @@ hash_fn_call <- function(from_fn,
 #'
 #' @inheritParams path_cache
 #' @param id Pin name uniquely identifying the object to be checked in the `pkg`'s user-cache pins board. A character scalar.
-#' @param max_age Maximum age the cached object is allowed to have. A valid [lubridate duration][lubridate::as.duration]. Defaults to 1 day (24 hours).
+#' @param max_age Maximum age the cached object is allowed to have. A valid [lubridate duration][lubridate::as.duration]. Defaults to 1 day (24 hours).
 #'
 #' @return A character scalar, or `NULL` if no cached object exists that hasn't exceeded `max_age`.
 #' @family obj_handling
@@ -348,9 +361,10 @@ is_cached <- function(board,
                           classes = "pins_board_folder")
   
   cache <- pins::pin_search(board = board)
+  
   if (nrow(cache)) {
     
-    cache %<>% dplyr::filter(name == id & lubridate::now(tzone = "UTC") - created <= lubridate::as.duration(!!max_age))
+    cache %<>% dplyr::filter(name == id & lubridate::now(tzone = "UTC") - created <= as_duration(!!max_age))
     
     if (nrow(cache) > 1L) {
       cli::cli_abort(paste0("Multiple pins with {.arg id} {.val {id}} found for the {.val {fs::path_file(board$path)}} board. This should not happen since ",

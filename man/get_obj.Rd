@@ -11,7 +11,7 @@ get_obj(board, id, max_age = "1 day")
 
 \item{id}{Pin name uniquely identifying the object to be retrieved from the \code{pkg}'s user-cache pins board. A character scalar.}
 
-\item{max_age}{Maximum age the cached object is allowed to have. A valid \link[lubridate:as.duration]{lubridate duration}. Defaults to 1 day (24 hours).}
+\item{max_age}{Maximum age the cached object is allowed to have. A valid \link[lubridate:as.duration]{lubridate duration}. Defaults to 1 day (24 hours).}
 }
 \value{
 The cached object if it is not older than \code{max_age}, otherwise \code{NULL}.
