@@ -224,7 +224,7 @@ ls_cache <- function(board) {
 #' This function could be called on package load/unload, for example.
 #'
 #' @inheritParams path_cache
-#' @param max_age Age above which cached objects will be deleted. A valid [lubridate duration][lubridate::as.duration]. Defaults to 1 day (24 hours).
+#' @param max_age Age above which cached objects will be deleted. A valid [lubridate duration][lubridate::as.duration]. Defaults to 1 day (24 hours).
 #'
 #' @return `board`, invisibly.
 #' @family pkg_cache_mgmt

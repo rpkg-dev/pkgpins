@@ -9,7 +9,7 @@ clear_cache(board, max_age = "1 day")
 \arguments{
 \item{board}{\link[=board]{Package's user-cache pins board}.}
 
-\item{max_age}{Age above which cached objects will be deleted. A valid \link[lubridate:as.duration]{lubridate duration}. Defaults to 1 day (24 hours).}
+\item{max_age}{Age above which cached objects will be deleted. A valid \link[lubridate:as.duration]{lubridate duration}. Defaults to 1 day (24 hours).}
 }
 \value{
 \code{board}, invisibly.
