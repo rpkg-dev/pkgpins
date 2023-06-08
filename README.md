@@ -1,4 +1,4 @@
-# pkgpins: Facilitates Results Caching in R Packages Using the Pins Package
+# pkgpins
 
 <a href="https://cran.r-project.org/package=pkgpins" class="pkgdown-release"><img src="https://r-pkg.org/badges/version/pkgpins" alt="CRAN Status" /></a>
 
