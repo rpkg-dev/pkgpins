@@ -5,7 +5,6 @@ output: pal::gitlab_document
 ```{r}
 #| label: init
 #| include: false
-#| echo: false
 
 knitr::opts_knit$set(root.dir = getwd())
 ```
