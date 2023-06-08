@@ -14,7 +14,7 @@ cache_obj(board, x, id, qs_preset = c("fast", "balanced", "high", "archive"))
 \item{id}{Pin name uniquely identifying \code{x} in the \code{pkg}'s user-cache pins board. A character scalar which is safe to use in paths of common file systems.
 Necessary to retrieve \code{x} again using \code{\link[=get_obj]{get_obj()}}. An already existing pin named \code{id} will be silently overwritten.}
 
-\item{qs_preset}{The serialization algorithm preset to use. See \code{\link[qs:qsave]{qs::qsave()}} (section \emph{Presets}) for details.}
+\item{qs_preset}{Serialization algorithm preset to use. See \code{\link[qs:qsave]{qs::qsave()}} (section \emph{Presets}) for details.}
 }
 \value{
 \code{x}, invisibly.

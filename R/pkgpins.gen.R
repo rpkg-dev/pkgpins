@@ -390,7 +390,7 @@ is_cached <- function(board,
 #' @param x Object to be cached.
 #' @param id Pin name uniquely identifying `x` in the `pkg`'s user-cache pins board. A character scalar which is safe to use in paths of common file systems.
 #'   Necessary to retrieve `x` again using [get_obj()]. An already existing pin named `id` will be silently overwritten.
-#' @param qs_preset The serialization algorithm preset to use. See [qs::qsave()] (section *Presets*) for details.
+#' @param qs_preset Serialization algorithm preset to use. See [qs::qsave()] (section *Presets*) for details.
 #'
 #' @return `x`, invisibly.
 #' @family obj_handling
