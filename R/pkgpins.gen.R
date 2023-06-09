@@ -144,7 +144,71 @@ with_cache <- function(expr,
   result
 }
 
-
+#' Add caching to a function
+#' 
+#' One-stop solution to turn a function into one with caching. The caching is based on *all* arguments of `.fn`. Use [with_cache()] if you need more control.
+#'
+#' Note that the returned function has [`...`][dots] in its signature instead of `fn`'s original formals. Use [with_cache()] to create a function with a
+#' specific signature.
+#'
+#' @inheritParams with_cache
+#' @param fn_name Name of the function to cache, i.e. the name of `fn`. A character scalar.
+#' @param fn A function.
+#'
+#' @return A modified version of `.fn` that uses caching.
+#' @family high_lvl
+#' @export
+#'
+#' @examples
+#' # if the fn below would be part of a real package, we could instead define `this_pkg` globally
+#' # using `this_pkg <- utils::packageName()`; instead, we now cache to pkgpins's cache (which
+#' # itself never uses the cache)
+#' this_pkg <- "pkgpins"
+#'
+#' # create a sleep function that caches sleeping (if only humans could do the same!)
+#' sleepless <- pkgpins::cachely(pkg = this_pkg,
+#'                               fn_name = "sleepless",
+#'                               fn = \(x) { Sys.sleep(x); x },
+#'                               max_cache_age = "1 year")
+#' # populate the cache...
+#' sleepless(0.5)
+#' sleepless(3)
+#' 
+#' # ... and never sleep the same amount of time again (for the next year)
+#' sleepless(0.5)
+#' sleepless(3)
+#' 
+#' # note that the function gained additional caching-related arguments...
+#' formals(sleepless)
+#' 
+#' # ... so you can still coerce it to sleep
+#' sleepless(3,
+#'           use_cache = FALSE)
+#' 
+#' # purge cache from the above example
+#' pkgpins::board(pkg = "pkgpins") |> pkgpins::purge_cache()
+cachely <- function(pkg,
+                    fn_name,
+                    fn,
+                    pkg_versioned = TRUE,
+                    use_cache = TRUE,
+                    max_cache_age = "1 day") {
+  
+  checkmate::assert_function(fn)
+  
+  rlang::new_function(args = rlang::pairlist2(... = ,
+                                              !!!rlang::exprs(use_cache = !!use_cache,
+                                                              max_cache_age = !!max_cache_age)),
+                      body = rlang::expr(expr = with_cache(expr = do.call(what = !!fn,
+                                                                          list(...)),
+                                                           pkg = !!pkg,
+                                                           from_fn = !!fn_name,
+                                                           ...,
+                                                           pkg_versioned = !!pkg_versioned,
+                                                           use_cache = use_cache,
+                                                           max_cache_age = max_cache_age)),
+                      env = parent.frame(n = 2L))
+}
 
 #' Get a package's user-cache pins board
 #'

@@ -79,4 +79,8 @@ bench::mark("with cache" = pkg_sys_deps("git2r"),
 # purge cache from the above example
 pkgpins::board(pkg = "pkgpins") |> pkgpins::purge_cache()
 }
+\seealso{
+Other high-level functions:
+\code{\link{cachely}()}
+}
 \concept{high_lvl}

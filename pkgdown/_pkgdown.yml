@@ -18,7 +18,9 @@ template:
 url: https://pkgpins.rpkg.dev
 reference:
 - title: High-level functions
-- contents: with_cache
+- contents:
+  - with_cache
+  - cachely
 - title: Low-level functions
 - subtitle: Manage package cache
   desc: Functions to manage package user-cache pins board(s).

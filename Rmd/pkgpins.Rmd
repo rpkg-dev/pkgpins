@@ -183,48 +183,22 @@ with_cache <- function(expr,
 }
 ```
 
-### !`cachely`
+### `cachely`
 
-EXPERIMENTAL; doesn't work as supposed (yet)!
-
-TODO:
-
--   Figure out how to properly pass on `...` to `fn()`; Currently only works with lambda fns, not with "normal" non-lambda fns:
-
-    ``` r
-    sleepy <- function(x) { Sys.sleep(x); x }
-
-    sleepless <- pkgpins::cachely(.pkg = "pkgpins",
-                                  .fn_name = "sleepless",
-                                  .fn = sleepy,
-                                  .max_cache_age = "1 year")
-
-    sleepless(1)                
-    sleepless(1)
-    ```
-
--   It probably makes sense to thoroughly read the chapter [Function factories](https://adv-r.hadley.nz/function-factories.html) of *Advanced R* at some point
-    in order to actually understand what we're doing here... 🤪
-
-```{r, purl = FALSE}
+```{r}
 #' Add caching to a function
 #' 
-#' Extends a function `.fn` by caching. Note that the caching is based on *all* arguments of `.fn`. Use [with_cache()] if you need more control.
+#' One-stop solution to turn a function into one with caching. The caching is based on *all* arguments of `.fn`. Use [with_cache()] if you need more control.
 #'
-#' @param .pkg Package name to which `.fn` belongs. A character scalar.
-#' @param .fn_name Name of the newly created function, i.e. the name for the function that is returned by `cachely()`. A character scalar.
-#' @param .fn A function or formula.
+#' Note that the returned function has [`...`][dots] in its signature instead of `fn`'s original formals. Use [with_cache()] to create a function with a
+#' specific signature.
 #'
-#'   If a **function**, it is used as is.
-#'
-#'   If a **formula**, e.g. `~ .x + 2`, it is converted to a function with up to two arguments: `.x` (single argument) or `.x` and `.y` (two arguments). The
-#'   `.` placeholder can be used instead of `.x`. This allows you to create very compact anonymous functions (lambdas) with up to two inputs. See
-#'   [rlang::as_function()] for details.
-#' @param ... Additional arguments passed on to `.fn`.
-#' @param .use_cache `r pkgsnip::param_label("use_cache")`
-#' @param .max_cache_age `r pkgsnip::param_label("max_cache_age")`
+#' @inheritParams with_cache
+#' @param fn_name Name of the function to cache, i.e. the name of `fn`. A character scalar.
+#' @param fn A function.
 #'
 #' @return A modified version of `.fn` that uses caching.
+#' @family high_lvl
 #' @export
 #'
 #' @examples
@@ -234,39 +208,48 @@ TODO:
 #' this_pkg <- "pkgpins"
 #'
 #' # create a sleep function that caches sleeping (if only humans could do the same!)
-#' sleepless <- pkgpins::cachely(.pkg = this_pkg,
-#'                               .fn_name = "sleepless",
-#'                               .fn = ~ { Sys.sleep(.x); .x },
-#'                               .max_cache_age = "1 year")
-#'
+#' sleepless <- pkgpins::cachely(pkg = this_pkg,
+#'                               fn_name = "sleepless",
+#'                               fn = \(x) { Sys.sleep(x); x },
+#'                               max_cache_age = "1 year")
 #' # populate the cache...
 #' sleepless(0.5)
-#' sleepless(1)
+#' sleepless(3)
 #' 
 #' # ... and never sleep the same amount of time again (for the next year)
 #' sleepless(0.5)
-#' sleepless(1)
+#' sleepless(3)
+#' 
+#' # note that the function gained additional caching-related arguments...
+#' formals(sleepless)
+#' 
+#' # ... so you can still coerce it to sleep
+#' sleepless(3,
+#'           use_cache = FALSE)
 #' 
 #' # purge cache from the above example
 #' pkgpins::board(pkg = "pkgpins") |> pkgpins::purge_cache()
-cachely <- function(.pkg,
-                    .fn_name,
-                    .fn,
-                    ...,
-                    .use_cache = TRUE,
-                    .max_cache_age = "1 day") {
+cachely <- function(pkg,
+                    fn_name,
+                    fn,
+                    pkg_versioned = TRUE,
+                    use_cache = TRUE,
+                    max_cache_age = "1 day") {
   
-  fn <- rlang::as_function(.fn,
-                           env = parent.frame())
+  checkmate::assert_function(fn)
   
-  rlang::new_function(args = rlang::fn_fmls(fn),
-                      body = quote(expr = with_cache(expr = do.call(what = fn, # an alternative would be rlang::exec(), JFYI
-                                                                    args = rlang::fn_fmls_syms(fn)),
-                                                     pkg = .pkg,
-                                                     from_fn = .fn_name,
-                                                     ...,
-                                                     use_cache = .use_cache,
-                                                     max_cache_age = .max_cache_age)))
+  rlang::new_function(args = rlang::pairlist2(... = ,
+                                              !!!rlang::exprs(use_cache = !!use_cache,
+                                                              max_cache_age = !!max_cache_age)),
+                      body = rlang::expr(expr = with_cache(expr = do.call(what = !!fn,
+                                                                          list(...)),
+                                                           pkg = !!pkg,
+                                                           from_fn = !!fn_name,
+                                                           ...,
+                                                           pkg_versioned = !!pkg_versioned,
+                                                           use_cache = use_cache,
+                                                           max_cache_age = max_cache_age)),
+                      env = parent.frame(n = 2L))
 }
 ```
 

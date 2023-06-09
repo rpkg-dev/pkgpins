@@ -2,6 +2,7 @@
 
 export(board)
 export(cache_obj)
+export(cachely)
 export(clear_cache)
 export(get_obj)
 export(hash_fn_call)
