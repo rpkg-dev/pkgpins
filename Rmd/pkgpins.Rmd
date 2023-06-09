@@ -532,7 +532,7 @@ is_cached <- function(board,
 
 TODO:
 
--   [ ] Systematically assess and ideally improve get performance.
+-   More systematically assess and ideally improve object retrieval performance.
 
     A first benchmark shows the pins overhead is pretty low and almost all delay caused by decompression:
 
