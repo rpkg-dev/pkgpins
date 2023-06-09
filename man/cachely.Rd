@@ -29,10 +29,10 @@ cached results from a different (old) package version, irrespective of \code{max
 \item{max_cache_age}{The duration after which cached results are refreshed (i.e. newly fetched). A valid \link[lubridate:as.duration]{lubridate duration}. Use \code{Inf} to disable cache expiry. Only relevant if \code{use_cache = TRUE}.}
 }
 \value{
-A modified version of \code{.fn} that uses caching.
+A modified version of \code{fn} that uses caching.
 }
 \description{
-One-stop solution to turn a function into one with caching. The caching is based on \emph{all} arguments of \code{.fn}. Use \code{\link[=with_cache]{with_cache()}} if you need more control.
+One-stop solution to turn a function into one with caching. The caching is based on \emph{all} arguments of \code{fn}. Use \code{\link[=with_cache]{with_cache()}} if you need more control.
 }
 \details{
 Note that the returned function has \code{\link[=dots]{...}} in its signature instead of \code{fn}'s original formals. Use \code{\link[=with_cache]{with_cache()}} to create a function with a

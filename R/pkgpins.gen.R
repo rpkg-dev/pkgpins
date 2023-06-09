@@ -146,7 +146,7 @@ with_cache <- function(expr,
 
 #' Add caching to a function
 #' 
-#' One-stop solution to turn a function into one with caching. The caching is based on *all* arguments of `.fn`. Use [with_cache()] if you need more control.
+#' One-stop solution to turn a function into one with caching. The caching is based on *all* arguments of `fn`. Use [with_cache()] if you need more control.
 #'
 #' Note that the returned function has [`...`][dots] in its signature instead of `fn`'s original formals. Use [with_cache()] to create a function with a
 #' specific signature.
@@ -155,7 +155,7 @@ with_cache <- function(expr,
 #' @param fn_name Name of the function to cache, i.e. the name of `fn`. A character scalar.
 #' @param fn A function.
 #'
-#' @return A modified version of `.fn` that uses caching.
+#' @return A modified version of `fn` that uses caching.
 #' @family high_lvl
 #' @export
 #'
