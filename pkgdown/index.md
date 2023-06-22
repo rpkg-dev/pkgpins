@@ -10,7 +10,7 @@ TODO: describe design (separate [user-cache pins board](https://pins.rstudio.com
 
 ## Predefined parameter labels
 
-There are two predefined parameter labels available in [pkgsnip](https://gitlab.com/salim_b/r/pkgs/pkgsnip) which fit typical use cases of this package. They are intended to be used in `@param` [roxygen2 tags](https://roxygen2.r-lib.org/articles/rd.html#functions)[^1] as follows:
+There are two predefined parameter labels available in [pkgsnip](https://gitlab.com/rpkg.dev/pkgsnip) which fit typical use cases of this package. They are intended to be used in `@param` [roxygen2 tags](https://roxygen2.r-lib.org/articles/rd.html#functions)[^1] as follows:
 
 ``` r
 #' @param max_cache_age `r pkgsnip::param_label("max_cache_age")`
@@ -34,7 +34,7 @@ if (!("remotes" %in% rownames(installed.packages()))) {
                    repos = "https://cloud.r-project.org/")
 }
 
-remotes::install_gitlab(repo = "salim_b/r/pkgs/pkgpins")
+remotes::install_gitlab(repo = "rpkg.dev/pkgpins")
 ```
 
 ## Usage
@@ -47,7 +47,7 @@ The (function) reference is found [here](reference).
 
 This package's source code is written in the [R Markdown](https://rmarkdown.rstudio.com/) file format to facilitate practices commonly referred to as [*literate programming*](https://en.wikipedia.org/wiki/Literate_programming). It allows the actual code to be freely mixed with explanatory and supplementary information in expressive Markdown format instead of having to rely on [`#` comments](https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Comments) only.
 
-All the `.gen.R` suffixed R source code found under [`R/`](https://gitlab.com/salim_b/r/pkgs/pkgpins/-/tree/master/R/) is generated from the respective R Markdown counterparts under [`Rmd/`](https://gitlab.com/salim_b/r/pkgs/pkgpins/-/tree/master/Rmd/) using [`pkgpurl::purl_rmd()`](https://pkgpurl.rpkg.dev/dev/reference/purl_rmd.html)[^2]. Always make changes only to the `.Rmd` files -- never the `.R` files -- and then run `pkgpurl::purl_rmd()` to regenerate the R source files.
+All the `.gen.R` suffixed R source code found under [`R/`](https://gitlab.com/rpkg.dev/pkgpins/-/tree/master/R/) is generated from the respective R Markdown counterparts under [`Rmd/`](https://gitlab.com/rpkg.dev/pkgpins/-/tree/master/Rmd/) using [`pkgpurl::purl_rmd()`](https://pkgpurl.rpkg.dev/dev/reference/purl_rmd.html)[^2]. Always make changes only to the `.Rmd` files -- never the `.R` files -- and then run `pkgpurl::purl_rmd()` to regenerate the R source files.
 
 ### Coding style
 
