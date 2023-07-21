@@ -20,7 +20,7 @@ knitr::opts_knit$set(root.dir = getwd())
 #| eval: !expr '!isTRUE(getOption("pal.build_readme.is_pkgdown"))'
 #| results: asis
 #| echo: false
-pkgsnip::md_snip(name = "pkgdown_notice") %>%
+pkgsnip::md_snip(id = "pkgdown_notice") %>%
   paste0("## Documentation\n\n",
          "[![Netlify Status](https://api.netlify.com/api/v1/badges/db173373-dd17-47ef-959b-695d01482a1d/deploy-status)]",
          "(https://app.netlify.com/sites/pkgpins-rpkg-dev/deploys)\n\n",
@@ -38,15 +38,15 @@ There are two predefined parameter labels available in [pkgsnip](https://gitlab.
 intended to be used in `@param` [roxygen2 tags](https://roxygen2.r-lib.org/articles/rd.html#functions)[^1] as follows:
 
 ``` r
-#' @param max_cache_age `r '\x60r pkgsnip::param_label("max_cache_age")\x60'`
-#' @param use_cache `r '\x60r pkgsnip::param_label("use_cache")\x60'`
+#' @param max_cache_age `r '\x60r pkgsnip::param_lbl("max_cache_age")\x60'`
+#' @param use_cache `r '\x60r pkgsnip::param_lbl("use_cache")\x60'`
 ```
 
 The above inline R code will eventually result in this:
 
 ``` r
-#' @param max_cache_age `r pkgsnip::param_label("max_cache_age")`
-#' @param use_cache `r pkgsnip::param_label("use_cache")`
+#' @param max_cache_age `r pkgsnip::param_lbl("max_cache_age")`
+#' @param use_cache `r pkgsnip::param_lbl("use_cache")`
 ```
 
 [^1]: Support for dynamic inline R code was introduced in [roxygen2 7.1.0](https://www.tidyverse.org/blog/2020/03/roxygen2-7-1-0/).
@@ -63,7 +63,7 @@ The above inline R code will eventually result in this:
 #| eval: !expr isTRUE(getOption("pal.build_readme.is_pkgdown"))
 #| results: asis
 #| echo: false
-pkgsnip::md_snip(name = "usage_notice") %>%
+pkgsnip::md_snip(id = "usage_notice") %>%
   paste0("## Usage\n\n", .) %>%
   pal::cat_lines()
 ```

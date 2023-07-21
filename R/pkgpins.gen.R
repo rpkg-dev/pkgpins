@@ -56,9 +56,9 @@ ls_board_paths <- function(pkg) {
 #'   cached results from a different (old) package version, irrespective of `max_cache_age`.
 #' @param from_fn Name of the function that `expr` is cached from, i.e. the name of the function that `with_cache()` is called from. A character scalar.
 #' @param ... Arguments received by `from_fn` on which the caching should depend. This is fundamental to determine whether `expr` was already cached or not. The
-#'   arguments must be specified _unnamed_ (see examples). `r pkgsnip::param_label("dyn_dots_support")`
-#' @param use_cache `r pkgsnip::param_label("use_cache")`
-#' @param max_cache_age `r pkgsnip::param_label("max_cache_age")` 
+#'   arguments must be specified _unnamed_ (see examples). `r pkgsnip::param_lbl("dyn_dots_support")`
+#' @param use_cache `r pkgsnip::param_lbl("use_cache")`
+#' @param max_cache_age `r pkgsnip::param_lbl("max_cache_age")` 
 #'
 #' @return The result of evaluating `expr`, from cache if `use_cache = TRUE` and a cached result exists that hasn't exceeded `max_cache_age`.
 #' @family high_lvl
@@ -248,7 +248,7 @@ board <- function(pkg,
 #'
 #' @param board [Package's user-cache pins board][board()].
 #'
-#' @return `r pkgsnip::return_label("path")`
+#' @return `r pkgsnip::return_lbl("path")`
 #' @family pkg_cache_mgmt
 #' @export
 path_cache <- function(board) {

@@ -28,9 +28,9 @@ arguments must be specified \emph{unnamed} (see examples). \link[rlang:dyn-dots]
 number. Otherwise, a separate user-cache pins board is created each time \code{pkg}'s version number changes (e.g. after an upgrade), ensuring to never return
 cached results from a different (old) package version, irrespective of \code{max_cache_age}.}
 
-\item{use_cache}{Return cached results if possible. If \code{FALSE}, results are always newly fetched regardless of \code{max_cache_age}.}
+\item{use_cache}{Whether or not to return cached results if possible. If \code{FALSE}, results are always newly fetched regardless of \code{max_cache_age}.}
 
-\item{max_cache_age}{The duration after which cached results are refreshed (i.e. newly fetched). A valid \link[lubridate:as.duration]{lubridate duration}. Use \code{Inf} to disable cache expiry. Only relevant if \code{use_cache = TRUE}.}
+\item{max_cache_age}{Duration after which cached results are refreshed (i.e. newly fetched). A valid \link[lubridate:as.duration]{lubridate duration}. Use \code{Inf} to disable cache expiry. Only relevant if \code{use_cache = TRUE}.}
 }
 \value{
 The result of evaluating \code{expr}, from cache if \code{use_cache = TRUE} and a cached result exists that hasn't exceeded \code{max_cache_age}.
