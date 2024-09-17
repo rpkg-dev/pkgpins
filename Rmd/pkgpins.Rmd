@@ -241,18 +241,28 @@ cachely <- function(pkg,
                     max_cache_age = "1 day") {
   
   checkmate::assert_function(fn)
+  fn_fmls_syms <- rlang::fn_fmls_syms(fn)
   
-  rlang::new_function(args = rlang::pairlist2(... = ,
-                                              !!!rlang::exprs(use_cache = !!use_cache,
-                                                              max_cache_age = !!max_cache_age)),
-                      body = rlang::expr(expr = with_cache(expr = do.call(what = !!fn,
-                                                                          list(...)),
-                                                           pkg = !!pkg,
-                                                           from_fn = !!fn_name,
-                                                           ...,
-                                                           pkg_versioned = !!pkg_versioned,
-                                                           use_cache = use_cache,
-                                                           max_cache_age = max_cache_age)),
+  # ensure fn doesn't already have caching params
+  caching_params <- c("use_cache", "max_cache_age")
+  
+  if (any(caching_params %in% names(fn_fmls_syms))) {
+    cli::cli_abort("{.arg fn} mustn't already have {.or {.arg {caching_params}}} parameters.")
+  }
+  
+  # create version of `fn` with caching
+  rlang::new_function(args = c(rlang::fn_fmls(fn = fn),
+                               list(use_cache = use_cache,
+                                    max_cache_age = max_cache_age)),
+                      body = rlang::expr(expr = pkgpins::with_cache(expr = do.call(what = !!fn,
+                                                                                   args = !!fn_fmls_syms),
+                                                                    pkg = !!pkg,
+                                                                    from_fn = !!fn_name,
+                                                                    !!!unlist(x = fn_fmls_syms,
+                                                                              use.names = FALSE),
+                                                                    pkg_versioned = !!pkg_versioned,
+                                                                    use_cache = use_cache,
+                                                                    max_cache_age = max_cache_age)),
                       env = parent.frame(n = 2L))
 }
 ```
