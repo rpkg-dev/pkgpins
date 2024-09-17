@@ -76,7 +76,7 @@ NOTES:
 
 -   tidyverse devs [discourage](https://github.com/tidyverse/magrittr/blob/master/NEWS.md#incorrect-call-stack-introspection) the use of `sys.parent()`,
     `sys.frame()` and friends and recommend to only rely on `parent.frame()` since it is the only base R function that allows to query the *call stack* -- and
-    thus also works when R code is called from *non-inspectable* frames. See `?rlang::stack` for more information on the *call* vs. the *context stack* in R.
+    thus also works when R code is called from *non-inspectable* frames. See `?rlang::stack` for more information on the *call* vs. the *context* stack in R.
 
 ```{r}
 #' Cache the result of an expression
