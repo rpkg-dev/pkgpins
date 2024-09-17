@@ -49,14 +49,18 @@ See \code{\link[=hash_fn_call]{hash_fn_call()}} for details about how the pin na
 # itself never uses the cache)
 this_pkg <- "pkgpins"
 
-# let's define a fn that returns R pkg sys deps from cache
+# let's define a fn that returns R pkg sys deps, cached
 pkg_sys_deps <- function(pkg,
+                         os = "ubuntu",
+                         os_version = "24.04",
                          use_cache = TRUE,
                          max_cache_age = "6h") {
   pkgpins::with_cache(
-    expr = purrr::list_flatten(jsonlite::fromJSON(txt = paste0("https://sysreqs.r-hub.io/pkg/",
-                                                               pkg),
-                                                  simplifyVector = FALSE)),
+    expr = purrr::list_flatten(jsonlite::fromJSON(
+      txt = glue::glue("https://packagemanager.posit.co/__api__/repos/2/sysreqs",
+                       "?all=false&pkgname={pkg}&distribution={os}&release={os_version}"),
+      simplifyVector = FALSE
+    )),
     pkg = this_pkg,
     from_fn = "pkg_sys_deps",
     pkg,

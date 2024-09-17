@@ -38,13 +38,15 @@ board <- pkgpins::board(pkg = "pkgpins")
 
 # let's define a fn that returns R pkg sys deps from cache
 pkg_sys_deps <- function(pkg,
+                         os = "ubuntu",
+                         os_version = "24.04",
                          use_cache = TRUE,
                          max_cache_age = "6h") {
   fetch <- TRUE
 
   if (use_cache) {
     pin_name <- pkgpins::hash_fn_call(from_fn = "pkg_sys_deps",
-                                      pkg)
+                                      pkg, os, os_version)
     result <- pkgpins::get_obj(board = board,
                                id = pin_name,
                                max_age = max_cache_age)
@@ -53,7 +55,9 @@ pkg_sys_deps <- function(pkg,
   
   if (fetch) {
     result <-
-      jsonlite::fromJSON(txt = paste0("https://sysreqs.r-hub.io/pkg/", pkg),
+      jsonlite::fromJSON(txt = glue::glue("https://packagemanager.posit.co/__api__/repos/2/sysreqs",
+                                          "?all=false&pkgname={pkg}&distribution={os}",
+                                          "&release={os_version}"),
                          simplifyVector = FALSE) |>
       purrr::list_flatten()
   }

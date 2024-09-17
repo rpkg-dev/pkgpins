@@ -24,7 +24,7 @@ Other package cache management functions:
 \code{\link{clear_cache}()},
 \code{\link{ls_cache}()},
 \code{\link{path_cache}()},
-\code{\link{purge_caches}()},
-\code{\link{purge_cache}()}
+\code{\link{purge_cache}()},
+\code{\link{purge_caches}()}
 }
 \concept{pkg_cache_mgmt}

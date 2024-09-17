@@ -1,60 +1,22 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://pkgpins.rpkg.dev/dev/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://pkgpins.rpkg.dev/dev/TODO.html</loc>
-  </url>
-  <url>
-    <loc>https://pkgpins.rpkg.dev/dev/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://pkgpins.rpkg.dev/dev/index.html</loc>
-  </url>
-  <url>
-    <loc>https://pkgpins.rpkg.dev/dev/reference/board.html</loc>
-  </url>
-  <url>
-    <loc>https://pkgpins.rpkg.dev/dev/reference/cache_obj.html</loc>
-  </url>
-  <url>
-    <loc>https://pkgpins.rpkg.dev/dev/reference/cachely.html</loc>
-  </url>
-  <url>
-    <loc>https://pkgpins.rpkg.dev/dev/reference/clear_cache.html</loc>
-  </url>
-  <url>
-    <loc>https://pkgpins.rpkg.dev/dev/reference/get_obj.html</loc>
-  </url>
-  <url>
-    <loc>https://pkgpins.rpkg.dev/dev/reference/hash_fn_call.html</loc>
-  </url>
-  <url>
-    <loc>https://pkgpins.rpkg.dev/dev/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://pkgpins.rpkg.dev/dev/reference/is_cached.html</loc>
-  </url>
-  <url>
-    <loc>https://pkgpins.rpkg.dev/dev/reference/ls_cache.html</loc>
-  </url>
-  <url>
-    <loc>https://pkgpins.rpkg.dev/dev/reference/path_cache.html</loc>
-  </url>
-  <url>
-    <loc>https://pkgpins.rpkg.dev/dev/reference/pkgpins-package.html</loc>
-  </url>
-  <url>
-    <loc>https://pkgpins.rpkg.dev/dev/reference/purge_cache.html</loc>
-  </url>
-  <url>
-    <loc>https://pkgpins.rpkg.dev/dev/reference/purge_caches.html</loc>
-  </url>
-  <url>
-    <loc>https://pkgpins.rpkg.dev/dev/reference/rm_obj.html</loc>
-  </url>
-  <url>
-    <loc>https://pkgpins.rpkg.dev/dev/reference/with_cache.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://pkgpins.rpkg.dev/dev/LICENSE.html</loc></url>
+<url><loc>https://pkgpins.rpkg.dev/dev/TODO.html</loc></url>
+<url><loc>https://pkgpins.rpkg.dev/dev/authors.html</loc></url>
+<url><loc>https://pkgpins.rpkg.dev/dev/index.html</loc></url>
+<url><loc>https://pkgpins.rpkg.dev/dev/reference/board.html</loc></url>
+<url><loc>https://pkgpins.rpkg.dev/dev/reference/cache_obj.html</loc></url>
+<url><loc>https://pkgpins.rpkg.dev/dev/reference/cachely.html</loc></url>
+<url><loc>https://pkgpins.rpkg.dev/dev/reference/clear_cache.html</loc></url>
+<url><loc>https://pkgpins.rpkg.dev/dev/reference/get_obj.html</loc></url>
+<url><loc>https://pkgpins.rpkg.dev/dev/reference/hash_fn_call.html</loc></url>
+<url><loc>https://pkgpins.rpkg.dev/dev/reference/index.html</loc></url>
+<url><loc>https://pkgpins.rpkg.dev/dev/reference/is_cached.html</loc></url>
+<url><loc>https://pkgpins.rpkg.dev/dev/reference/ls_cache.html</loc></url>
+<url><loc>https://pkgpins.rpkg.dev/dev/reference/path_cache.html</loc></url>
+<url><loc>https://pkgpins.rpkg.dev/dev/reference/pkgpins-package.html</loc></url>
+<url><loc>https://pkgpins.rpkg.dev/dev/reference/purge_cache.html</loc></url>
+<url><loc>https://pkgpins.rpkg.dev/dev/reference/purge_caches.html</loc></url>
+<url><loc>https://pkgpins.rpkg.dev/dev/reference/rm_obj.html</loc></url>
+<url><loc>https://pkgpins.rpkg.dev/dev/reference/with_cache.html</loc></url>
 </urlset>
+

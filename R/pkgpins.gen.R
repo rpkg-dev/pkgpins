@@ -2,7 +2,7 @@
 # See `README.md#r-markdown-format` for more information on the literate programming approach used applying the R Markdown format.
 
 # pkgpins: Facilitates Results Caching in R Packages Using the Pins Package
-# Copyright (C) 2023 Salim Brüggemann
+# Copyright (C) 2024 Salim Brüggemann
 # 
 # This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free
 # Software Foundation, either version 3 of the License, or any later version.
@@ -70,14 +70,18 @@ ls_board_paths <- function(pkg) {
 #' # itself never uses the cache)
 #' this_pkg <- "pkgpins"
 #' 
-#' # let's define a fn that returns R pkg sys deps from cache
+#' # let's define a fn that returns R pkg sys deps, cached
 #' pkg_sys_deps <- function(pkg,
+#'                          os = "ubuntu",
+#'                          os_version = "24.04",
 #'                          use_cache = TRUE,
 #'                          max_cache_age = "6h") {
 #'   pkgpins::with_cache(
-#'     expr = purrr::list_flatten(jsonlite::fromJSON(txt = paste0("https://sysreqs.r-hub.io/pkg/",
-#'                                                                pkg),
-#'                                                   simplifyVector = FALSE)),
+#'     expr = purrr::list_flatten(jsonlite::fromJSON(
+#'       txt = glue::glue("https://packagemanager.posit.co/__api__/repos/2/sysreqs",
+#'                        "?all=false&pkgname={pkg}&distribution={os}&release={os_version}"),
+#'       simplifyVector = FALSE
+#'     )),
 #'     pkg = this_pkg,
 #'     from_fn = "pkg_sys_deps",
 #'     pkg,
@@ -195,18 +199,28 @@ cachely <- function(pkg,
                     max_cache_age = "1 day") {
   
   checkmate::assert_function(fn)
+  fn_fmls_syms <- rlang::fn_fmls_syms(fn)
   
-  rlang::new_function(args = rlang::pairlist2(... = ,
-                                              !!!rlang::exprs(use_cache = !!use_cache,
-                                                              max_cache_age = !!max_cache_age)),
-                      body = rlang::expr(expr = with_cache(expr = do.call(what = !!fn,
-                                                                          list(...)),
-                                                           pkg = !!pkg,
-                                                           from_fn = !!fn_name,
-                                                           ...,
-                                                           pkg_versioned = !!pkg_versioned,
-                                                           use_cache = use_cache,
-                                                           max_cache_age = max_cache_age)),
+  # ensure fn doesn't already have caching params
+  caching_params <- c("use_cache", "max_cache_age")
+  
+  if (any(caching_params %in% names(fn_fmls_syms))) {
+    cli::cli_abort("{.arg fn} mustn't already have {.or {.arg {caching_params}}} parameters.")
+  }
+  
+  # create version of `fn` with caching
+  rlang::new_function(args = c(rlang::fn_fmls(fn = fn),
+                               list(use_cache = use_cache,
+                                    max_cache_age = max_cache_age)),
+                      body = rlang::expr(expr = pkgpins::with_cache(expr = do.call(what = !!fn,
+                                                                                   args = !!fn_fmls_syms),
+                                                                    pkg = !!pkg,
+                                                                    from_fn = !!fn_name,
+                                                                    !!!unlist(x = fn_fmls_syms,
+                                                                              use.names = FALSE),
+                                                                    pkg_versioned = !!pkg_versioned,
+                                                                    use_cache = use_cache,
+                                                                    max_cache_age = max_cache_age)),
                       env = parent.frame(n = 2L))
 }
 
@@ -468,13 +482,15 @@ is_cached <- function(board,
 #' 
 #' # let's define a fn that returns R pkg sys deps from cache
 #' pkg_sys_deps <- function(pkg,
+#'                          os = "ubuntu",
+#'                          os_version = "24.04",
 #'                          use_cache = TRUE,
 #'                          max_cache_age = "6h") {
 #'   fetch <- TRUE
 #'
 #'   if (use_cache) {
 #'     pin_name <- pkgpins::hash_fn_call(from_fn = "pkg_sys_deps",
-#'                                       pkg)
+#'                                       pkg, os, os_version)
 #'     result <- pkgpins::get_obj(board = board,
 #'                                id = pin_name,
 #'                                max_age = max_cache_age)
@@ -483,7 +499,9 @@ is_cached <- function(board,
 #'   
 #'   if (fetch) {
 #'     result <-
-#'       jsonlite::fromJSON(txt = paste0("https://sysreqs.r-hub.io/pkg/", pkg),
+#'       jsonlite::fromJSON(txt = glue::glue("https://packagemanager.posit.co/__api__/repos/2/sysreqs",
+#'                                           "?all=false&pkgname={pkg}&distribution={os}",
+#'                                           "&release={os_version}"),
 #'                          simplifyVector = FALSE) |>
 #'       purrr::list_flatten()
 #'   }
