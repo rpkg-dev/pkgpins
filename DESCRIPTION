@@ -2,14 +2,14 @@ Package: pkgpins
 Title: Facilitates Results Caching in R Packages Using the Pins Package
 Version: 0.8.0.9000
 Authors@R: 
-    person("Salim", "Brüggemann", , "salim-b@pm.me", role = c("aut", "cre"),
+    person("Salim", "Brüggemann", , "salim@rpkg.dev", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-5329-5987"))
 Description: pkgpins builds upon the pins package and strives to provide R
     package authors a simple and standardized way to cache results on the
     filesystem in a suitable user directory.
 License: AGPL (>= 3)
 URL: https://pkgpins.rpkg.dev, https://gitlab.com/rpkg.dev/pkgpins
-BugReports: https://gitlab.com/rpkg.dev/pkgpins/issues
+BugReports: https://gitlab.com/rpkg.dev/pkgpins/-/issues
 Depends: 
     R (>= 4.2)
 Imports: 
