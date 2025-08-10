@@ -119,7 +119,7 @@ cached results from a different (old) package version, irrespective of <code>max
 <span class="r-in"><span>                         <span class="va">use_cache</span> <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>                         <span class="va">max_cache_age</span> <span class="op">=</span> <span class="st">"6h"</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="fu">pkgpins</span><span class="fu">::</span><span class="fu">with_cache</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    expr <span class="op">=</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/list_flatten.html" class="external-link">list_flatten</a></span><span class="op">(</span><span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/jsonlite/man/fromJSON.html" class="external-link">fromJSON</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    expr <span class="op">=</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/list_flatten.html" class="external-link">list_flatten</a></span><span class="op">(</span><span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://jeroen.r-universe.dev/jsonlite/reference/fromJSON.html" class="external-link">fromJSON</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>      txt <span class="op">=</span> <span class="fu">glue</span><span class="fu">::</span><span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html" class="external-link">glue</a></span><span class="op">(</span><span class="st">"https://packagemanager.posit.co/__api__/repos/2/sysreqs"</span>,</span></span>
 <span class="r-in"><span>                       <span class="st">"?all=false&amp;pkgname={pkg}&amp;distribution={os}&amp;release={os_version}"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>      simplifyVector <span class="op">=</span> <span class="cn">FALSE</span></span></span>
@@ -143,10 +143,22 @@ cached results from a different (old) package version, irrespective of <code>max
 <span class="r-out co"><span class="r-pr">#&gt;</span> $requirements$requirements$packages[[1]]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "libgit2-dev"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $requirements$requirements$packages[[2]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "libssh2-1-dev"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $requirements$requirements$packages[[3]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "libssl-dev"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $requirements$requirements$install_scripts</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $requirements$requirements$install_scripts[[1]]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "apt-get install -y libgit2-dev"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $requirements$requirements$install_scripts[[2]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "apt-get install -y libssh2-1-dev"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $requirements$requirements$install_scripts[[3]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "apt-get install -y libssl-dev"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -155,7 +167,7 @@ cached results from a different (old) package version, irrespective of <code>max
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="co"># for the `max_cache_age` (we've set a default of 6h), the cached result will be returned</span></span></span>
 <span class="r-in"><span><span class="co"># (as long as `use_cache = TRUE`):</span></span></span>
-<span class="r-in"><span><span class="fu">bench</span><span class="fu">::</span><span class="fu"><a href="http://bench.r-lib.org/reference/mark.html" class="external-link">mark</a></span><span class="op">(</span><span class="st">"with cache"</span> <span class="op">=</span> <span class="fu">pkg_sys_deps</span><span class="op">(</span><span class="st">"git2r"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span><span class="fu">bench</span><span class="fu">::</span><span class="fu"><a href="https://bench.r-lib.org/reference/mark.html" class="external-link">mark</a></span><span class="op">(</span><span class="st">"with cache"</span> <span class="op">=</span> <span class="fu">pkg_sys_deps</span><span class="op">(</span><span class="st">"git2r"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>            <span class="st">"without cache"</span> <span class="op">=</span> <span class="fu">pkg_sys_deps</span><span class="op">(</span><span class="st">"git2r"</span>, use_cache <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>            iterations <span class="op">=</span> <span class="fl">10</span>,</span></span>
 <span class="r-in"><span>            relative <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">}</span> <span class="co"># }</span></span></span>
@@ -173,7 +185,7 @@ cached results from a different (old) package version, irrespective of <code>max
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>
