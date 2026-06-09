@@ -85,6 +85,6 @@ pkgpins::board(pkg = "pkgpins") |> pkgpins::purge_cache()
 }
 \seealso{
 Other high-level functions:
-\code{\link{cachely}()}
+\code{\link[=cachely]{cachely()}}
 }
 \concept{high_lvl}

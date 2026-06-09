@@ -21,9 +21,9 @@ Retrieves a cached object from a package's user-cache pins board \emph{if} it is
 }
 \seealso{
 Other object handling functions:
-\code{\link{cache_obj}()},
-\code{\link{hash_fn_call}()},
-\code{\link{is_cached}()},
-\code{\link{rm_obj}()}
+\code{\link[=cache_obj]{cache_obj()}},
+\code{\link[=hash_fn_call]{hash_fn_call()}},
+\code{\link[=is_cached]{is_cached()}},
+\code{\link[=rm_obj]{rm_obj()}}
 }
 \concept{obj_handling}

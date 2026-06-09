@@ -31,10 +31,10 @@ This function could be called on package load/unload, for example.
 }
 \seealso{
 Other package cache management functions:
-\code{\link{board}()},
-\code{\link{ls_cache}()},
-\code{\link{path_cache}()},
-\code{\link{purge_cache}()},
-\code{\link{purge_caches}()}
+\code{\link[=board]{board()}},
+\code{\link[=ls_cache]{ls_cache()}},
+\code{\link[=path_cache]{path_cache()}},
+\code{\link[=purge_cache]{purge_cache()}},
+\code{\link[=purge_caches]{purge_caches()}}
 }
 \concept{pkg_cache_mgmt}

@@ -14,7 +14,8 @@ cache_obj(board, x, id, qs_preset = c("fast", "balanced", "high", "archive"))
 \item{id}{Pin name uniquely identifying \code{x} in the \code{pkg}'s user-cache pins board. A character scalar which is safe to use in paths of common file systems.
 Necessary to retrieve \code{x} again using \code{\link[=get_obj]{get_obj()}}. An already existing pin named \code{id} will be silently overwritten.}
 
-\item{qs_preset}{Serialization algorithm preset to use. See \code{\link[qs:qsave]{qs::qsave()}} (section \emph{Presets}) for details.}
+\item{qs_preset}{Compression level preset, mapped internally to \code{\link[qs2:qs_save]{qs2::qs_save()}}'s \code{compress_level}
+(\code{"fast"} = 1, \code{"balanced"} = 3, \code{"high"} = 7, \code{"archive"} = 22).}
 }
 \value{
 \code{x}, invisibly.
@@ -87,9 +88,9 @@ pkgpins::purge_cache(board = board)
 }
 \seealso{
 Other object handling functions:
-\code{\link{get_obj}()},
-\code{\link{hash_fn_call}()},
-\code{\link{is_cached}()},
-\code{\link{rm_obj}()}
+\code{\link[=get_obj]{get_obj()}},
+\code{\link[=hash_fn_call]{hash_fn_call()}},
+\code{\link[=is_cached]{is_cached()}},
+\code{\link[=rm_obj]{rm_obj()}}
 }
 \concept{obj_handling}

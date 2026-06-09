@@ -14,10 +14,10 @@ Deletes \emph{all} objects from a package's user-cache pins board. All boards be
 }
 \seealso{
 Other package cache management functions:
-\code{\link{board}()},
-\code{\link{clear_cache}()},
-\code{\link{ls_cache}()},
-\code{\link{path_cache}()},
-\code{\link{purge_caches}()}
+\code{\link[=board]{board()}},
+\code{\link[=clear_cache]{clear_cache()}},
+\code{\link[=ls_cache]{ls_cache()}},
+\code{\link[=path_cache]{path_cache()}},
+\code{\link[=purge_caches]{purge_caches()}}
 }
 \concept{pkg_cache_mgmt}

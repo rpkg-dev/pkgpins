@@ -20,5 +20,10 @@ Useful links:
 \author{
 \strong{Maintainer}: Salim Brüggemann \email{salim@rpkg.dev} (\href{https://orcid.org/0000-0002-5329-5987}{ORCID})
 
+Authors:
+\itemize{
+  \item Salim Brüggemann \email{salim@rpkg.dev} (\href{https://orcid.org/0000-0002-5329-5987}{ORCID})
+}
+
 }
 \keyword{internal}
