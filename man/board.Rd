@@ -21,10 +21,10 @@ Returns a \code{pkg}'s user-cache pins board. The board is automatically created
 }
 \seealso{
 Other package cache management functions:
-\code{\link{clear_cache}()},
-\code{\link{ls_cache}()},
-\code{\link{path_cache}()},
-\code{\link{purge_cache}()},
-\code{\link{purge_caches}()}
+\code{\link[=clear_cache]{clear_cache()}},
+\code{\link[=ls_cache]{ls_cache()}},
+\code{\link[=path_cache]{path_cache()}},
+\code{\link[=purge_cache]{purge_cache()}},
+\code{\link[=purge_caches]{purge_caches()}}
 }
 \concept{pkg_cache_mgmt}

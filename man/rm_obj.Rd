@@ -24,9 +24,9 @@ even \link[=purge_cache]{purging} the whole package user-cache pins board at onc
 }
 \seealso{
 Other object handling functions:
-\code{\link{cache_obj}()},
-\code{\link{get_obj}()},
-\code{\link{hash_fn_call}()},
-\code{\link{is_cached}()}
+\code{\link[=cache_obj]{cache_obj()}},
+\code{\link[=get_obj]{get_obj()}},
+\code{\link[=hash_fn_call]{hash_fn_call()}},
+\code{\link[=is_cached]{is_cached()}}
 }
 \concept{obj_handling}

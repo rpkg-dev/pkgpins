@@ -1,6 +1,6 @@
 Package: pkgpins
 Title: Facilitates Results Caching in R Packages Using the Pins Package
-Version: 0.8.0.9000
+Version: 0.9.0.9000
 Authors@R: 
     person("Salim", "Brüggemann", , "salim@rpkg.dev", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-5329-5987"))
@@ -22,7 +22,7 @@ Imports:
     magrittr (>= 2.0.1),
     pins (>= 1.0.0),
     purrr (>= 1.0.0),
-    qs (>= 0.25.1),
+    qs2 (>= 0.2.0),
     rlang (>= 1.0.0),
     stringr (>= 1.4.0),
     tools,

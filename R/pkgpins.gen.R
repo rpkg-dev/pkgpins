@@ -128,23 +128,24 @@ with_cache <- function(expr,
                   id = id,
                   max_age = max_cache_age)) {
       
-      result <- pins::pin_read(board = board,
-                               name = id)
+      meta <- pins::pin_meta(board = board,
+                             name = id)
+      result <- qs2::qs_read(file = fs::path(meta$local$dir, meta$file))
       fetch <- FALSE
     }
   }
-  
+
   if (fetch) {
     result <- rlang::eval_bare(expr = expr,
                                env = parent.frame(n = 2L))
   }
-  
+
   if (use_cache && fetch) {
     cache_obj(board = board,
               x = result,
               id = id)
   }
-  
+
   result
 }
 
@@ -468,7 +469,8 @@ is_cached <- function(board,
 #' @param x Object to be cached.
 #' @param id Pin name uniquely identifying `x` in the `pkg`'s user-cache pins board. A character scalar which is safe to use in paths of common file systems.
 #'   Necessary to retrieve `x` again using [get_obj()]. An already existing pin named `id` will be silently overwritten.
-#' @param qs_preset Serialization algorithm preset to use. See [qs::qsave()] (section *Presets*) for details.
+#' @param qs_preset Compression level preset, mapped internally to [qs2::qs_save()]'s `compress_level`
+#'   (`"fast"` = 1, `"balanced"` = 3, `"high"` = 7, `"archive"` = 22).
 #'
 #' @return `x`, invisibly.
 #' @family obj_handling
@@ -553,20 +555,26 @@ cache_obj <- function(board,
     fs::path(id, glue::glue("{date_time_created}-00000")) %>%
     fs::dir_create()
   
-  path_file <- "cache.qs"
+  path_file <- "cache.qs2"
   path <- fs::path(path_dir, path_file)
-  
-  qs::qsave(x = x,
-            file = path,
-            preset = qs_preset,
-            check_hash = TRUE)
-  
+
+  # qs2 has no preset concept; map qs's preset names to compress_level (1-22)
+  compress_level <- switch(qs_preset,
+                           fast = 1L,
+                           balanced = 3L,
+                           high = 7L,
+                           archive = 22L)
+
+  qs2::qs_save(object = x,
+               file = path,
+               compress_level = compress_level)
+
   # write pin metadata
   yaml::write_yaml(x = list(file = path_file,
                             file_size = as.integer(fs::file_size(path)),
-                            # pin hash is omitted since a) not sensible for our purpose and b) `qs::qsave()` stores an integrity hash in file anyways
+                            # pin hash is omitted since a) not sensible for our purpose and b) `qs2::qs_save()` stores an integrity checksum in file anyways
                             pin_hash = NULL,
-                            type = "qs",
+                            type = "qs2",
                             title = id,
                             description = NULL,
                             created = date_time_created,
@@ -593,8 +601,9 @@ get_obj <- function(board,
                 id = id,
                 max_age = max_age)) {
     
-    result <- pins::pin_read(board = board,
-                             name = id)
+    meta <- pins::pin_meta(board = board,
+                           name = id)
+    result <- qs2::qs_read(file = fs::path(meta$local$dir, meta$file))
   } else {
     result <- NULL
   }

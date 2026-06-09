@@ -21,9 +21,9 @@ Returns \code{TRUE} if the object is present in the \code{pkg}'s user-cache pins
 }
 \seealso{
 Other object handling functions:
-\code{\link{cache_obj}()},
-\code{\link{get_obj}()},
-\code{\link{hash_fn_call}()},
-\code{\link{rm_obj}()}
+\code{\link[=cache_obj]{cache_obj()}},
+\code{\link[=get_obj]{get_obj()}},
+\code{\link[=hash_fn_call]{hash_fn_call()}},
+\code{\link[=rm_obj]{rm_obj()}}
 }
 \concept{obj_handling}

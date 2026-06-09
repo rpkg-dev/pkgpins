@@ -69,6 +69,6 @@ pkgpins::board(pkg = "pkgpins") |> pkgpins::purge_cache()
 }
 \seealso{
 Other high-level functions:
-\code{\link{with_cache}()}
+\code{\link[=with_cache]{with_cache()}}
 }
 \concept{high_lvl}

@@ -43,13 +43,13 @@ The (function) reference is found [here](reference).
 
 ## Development
 
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/rpkg-dev/pkgpins)
+[![Ask DeepWiki](https://rpkg.dev/badge_deepwiki.svg)](https://deepwiki.com/rpkg-dev/pkgpins)
 
 ### R Markdown format
 
 This package's source code is written in the [R Markdown](https://rmarkdown.rstudio.com/) file format to facilitate practices commonly referred to as [*literate programming*](https://en.wikipedia.org/wiki/Literate_programming). It allows the actual code to be freely mixed with explanatory and supplementary information in expressive Markdown format instead of having to rely on [`#` comments](https://rstudio.github.io/r-manuals/r-lang/Parser.html#comments) only.
 
-All the `.gen.R` suffixed R source code found under [`R/`](https://gitlab.com/rpkg.dev/pkgpins/-/tree/master/R/) is generated from the respective R Markdown counterparts under [`Rmd/`](https://gitlab.com/rpkg.dev/pkgpins/-/tree/master/Rmd/) using [`pkgpurl::purl_rmd()`](https://pkgpurl.rpkg.dev/dev/reference/purl_rmd.html)[^2]. Always make changes only to the `.Rmd` files -- never the `.R` files -- and then run `pkgpurl::purl_rmd()` to regenerate the R source files.
+All the `.gen.R` suffixed R source code found under [`R/`](https://gitlab.com/rpkg.dev/pkgpins/-/tree/qs2-migration/R/) is generated from the respective R Markdown counterparts under [`Rmd/`](https://gitlab.com/rpkg.dev/pkgpins/-/tree/qs2-migration/Rmd/) using [`pkgpurl::purl_rmd()`](https://pkgpurl.rpkg.dev/dev/reference/purl_rmd.html)[^2]. Always make changes only to the `.Rmd` files -- never the `.R` files -- and then run `pkgpurl::purl_rmd()` to regenerate the R source files.
 
 ### Coding style
 
@@ -79,7 +79,7 @@ This package borrows a lot of the [Tidyverse](https://www.tidyverse.org/) design
 
 - Usage of [R's right-hand assignment operator `->`](https://rdrr.io/r/base/assignOps.html) is not allowed[^4].
 
-- R source code is *not* split over several files as [suggested by the TSG](https://style.tidyverse.org/package-files.html) but instead is (as far as possible) kept in the single file [`Rmd/pkgpins.Rmd`](https://gitlab.com/rpkg.dev/pkgpins/-/tree/master/Rmd/pkgpins.Rmd) which is well-structured thanks to its [Markdown support](#r-markdown-format).
+- R source code is *not* split over several files as [suggested by the TSG](https://style.tidyverse.org/package-files.html) but instead is (as far as possible) kept in the single file [`Rmd/pkgpins.Rmd`](https://gitlab.com/rpkg.dev/pkgpins/-/tree/qs2-migration/Rmd/pkgpins.Rmd) which is well-structured thanks to its [Markdown support](#r-markdown-format).
 
 As far as possible, these deviations from the TSG plus some additional restrictions are formally specified in [`pkgpurl::default_linters`](https://pkgpurl.rpkg.dev/reference/default_linters), which is (by default) used in [`pkgpurl::lint_rmd()`](https://pkgpurl.rpkg.dev/reference/lint_rmd), which in turn is the recommended way to lint this package.
 

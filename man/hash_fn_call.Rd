@@ -41,9 +41,9 @@ foo(b = "bar")
 }
 \seealso{
 Other object handling functions:
-\code{\link{cache_obj}()},
-\code{\link{get_obj}()},
-\code{\link{is_cached}()},
-\code{\link{rm_obj}()}
+\code{\link[=cache_obj]{cache_obj()}},
+\code{\link[=get_obj]{get_obj()}},
+\code{\link[=is_cached]{is_cached()}},
+\code{\link[=rm_obj]{rm_obj()}}
 }
 \concept{obj_handling}
